@@ -1,0 +1,53 @@
+# Visual Story/Novel Maker Website
+Potential pages (bold is a page/element, italic is a thing users should be able to do on those pages):
+- **Constant options** → Perhaps put a navigation bar up top. These will always be available on every page.
+  - If not signed in:
+    - *Go to login page*
+    - *Go to signup page*
+  - If signed in:
+    - *Go to user profile page*
+    - *Go to ‘my stories’ page*
+    - *Go to user stats page*
+    - *Go to user settings page*
+    - *Go to make story page*
+    - *Go to favorited stories page*
+    - *Log out*
+- **Home page** (for the purposes of the project, should we assume ALL users must be logged in to play?)
+  - Select to play a recently posted / popular story
+  - Search a story on searchbar
+- **Login page**
+  - *Enter username & password*
+  - *Log in*
+- **Signup page**
+  - *Enter username & password*
+  - *Confirm password*
+  - *Sign up*
+- User pages
+  - **User profile** → This will show their username and their public stories (and profile picture?)
+    - *Go to landing page of one of their stories*
+  - **User settings page**
+    - *Change password*
+    - *Change profile picture (?)*
+  - **“My stories” page** → This will show ALL their stories, either public or unreleased
+    - *Edit a story → go to edit stories page*
+    - *Play a story in its current state*
+    - *Delete a story*
+    - *Sort by: most recently created / last updated / alphabetical ASC / alphabetical DESC*
+    - *Filter by: Public / Unreleased / All*
+  - **Favorite stories page** → Fetch all the user’s favorited stories
+    - *Sort by: most recently created / last updated / alphabetical ASC / alphabetical DESC / most popular of the   - day/week/month/alltime*
+    - *Select a story* → Go to its landing age
+  - **User stats page** (amount of stories played, stories made, etc.)
+- Browsing & playing
+  - **Search results page** (based on search queries)
+    - *Sort by: most recently created / last updated / alphabetical ASC / alphabetical DESC / most popular of the day/week/month/alltime*
+    - *Select a story* → Go to its landing age
+  - **Story landing page**
+    - *View story page ratings statistics (plays, likes, dislikes, favorites)*
+    - *View story page gameplay statistics (endings reached, choices chosen)*
+    - *View story comments*
+    - *Leave a comment*
+    - *Favorite story*
+    - *Go back to search / home page*
+- **Edit stories page**
+  - *Very complicated – Outline elsewhere below!!*
