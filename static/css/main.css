@@ -48,15 +48,23 @@ body::before {
     z-index: 0;
 }
 
-/* "Notetella." top left logo */
+/* Top-left logo */
 .logo {
     position: fixed;
     top: 22px;
     left: 28px;
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--text-primary);
+    width: 150px;
+    line-height: 0;
     z-index: 10;
+    contain: paint;
+}
+
+.logo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: brightness(0) invert(1);
+    transform: translateZ(0);
 }
 
 /* Login card */
@@ -176,6 +184,6 @@ body::before {
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 }
-.btn-create:hover { 
+.btn-create:hover {
     background: var(--btn-create-hover); 
 }
