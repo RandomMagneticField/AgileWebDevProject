@@ -266,38 +266,7 @@
 /* for mobile view */
 @media (max-width: 900px) {
 
-    .dashboard-body {
-        padding: 16px;
-        padding-bottom: 100px;
-        height: 100vh;
-    }
-
-    .sidebar {
-        position: fixed;
-        top: auto;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: auto;
-        height: auto;
-        flex-direction: row;
-        align-items: center;
-        border-radius: 20px;
-        padding: 10px 10px;
-        gap: 5px;
-    }
-
-    .sidebar-divider {
-        width: 1px;
-        height: 24px;
-        margin: 0 5px;
-    }
-
-    .dash-main {
-        margin-left: 0;
-        height: 100%;
-    }
-
+  
     .dash-controls {
         flex-direction: column;
         align-items: stretch;
