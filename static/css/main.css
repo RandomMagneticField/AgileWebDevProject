@@ -39,6 +39,9 @@
     --note-card-border:  rgba(98, 98, 98, 1);
     --note-tag-bg:       rgba(32, 32, 32, 0.50);
     --note-card-glow:    rgba(207, 216, 255, 0.40);
+    --note-title:    rgba(255, 255, 255, 1);
+    --note-text:     #A0A0A0;
+    --note-tag-text: #626262;
 }
 
 body {
@@ -320,7 +323,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 28px;
+    margin-bottom: 15px;
     gap: 16px;
 }
 
@@ -418,165 +421,215 @@ body::before {
 
 /* ── Notes grid ── */
 .notes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
 /* ── Note card ── */
 .note-card {
-  background: var(--note-card-bg);
-  border: 1px solid var(--note-card-border);
-  border-radius: 14px;
-  padding: 20px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  will-change: transform;
+    background: var(--note-card-bg);
+    border: 1px solid var(--note-card-border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Scale on hover without affecting neighbours */
 .note-card:hover {
-  transform: scale(1.02);
+    transform: scale(1.02);
 }
 
 /* Glow blob at top middle on hover */
 .note-card::before {
-  content: '';
-  position: absolute;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 120px;
-  border-radius: 50%;
-  background: var(--note-card-glow);
-  filter: blur(100px);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: 0;
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--note-card-glow);
+    filter: blur(100px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .note-card:hover::before {
-  opacity: 1;
+    opacity: 1;
 }
 
-/* Card content sits above glow */
 .note-card-content {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide scrollbar */
+#panel-notes,
+#panel-decks {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* Edge */
+}
+
+#panel-notes::-webkit-scrollbar,
+#panel-decks::-webkit-scrollbar {
+    display: none;                /* Chrome/Safari */
 }
 
 /* Card title */
 .note-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #FFFFFF;
-  margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--note-title);
+    margin-bottom: 10px;
 }
 
 /* Card body preview */
 .note-card-body {
-  font-size: 13px;
-  font-weight: 300;
-  color: #A0A0A0;
-  line-height: 1.6;
-  margin-bottom: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    font-size: 13px;
+    font-weight: 200;
+    color: var(--note-text);
+    line-height: 1.6;
+    margin-bottom: 16px;
 }
 
 /* Footer row: tags + date */
 .note-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   min-width: 0;
+   gap: 10px;
+
 }
 
 .note-card-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex-wrap: nowrap;        /* stop tags from wrapping */
+    overflow-x: auto;         /* enable horizontal scroll */
+    scrollbar-width: none;    /* hide scrollbar Firefox */
+    -ms-overflow-style: none; /* hide scrollbar IE/Edge */
+}
+.note-card-tags::-webkit-scrollbar {
+    display: none;            /* hide scrollbar Chrome/Safari */
 }
 
 /* Individual tag */
 .note-tag {
-  background: var(--note-tag-bg);
-  border: 1px solid var(--note-card-border);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 400;
-  color: #626262;
+    background: var(--note-tag-bg);
+    border: 1px solid var(--note-card-border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--note-tag-text);
 }
 
 /* Date */
 .note-card-date {
-  font-size: 12px;
-  font-weight: 300;
-  color: #A0A0A0;
-  white-space: nowrap;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--note-text);
+    min-width: 40px;
+    flex-shrink: 0;
 }
 
+/* for number of decks based on screen size */
 @media (max-width: 1200px) {
-  .notes-grid { grid-template-columns: repeat(2, 1fr); }
+    .notes-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
 }
 
 @media (max-width: 700px) {
-  .notes-grid { grid-template-columns: 1fr; }
+    .notes-grid { 
+        grid-template-columns: 1fr; 
+    }
 }
+
+
+/* for mobile view */
 @media (max-width: 900px) {
 
-  .dashboard-body {
-    flex-direction: column;
-    padding: 16px;
-    padding-bottom: 100px;
-    height: 100vh;
-    overflow: hidden;
-  }
+    .dashboard-body {
+        padding: 16px;
+        padding-bottom: 100px;
+        height: 100vh;
+    }
 
-  .sidebar {
-    position: fixed;
-    top: auto;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: auto;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    border-radius: 20px;
-    padding: 10px 16px;
-    gap: 4px;
-  }
+    .sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        border-radius: 20px;
+        padding: 10px 10px;
+        gap: 5px;
+    }
 
-  .sidebar-divider {
-    width: 1px;
-    height: 24px;
-    margin: 0 4px;
-  }
+    .sidebar-divider {
+        width: 1px;
+        height: 24px;
+        margin: 0 5px;
+    }
 
-  .dash-main {
-    margin-left: 0;
+    .dash-main {
+        margin-left: 0;
         height: 100%;
-  }
+    }
 
-  .dash-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
+    .dash-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
 
-  .tab-toggle {
-    align-self: flex-start;
-  }
+    .tab-toggle {
+        align-self: flex-start;
+    }
 
-  .search-input {
-    width: 100%;
-  }
+    /* ── Greeting ── */
+    .dash-greeting {
+        font-size: 10px;
+        font-weight: 400;
+    }
+
+    /* ── Dashboard title ── */
+    .dash-title {
+    font-size: 24px;
+    font-weight: 600;
+    }
+    .tab-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.tab-toggle {
+    padding: 5px;
+    gap: 5px;
+}
+.search-input {
+    padding: 8px 14px;
+    font-size: 13px;
+     width: 100%;
+}
+
+.btn-add {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+}
 }
