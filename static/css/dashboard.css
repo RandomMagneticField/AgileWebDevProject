@@ -145,6 +145,9 @@
     position: relative;
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Scale on hover without affecting neighbours */
@@ -177,7 +180,11 @@
 .note-card-content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
+
 
 /* Hide scrollbar */
 #panel-notes,
@@ -206,6 +213,12 @@
     color: var(--note-text);
     line-height: 1.6;
     margin-bottom: 16px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    line-clamp: 4;
+    overflow: hidden;
 }
 
 /* Footer row: tags + date */
@@ -213,16 +226,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-   min-width: 0;
-   gap: 10px;
+    min-width: 0;
+    gap: 10px;
+    margin-top: auto;
 }
 
 .note-card-tags {
     display: flex;
     gap: 6px;
-    flex-wrap: wrap;
-    flex-wrap: nowrap;        /* stop tags from wrapping */
-    overflow-x: auto;         /* enable horizontal scroll */
+    flex-wrap: nowrap;       
+    overflow-x: auto;        
     scrollbar-width: none;    /* hide scrollbar Firefox */
     -ms-overflow-style: none; /* hide scrollbar IE/Edge */
 }
@@ -239,6 +252,9 @@
     font-size: 11px;
     font-weight: 400;
     color: var(--note-tag-text);
+    /* Prevent tags from wrapping */
+    white-space: nowrap;   
+    flex-shrink: 0; 
 }
 
 /* Date */
@@ -308,4 +324,131 @@
     height: 36px;
     font-size: 18px;
 }
+}
+
+/* Deck card */
+.deck-card {
+    background: var(--note-card-bg);
+    border: 1px solid var(--note-card-border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.deck-card:hover {
+    transform: scale(1.02);
+}
+
+.deck-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--note-card-glow);
+    filter: blur(100px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.deck-card:hover::before {
+    opacity: 1;
+}
+
+.deck-card-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.deck-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.deck-play-btn {
+    width: 44px;
+    height: 44px;
+    /* flex-shrink: 0; */
+    background: var(--deck-play-bg);
+    border: 1px solid var(--deck-play-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+}
+
+.deck-play-btn:hover {
+    background: var(--deck-play-bg-hover);
+    color: var(--text-primary);
+}
+
+.deck-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.deck-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--note-title);
+}
+
+.deck-card-count {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--note-text);
+}
+
+.deck-progress-section {
+    margin-bottom: 16px;
+}
+
+.deck-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.deck-progress-label,
+.deck-progress-value {
+    font-size: 12px;
+    font-weight: 200;
+    color: var(--deck-progress-text);
+}
+
+.deck-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--deck-progress-bg);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.deck-progress-fill {
+    height: 100%;
+    background: var(--deck-progress-fill);
+    border-radius: 2px;
+    transition: width 0.3s ease;
 }
