@@ -385,3 +385,13 @@ body::before {
 .btn-add:hover { 
     background: var(--btn-login-hover); 
 }
+
+/* Logo */
+
+.logo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: brightness(0) invert(1);
+    transform: translateZ(0);
+}
