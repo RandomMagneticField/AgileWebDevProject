@@ -93,7 +93,7 @@ body::before {
     align-items: stretch;
     justify-content: flex-start;
     padding: 20px;
-    height: 100dvh;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -209,6 +209,7 @@ body::before {
     .dash-main {
         margin-left: 0;
         height: 100%;
+        max-height:calc(100dvh - 120px); ;
     }
 
    
