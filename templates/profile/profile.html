@@ -120,7 +120,7 @@
                 <div class="header-left"></div>
                 <div class="header-middle">Notella.</div>
                 <div class="header-right">
-                    <button class="setting">setting logo</button>
+                    <button class="setting" id="setting">setting logo</button>
                 </div>
             </div>
             
@@ -166,5 +166,12 @@
         </div>
     </div>
 
+    <script>
+        const setting = document.getElementById("setting")
+
+        setting.addEventListener('click', function(){
+            window.location.href="setting.html"
+        })
+    </script>
 </body>
 </html>
