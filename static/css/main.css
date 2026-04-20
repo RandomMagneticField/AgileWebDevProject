@@ -50,6 +50,23 @@
     --deck-progress-bg:    rgba(80, 80, 80, 0.20);
     --deck-progress-fill:  #FFFFFF;
     --deck-progress-text:  #A0A0A0;
+
+    /* Editor */
+    --editor-box-bg:           rgba(32, 32, 32, 0.40);
+    --editor-box-border:       rgba(98, 98, 98, 1);
+
+    --btn-green-bg:            rgba(26, 58, 20, 0.20);
+    --btn-green-bg-hover:      rgba(26, 58, 20, 0.40);
+    --btn-green-border:        #5BAE6B;
+    --btn-green-color:         #5BAE6B;
+    --btn-danger-bg:           rgba(200, 60, 60, 0.06);
+    --btn-danger-bg-hover:     rgba(200, 60, 60, 0.14);
+    --btn-danger-border:       rgba(200, 60, 60, 0.30);
+    --btn-danger-color:        #cc7070;
+
+    --side-card-bg:            rgba(32, 32, 32, 0.40);
+
+
 }
 
 body {
