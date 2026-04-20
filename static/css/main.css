@@ -48,17 +48,6 @@ body::before {
     z-index: 0;
 }
 
-/* Top-left logo */
-.logo {
-    position: fixed;
-    top: 22px;
-    left: 28px;
-    width: 150px;
-    line-height: 0;
-    z-index: 10;
-    contain: paint;
-}
-
 .logo-img {
     display: block;
     width: 100%;
