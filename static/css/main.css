@@ -1,0 +1,387 @@
+/* Universal reset */
+*, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+/* color variables for eaiser liught / dark mode  */
+:root {
+    --bg:                  #0E0E0E;
+    --glow:                rgba(48, 59, 106, 0.30);
+    --card-bg:             rgba(32, 32, 32, 0.20);
+    --card-border:         rgba(160, 160, 160, 1);
+    --input-bg:            rgba(32, 32, 32, 0.20);
+    --input-border:        rgba(98, 98, 98, 1);
+    --btn-login-bg:        rgba(80, 80, 80, 0.70);
+    --btn-login-hover:     rgba(80, 80, 80, 0.90);
+    --btn-create-hover:    rgba(255, 255, 255, 0.04);
+    --avatar-bg:           rgba(80, 80, 80, 0.70);
+    --text-primary:        #f0f0f0;
+    --text-muted:          #888;
+    --divider-line:        rgba(255, 255, 255, 0.1);
+    --font:                'Inter', sans-serif;
+
+    /* Sidebar */
+    --sidebar-bg:          rgba(32, 32, 32, 0.50);
+    --sidebar-border:      rgba(98, 98, 98, 1);
+    --sidebar-divider:     rgba(38, 38, 38, 1);
+    --nav-icon-color:      #A0A0A0;
+    --nav-active-bg:       rgba(80, 80, 80, 0.70);
+    --nav-active-icon:     #FFFFFF;
+
+    /* Dashboard inner container */
+    --dash-bg:             rgba(32, 32, 32, 0.20);
+    --dash-border:         rgba(98, 98, 98, 1);
+}
+
+body {
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ambient glow blob — smaller, top left area */
+body::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 600px;
+    background: var(--glow);
+    filter: blur(250px);
+    top: -100px;
+    left: 100px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* "Notetella." top left logo */
+.logo {
+    position: fixed;
+    top: 22px;
+    left: 28px;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-primary);
+    z-index: 10;
+}
+
+/* Login card */
+.login-card {
+    max-width: 500px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 44px 36px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Avatar circle */
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--avatar-bg);
+    margin-bottom: 28px;
+}
+
+/* "Welcome" heading */
+.welcome {
+    font-size: 28px;
+    font-weight: 100;
+    color: var(--text-primary);
+    margin-bottom: 28px;
+}
+
+/* Wraps username + password inputs */
+.fields {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Individual input field */
+.field {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 14px 22px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 100;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.field::placeholder { 
+    color: var(--text-muted); 
+    font-weight: 100; 
+}
+.field:focus { 
+    border-color: var(--text-primary); 
+}
+
+/* Login button */
+.btn-login {
+    width: 100%;
+    background: var(--btn-login-bg);
+    border: none;
+    border-radius: 15px;
+    padding: 15px 22px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 100;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 16px;
+}
+.btn-login:hover { 
+    background: var(--btn-login-hover); 
+}
+
+/* "or" divider */
+.divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.divider-line { 
+    flex: 1; 
+    height: 1px; 
+    background: var(--divider-line); 
+}
+.divider-text { 
+    font-size: 13px; 
+    font-weight: 100; 
+    color: var(--text-muted); 
+}
+
+/* Create an Account button */
+.btn-create {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 15px 22px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 100;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+.btn-create:hover { 
+    background: var(--btn-create-hover); 
+}
+
+
+/* notes dashboard */
+
+.dashboard-body {
+    align-items: stretch;
+    padding: 20px;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    position: fixed;
+    top: 50%;
+    left: 29px;
+    transform: translateY(-50%);
+    z-index: 100;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--sidebar-border);
+    border-radius: 20px;
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Divider line between icons */
+.sidebar-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--sidebar-divider);
+    margin: 5px 0;
+}
+
+/* Individual nav icon */
+.nav-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nav-icon-color);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+}
+
+.nav-icon:hover {
+    color: var(--nav-active-icon);
+    border: 1px solid rgba(98, 98, 98, 1);
+    border-radius: 12px;
+}
+
+/* Active state */
+.nav-icon.active {
+    background: var(--nav-active-bg);
+    color: var(--nav-active-icon);
+    border-radius: 12px;
+    cursor: default;
+    pointer-events: none;
+     text-decoration: none;
+}
+
+/* ── Main content area ── */
+.dash-main {
+    margin-left: 100px;
+    flex: 1;
+    display: flex;
+    padding: 0;
+}
+
+/* ── Inner rounded container ── */
+.dash-container {
+    flex: 1;
+    background: var(--dash-bg);
+    border: 1px solid var(--dash-border);
+    border-radius: 20px;
+    padding: 32px 36px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+/* ── Greeting ── */
+.dash-greeting {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0px;
+}
+
+/* ── Dashboard title ── */
+.dash-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* ── Tab + search row ── */
+.dash-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 16px;
+}
+
+/* ── Tab toggle ── */
+.tab-toggle {
+    display: flex;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 7px;
+    gap: 7px;
+}
+.tab-divider {
+    width: 1px;
+    background: var(--sidebar-divider);
+    align-self: stretch;
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-weight: 100;  
+}
+
+.tab-btn.active {
+    background: var(--btn-login-bg);
+    color: var(--text-primary);
+    font-weight: 300;
+}
+
+/* ── Search + add row ── */
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-input {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-primary);
+    outline: none;
+    width: 350px;
+    transition: border-color 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.search-input::placeholder { 
+    color: var(--text-muted); 
+}
+.search-input:focus { 
+    border-color: var(--text-primary); 
+}
+
+/* Add button */
+.btn-add {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--sidebar-bg);
+    color: var(--text-primary);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    border: 1px solid var(--input-border);
+    font-weight: 200;
+}
+.btn-add:hover { 
+    background: var(--btn-login-hover); 
+}
