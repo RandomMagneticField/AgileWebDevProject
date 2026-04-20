@@ -1,0 +1,342 @@
+/* notes dashboard */
+
+#panel-notes,
+#panel-decks {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding: 8px;
+    margin: -8px;
+}
+
+/* ── Greeting ── */
+.dash-greeting {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0px;
+}
+
+/* ── Dashboard title ── */
+.dash-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* ── Tab + search row ── */
+.dash-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    gap: 16px;
+}
+
+/* ── Tab toggle ── */
+.tab-toggle {
+    display: flex;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 7px;
+    gap: 7px;
+}
+.tab-divider {
+    width: 1px;
+    background: var(--sidebar-divider);
+    align-self: stretch;
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-weight: 100;  
+}
+
+.tab-btn.active {
+    background: var(--btn-login-bg);
+    color: var(--text-primary);
+    font-weight: 300;
+}
+
+/* ── Search + add row ── */
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-input {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-primary);
+    outline: none;
+    width: 350px;
+    transition: border-color 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.search-input::placeholder { 
+    color: var(--text-muted); 
+}
+.search-input:focus { 
+    border-color: var(--text-primary); 
+}
+
+/* Add button */
+.btn-add {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--sidebar-bg);
+    color: var(--text-primary);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    border: 1px solid var(--input-border);
+    font-weight: 200;
+}
+.btn-add:hover { 
+    background: var(--btn-login-hover); 
+}
+
+.dash-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--sidebar-divider);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+/* ── Notes grid ── */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* ── Note card ── */
+.note-card {
+    background: var(--note-card-bg);
+    border: 1px solid var(--note-card-border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Scale on hover without affecting neighbours */
+.note-card:hover {
+    transform: scale(1.02);
+}
+
+/* Glow blob at top middle on hover */
+.note-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--note-card-glow);
+    filter: blur(100px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.note-card:hover::before {
+    opacity: 1;
+}
+
+.note-card-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide scrollbar */
+#panel-notes,
+#panel-decks {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* Edge */
+}
+
+#panel-notes::-webkit-scrollbar,
+#panel-decks::-webkit-scrollbar {
+    display: none;                /* Chrome/Safari */
+}
+
+/* Card title */
+.note-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--note-title);
+    margin-bottom: 10px;
+}
+
+/* Card body preview */
+.note-card-body {
+    font-size: 13px;
+    font-weight: 200;
+    color: var(--note-text);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+/* Footer row: tags + date */
+.note-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   min-width: 0;
+   gap: 10px;
+}
+
+.note-card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex-wrap: nowrap;        /* stop tags from wrapping */
+    overflow-x: auto;         /* enable horizontal scroll */
+    scrollbar-width: none;    /* hide scrollbar Firefox */
+    -ms-overflow-style: none; /* hide scrollbar IE/Edge */
+}
+.note-card-tags::-webkit-scrollbar {
+    display: none;            /* hide scrollbar Chrome/Safari */
+}
+
+/* Individual tag */
+.note-tag {
+    background: var(--note-tag-bg);
+    border: 1px solid var(--note-card-border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--note-tag-text);
+}
+
+/* Date */
+.note-card-date {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--note-text);
+    min-width: 40px;
+    flex-shrink: 0;
+}
+
+/* for number of decks based on screen size */
+@media (max-width: 1200px) {
+    .notes-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 700px) {
+    .notes-grid { 
+        grid-template-columns: 1fr; 
+    }
+}
+
+/* for mobile view */
+@media (max-width: 900px) {
+
+    .dashboard-body {
+        padding: 16px;
+        padding-bottom: 100px;
+        height: 100vh;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        border-radius: 20px;
+        padding: 10px 10px;
+        gap: 5px;
+    }
+
+    .sidebar-divider {
+        width: 1px;
+        height: 24px;
+        margin: 0 5px;
+    }
+
+    .dash-main {
+        margin-left: 0;
+        height: 100%;
+    }
+
+    .dash-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .tab-toggle {
+        align-self: flex-start;
+    }
+
+    /* ── Greeting ── */
+    .dash-greeting {
+        font-size: 10px;
+        font-weight: 400;
+    }
+
+    /* ── Dashboard title ── */
+    .dash-title {
+    font-size: 24px;
+    font-weight: 600;
+    }
+    .tab-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.tab-toggle {
+    padding: 5px;
+    gap: 5px;
+}
+.search-input {
+    padding: 8px 14px;
+    font-size: 13px;
+     width: 100%;
+}
+
+.btn-add {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+}
+}
