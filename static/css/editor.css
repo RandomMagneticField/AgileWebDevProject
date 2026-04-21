@@ -480,6 +480,7 @@ body.mode-preview .write-label {
 
 @media (max-width: 900px) {
 
+
     .dash-container {
         overflow-y: auto;
         height: 100%;
@@ -537,5 +538,9 @@ body.mode-preview .write-label {
 
     .dash-divider {
         margin-top: 15px;
+    }
+
+    .editor-pane-right {
+        display: none;
     }
 }
