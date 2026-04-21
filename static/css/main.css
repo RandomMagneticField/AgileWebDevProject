@@ -42,6 +42,14 @@
     --note-title:    rgba(255, 255, 255, 1);
     --note-text:     #A0A0A0;
     --note-tag-text: #626262;
+
+    /* Deck card */
+    --deck-play-bg:        rgba(80, 80, 80, 0.20);
+    --deck-play-bg-hover:  rgba(80, 80, 80, 0.40);
+    --deck-play-border:    rgba(98, 98, 98, 1);
+    --deck-progress-bg:    rgba(80, 80, 80, 0.20);
+    --deck-progress-fill:  #FFFFFF;
+    --deck-progress-text:  #A0A0A0;
 }
 
 body {
