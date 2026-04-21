@@ -10,6 +10,7 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    overflow: hidden;
 }
 
 .editor-title {
@@ -21,7 +22,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 500px;
+    max-width: 100%;
+    /* background-color: blueviolet; */
 }
 
 .editor-title:focus {
@@ -245,3 +247,46 @@
 .side-textarea::placeholder { 
     color: var(--text-muted); 
 }
+
+
+.tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    cursor: text;
+    min-height: 28px;
+}
+
+.tag-removable {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+}
+.tag-remove:hover { color: var(--text-primary); }
+
+.tag-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-primary);
+    min-width: 60px;
+    flex: 1;
+    margin-top: 10px;
+    /* this tells flex container to let this item get a full row */
+    flex-basis:  100%;
+}
+.tag-input::placeholder { color: var(--text-muted); }

@@ -36,3 +36,31 @@ function autoResizeTextarea(element) {
     element.style.height = 'auto';
     element.style.height = element.scrollHeight + 'px';
 }
+
+function handleTag(evnt) {
+
+    if (evnt.key === 'Enter' || evnt.key === ',') {
+        const val = evnt.target.value.trim().replace(/,/g, '').substring(0, 20);
+
+        if (!val) {
+            return;
+        }
+
+        const pill = document.createElement('span');
+        pill.className = 'note-tag tag-removable';
+        pill.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+        document.getElementById('tags-wrap').insertBefore(pill, evnt.target);
+
+        // clear input
+        evnt.target.value = '';
+    }
+
+    // function below makes backspace delete tags. Uncomment if we decide this is good UX. 
+    // if (evnt.key === 'Backspace' && evnt.target.value === '') {
+    //     const pills = document.querySelectorAll('#tags-wrap .tag-removable');
+    //     if (pills.length) pills[pills.length - 1].remove();
+    // }
+}
+function removeTag(btn) { 
+    btn.closest('.tag-removable').remove(); 
+}
