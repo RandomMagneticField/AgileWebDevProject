@@ -554,4 +554,7 @@ body.mode-preview .write-label {
     .md-toolbar::-webkit-scrollbar {
         display: none;
     }
+    .tb-btn::after {
+        display: none;
+    }
 }
