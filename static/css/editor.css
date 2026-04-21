@@ -190,3 +190,40 @@
     gap: 6px;
 }
 .btn-danger:hover { background: var(--btn-danger-bg-hover); }
+
+.vis-toggle {
+    display: flex;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.vis-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 7px;
+    font-size: 11px;
+    font-family: var(--font);
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    margin: 2px;
+}
+
+.vis-btn.active {
+    background: var(--nav-active-bg);
+    border-color: var(--editor-box-border);
+    color: var(--text-primary);
+}
+.vis-divider {
+    width: 1px;
+    background: var(--sidebar-divider);
+    align-self: stretch;
+    margin-left: 2px;
+    margin-right: 2px;
+}

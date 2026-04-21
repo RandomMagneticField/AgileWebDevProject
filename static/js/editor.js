@@ -26,3 +26,8 @@ noteTitle.addEventListener('input', () => {
         sel.addRange(range);
     }
 });
+
+function setVis(v) {
+    document.getElementById('vis-private').classList.toggle('active', v === 'private');
+    document.getElementById('vis-public').classList.toggle('active', v === 'public');
+}
