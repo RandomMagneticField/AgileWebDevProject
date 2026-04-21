@@ -41,7 +41,7 @@
       <div class="editor-header">
         <div class="editor-header-left">
           <div class="dash-greeting">Note Editor</div>
-          <div class="dash-title editor-title" contenteditable="true" spellcheck="false" id="note-title">Note Name</div>
+          <div class="dash-title editor-title" contenteditable="true" spellcheck="false" id="note-title" >Note Name</div>
         </div>
 
 
@@ -75,6 +75,7 @@
 
           <div class="editor-side-card">
             <div class="editor-side-label">Visibility</div>
+            
             <div class="vis-toggle">
               <button class="vis-btn active" id="vis-private" onclick="setVis('private')">Private</button>
               <div class="vis-divider"></div>
@@ -84,6 +85,7 @@
 
           <div class="editor-side-card">
             <div class="editor-side-label">Description:</div>
+            <textarea class="side-textarea" placeholder="Add a short description..." oninput="autoResizeTextarea(this)"></textarea>
           </div>
 
           <div class="editor-side-card">

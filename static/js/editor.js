@@ -31,3 +31,8 @@ function setVis(v) {
     document.getElementById('vis-private').classList.toggle('active', v === 'private');
     document.getElementById('vis-public').classList.toggle('active', v === 'public');
 }
+
+function autoResizeTextarea(element) {
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + 'px';
+}
