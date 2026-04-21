@@ -101,6 +101,52 @@ function onEdit() {
     renderPreview();
 }
 
-function fmt(type){
+function fmt(type) {
 
+    // we added const textarea earlier (md-input)
+    const el = textarea;
+    // cursor start and end positions
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+
+    // selected text
+    const sel = el.value.substring(start, end);
+
+    // everything before selected
+    const before = el.value.substring(0, start);
+    // everyting after
+    const after = el.value.substring(end);
+
+    let newText = ''
+    let cursorOffset = 0
+    let selectLen = 0;
+
+    switch (type) {
+        case 'bold':
+            // if text is selected, wrap it. If not, insert placeholder and select it.
+            newText = `**${sel || 'bold text'}**`;
+            cursorOffset = sel ? newText.length : 2 + 9; 
+            selectLen = sel ? 0 : 9;                     
+            break;
+        case 'italic':
+            newText = `*${sel || 'italic text'}*`;
+            cursorOffset = sel ? newText.length : 1 + 11; 
+            selectLen = sel ? 0 : 11;
+            break;
+        case 'strike':
+            newText = `~~${sel || 'strikethrough'}~~`;
+            cursorOffset = sel ? newText.length : 2 + 13; 
+            selectLen = sel ? 0 : 13;
+            break;
+        default:
+            return;
+    }
+    // rebuild textarea with formatted text inserted
+    el.value = before + newText + after;
+    // focus back on textarea and set cursor selection
+    el.focus();
+    el.selectionStart = start + cursorOffset - selectLen;
+    el.selectionEnd = start + cursorOffset;
+    // re render preview
+    onEdit();
 }

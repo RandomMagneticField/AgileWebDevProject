@@ -428,6 +428,7 @@
     overflow-y: auto;
     padding: 32px 16px 16px;
     display: none;
+    font-family: var(--font)
 }
 
 /* Views */
@@ -557,4 +558,21 @@ body.mode-preview .write-label {
     .tb-btn::after {
         display: none;
     }
+}
+
+/* Preview Text Stylings*/
+/* plain text */
+.md-preview p { 
+    color: var(--text-muted); 
+    font-size: 13px; 
+    line-height: 1.7; 
+    margin-bottom: 0.8em; 
+    font-family: var(--font);
+    font-weight: 100;
+}
+
+/* bold text */
+.md-preview strong { 
+    color: var(--text-primary); 
+    font-weight: 600; 
 }
