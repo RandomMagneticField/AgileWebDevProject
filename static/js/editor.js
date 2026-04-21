@@ -2,6 +2,7 @@ function setMode(mode, element) {
     document.body.className = 'dashboard-body mode-' + mode;
     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
     element.classList.add('active');
+    if (mode !== 'edit') renderPreview();
 }
 
 const noteTitle = document.getElementById('note-title');
@@ -64,4 +65,42 @@ function handleTag(evnt) {
 }
 function removeTag(btn) { 
     btn.closest('.tag-removable').remove(); 
+}
+
+
+function handleResponsiveMode() {
+    const isMobile = window.innerWidth <= 900;
+    if (isMobile) {
+        const previewBtn = document.querySelector('.view-btn[onclick*="preview"]');
+        setMode('preview', previewBtn);
+    }
+}
+
+window.addEventListener('resize', handleResponsiveMode);
+handleResponsiveMode();
+
+// Markdown preview rendering
+
+// breaks treat breaks as br, gfm = github flavoured markdown, adds tables, strikethough etc.
+marked.setOptions({ breaks: true, gfm: true });
+
+const textarea = document.getElementById('md-input');
+const preview = document.getElementById('md-preview');
+
+const isMobile = window.innerWidth <= 900;
+document.body.classList.add(isMobile ? 'mode-edit' : 'mode-split');
+function renderPreview() {
+    preview.innerHTML = marked.parse(textarea.value || '');
+}
+
+
+renderPreview()
+
+
+function onEdit() {
+    renderPreview();
+}
+
+function fmt(type){
+
 }

@@ -71,28 +71,28 @@
 
         <div class="editor-box">
           <div class="md-toolbar">
-              <button class="tb-btn" data-tip="Bold"><b>B</b></button>
-              <button class="tb-btn" data-tip="Italic"><i>I</i></button>
-              <button class="tb-btn" data-tip="Strikethrough" style="text-decoration:line-through;">S</button>
+              <button class="tb-btn" data-tip="Bold" onclick="fmt('bold')"><b>B</b></button>
+              <button class="tb-btn" data-tip="Italic" onclick="fmt('italic')"><i>I</i></button>
+              <button class="tb-btn" data-tip="Strikethrough" onclick="fmt('strike')" style="text-decoration:line-through;">S</button>
 
               <div class="tb-sep"></div>
 
-              <button class="tb-btn" data-tip="Heading 1" >H1</button>
-              <button class="tb-btn" data-tip="Heading 2" >H2</button>
-              <button class="tb-btn" data-tip="Heading 3" >H3</button>
+              <button class="tb-btn" data-tip="Heading 1" onclick="fmt('h1')">H1</button>
+              <button class="tb-btn" data-tip="Heading 2" onclick="fmt('h2')">H2</button>
+              <button class="tb-btn" data-tip="Heading 3" onclick="fmt('h3')">H3</button>
 
               <div class="tb-sep"></div>
 
-              <button class="tb-btn" data-tip="Bullet list"><i class="bi bi-list-ul"></i></button>
-              <button class="tb-btn" data-tip="Numbered list"><i class="bi bi-list-ol"></i></button>
-              <button class="tb-btn" data-tip="Blockquote"><i class="bi bi-quote"></i></button>
-             
+              <button class="tb-btn" data-tip="Bullet list" onclick="fmt('ul')"><i class="bi bi-list-ul"></i></button>
+              <button class="tb-btn" data-tip="Numbered list" onclick="fmt('ol')"><i class="bi bi-list-ol"></i></button>
+              <button class="tb-btn" data-tip="Blockquote" onclick="fmt('quote')"><i class="bi bi-quote"></i></button>
+
               <div class="tb-sep"></div>
 
-              <button class="tb-btn" data-tip="Inline code"><i class="bi bi-code"></i></button>
-              <button class="tb-btn" data-tip="Code block"><i class="bi bi-code-square"></i></button>
-              <button class="tb-btn" data-tip="Table"><i class="bi bi-table"></i></button>
-              <button class="tb-btn" data-tip="Horizontal rule"><i class="bi bi-dash-lg"></i></button>
+              <button class="tb-btn" data-tip="Inline code" onclick="fmt('code')"><i class="bi bi-code"></i></button>
+              <button class="tb-btn" data-tip="Code block" onclick="fmt('codeblock')"><i class="bi bi-code-square"></i></button>
+              <button class="tb-btn" data-tip="Table" onclick="fmt('table')"><i class="bi bi-table"></i></button>
+              <button class="tb-btn" data-tip="Horizontal rule" onclick="fmt('link')"><i class="bi bi-dash-lg"></i></button>
               
               <div class="tb-sep"></div>
 
@@ -101,13 +101,13 @@
           <div class="editor-pane">
 
               <div class="editor-pane-label write-label">MD Section</div>
-                <textarea class="md-textarea" id="md-input" placeholder="Start writing your note in Markdown..." spellcheck="false"></textarea>
+                <textarea class="md-textarea" id="md-input" placeholder="Start writing your note in Markdown..." spellcheck="false" oninput="onEdit()" onkeydown="handleKeys(event)"></textarea>
                 
                 <div class="pane-divider"></div>
 
                 <div class="editor-pane-right">
                   <div class="editor-pane-label preview-label">Preview Section</div>
-                  <div class="md-preview" id="md-preview">Preview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview Section</div>
+                  <div class="md-preview" id="md-preview"></div>
               </div>
 
           </div>
@@ -161,6 +161,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="../../static/js/editor.js"></script>
 </body>
 </html>
