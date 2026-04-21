@@ -47,15 +47,15 @@
 
         <div class="editor-header-right">
           <div class="view-toggle">
-            <button class="view-btn" onclick="setMode(this)">
+            <button class="view-btn" onclick="setMode('edit',this)">
               <i class="bi bi-pen"></i> Edit
             </button>
             <div class="view-toggle-divider"></div>
-            <button class="view-btn active" onclick="setMode(this)">
+            <button class="view-btn active" onclick="setMode('split',this)">
               <i class="bi bi-layout-split"></i> Split
             </button>
             <div class="view-toggle-divider"></div>
-            <button class="view-btn" onclick="setMode(this)">
+            <button class="view-btn" onclick="setMode('preview',this)">
               <i class="bi bi-eye"></i> Preview
             </button>
           </div>
@@ -98,7 +98,19 @@
 
               <button class="tb-btn" data-tip="Link"><i class="bi bi-link-45deg"></i></button>
           </div>
-          <div class="editor-pane"></div>
+          <div class="editor-pane">
+
+              <div class="editor-pane-label write-label">MD Section</div>
+                <textarea class="md-textarea" id="md-input" placeholder="Start writing your note in Markdown..." spellcheck="false"></textarea>
+                
+                <div class="pane-divider"></div>
+
+                <div class="editor-pane-right">
+                  <div class="editor-pane-label preview-label">Preview Section</div>
+                  <div class="md-preview" id="md-preview">Preview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview SectionPreview Section</div>
+              </div>
+
+          </div>
 
         </div>
 

@@ -356,3 +356,124 @@
 .tb-btn:hover::after { 
     opacity: 1; 
 }
+
+
+
+.editor-pane {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.editor-pane-label {
+    position: absolute;
+    top: 10px;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* .write-label { 
+    left: 16px; 
+} */
+
+.editor-pane-right {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.preview-label, .write-label { 
+    left: 16px; 
+}
+
+/* Textarea */
+.md-textarea {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: var(--text-primary);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 32px 16px 16px;
+    caret-color: var(--editor-caret);
+}
+
+.md-textarea::placeholder  { 
+    color: var(--text-muted); 
+}
+
+/* Pane divider */
+.pane-divider {
+    width: 1px;
+    background: var(--editor-pane-divider);
+    flex-shrink: 0;
+    height: 95%;
+    align-self: center;
+}
+
+.md-preview {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding: 32px 16px 16px;
+    display: none;
+}
+
+/* Views */
+/* Edit View */
+body.mode-edit .md-textarea { 
+    display: block; 
+    flex: 1; 
+}
+body.mode-edit .pane-divider { 
+    display: none; 
+}
+body.mode-edit .editor-pane-right { 
+    display: none; 
+}
+
+/* Split View */
+body.mode-split .md-textarea { 
+    display: block; 
+    flex: 1; 
+}
+body.mode-split .pane-divider { 
+    display: block; 
+}
+body.mode-split .editor-pane-right { 
+    display: flex; 
+}
+body.mode-split .md-preview { 
+    display: block; 
+}
+
+
+/* Preview View */
+body.mode-preview .md-textarea { 
+    display: none; 
+}
+body.mode-preview .pane-divider { 
+    display: none; 
+}
+body.mode-preview .editor-pane-right { 
+    display: flex; 
+    flex: 1; 
+}
+body.mode-preview .md-preview { 
+    display: block; 
+    flex: 1; 
+}
+body.mode-preview .write-label { 
+    display: none; 
+}

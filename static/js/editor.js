@@ -1,6 +1,7 @@
-function setMode(el) {
+function setMode(mode, element) {
+    document.body.className = 'dashboard-body mode-' + mode;
     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
+    element.classList.add('active');
 }
 
 const noteTitle = document.getElementById('note-title');
