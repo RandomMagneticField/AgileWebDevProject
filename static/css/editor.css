@@ -543,4 +543,15 @@ body.mode-preview .write-label {
     .editor-pane-right {
         display: none;
     }
+
+    .md-toolbar {
+        overflow-x: auto;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+        gap: 15px;
+    }
+
+    .md-toolbar::-webkit-scrollbar {
+        display: none;
+    }
 }
