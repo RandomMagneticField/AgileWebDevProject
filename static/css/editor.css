@@ -610,3 +610,42 @@ body.mode-preview .write-label {
     margin: 0 0 0.8em;
     font-family: var(--font);
 }
+
+
+.md-preview code {
+    background: var(--preview-code-bg);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--preview-code-color);
+}
+.md-preview pre {
+    background: var(--preview-pre-bg);
+    border: 1px solid var(--editor-box-border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    margin-bottom: 1em;
+}
+.md-preview pre code { 
+    background: transparent; 
+    padding: 5px; 
+}
+.md-preview hr { 
+    border: none; 
+    border-top: 1px solid var(--editor-box-border); 
+    margin: 1em 0; 
+}
+
+
+
+.md-preview a {
+    color: var(--text-muted);
+    text-decoration: underline;
+}
+
+.md-preview a:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}

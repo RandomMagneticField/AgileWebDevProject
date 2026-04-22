@@ -183,12 +183,41 @@ function fmt(type) {
             cursorOffset = newText.length;
             selectLen = sel ? 0 : 10;
             break;
-            
+        
+
+        case 'code':
+            newText = `\`${sel || 'code'}\``;
+            cursorOffset = sel ? newText.length : 1 + 4;
+            selectLen = sel ? 0 : 4;
+            break;
+        case 'codeblock':
+            const prefixCb = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefixCb}\`\`\`\n${sel || 'code here'}\n\`\`\`\n`;
+            cursorOffset = sel ? newText.length : prefixCb.length + 4 + 9;
+            selectLen = sel ? 0 : 9;
+            break;
+        // note if --- is added right below a line, md will treat it as h2.
+        case 'hr':
+            const prefixHr = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefixHr}***\n`;
+            cursorOffset = newText.length;
+            selectLen = 0;
+            break;
+        case 'link':
+            newText = `[${sel || 'link text'}](url)`;
+            cursorOffset = sel ? newText.length - 5 : 1 + 9;
+            selectLen = sel ? 0 : 9;
+            break;
         default:
             return;
     }
     // rebuild textarea with formatted text inserted
-    el.value = before + newText + after;
+    if (type === 'hr') {
+        // include sel to prevent text deletion for hr
+        el.value = before + newText + sel + after;
+    } else {
+        el.value = before + newText + after;
+    }
     // focus back on textarea and set cursor selection
     el.focus();
     el.selectionStart = start + cursorOffset - selectLen;
