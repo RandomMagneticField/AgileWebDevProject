@@ -23,13 +23,8 @@
 }
 
 .logo-img {
-    width: 50% !important;
+    width: 25% !important;
     position: static !important;
-}
-
-.logo-position{
-    text-align: center;
-    margin-bottom: 16px;
 }
 
 .setting{
