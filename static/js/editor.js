@@ -122,6 +122,7 @@ function fmt(type) {
     let selectLen = 0;
 
     switch (type) {
+        
         case 'bold':
             // if text is selected, wrap it. If not, insert placeholder and select it.
             newText = `**${sel || 'bold text'}**`;
@@ -137,6 +138,28 @@ function fmt(type) {
             newText = `~~${sel || 'strikethrough'}~~`;
             cursorOffset = sel ? newText.length : 2 + 13; 
             selectLen = sel ? 0 : 13;
+            break;
+
+        // headings
+        case 'h1':
+            // if the cursor is already at the start of a line, no \n is added. If it's mid-line, a \n is added first to push it onto a new line.
+            // check if start is 0 or if char before is \n to determine this.
+            const prefix1 = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefix1}# ${sel || 'Heading 1'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 9;
+            break;
+        case 'h2':
+            const prefix2 = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefix2}## ${sel || 'Heading 2'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 9;
+            break;
+        case 'h3':
+            const prefix3 = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefix3}### ${sel || 'Heading 3'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 9;
             break;
         default:
             return;
