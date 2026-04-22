@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="../../static/css/auth.css"/>
 
     <style>
-      .login-card .btn-back {
-          width: auto !important;
-          padding: 8px 20px !important;
-          font-size: 13px;
-          align-self: flex-start;
-          margin-bottom: 20px;
-        }
+      .btn-back{
+        width: auto !important;
+        padding: 8px 20px !important;
+        font-size: 13px;
+        align-self: flex-start;
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
@@ -65,7 +65,7 @@
           alert("Please fill in all fields")
         } else {
           if(pw.value === confpw.value){
-            alert('Account created successfully!')
+            window.location.href = "../dashboard/index.html"
           } else {
             alert("Passwords don't match")
             confpw.value = ""

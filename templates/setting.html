@@ -65,14 +65,6 @@
       margin-top: 16px;
     }
 
-    .avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: var(--avatar-bg);
-      flex-shrink: 0;
-    }
-
     .profile-info {
       flex: 1;
       text-align: center;
@@ -166,12 +158,26 @@
         <hr class="settings-divider">
 
         <!-- Buttons -->
-        <button class="btn-login" style="margin-top:16px;">Log Out</button>
-        <button class="btn-create" style="margin-top:10px;">Delete Account</button>
+        <button class="btn-login" style="margin-top:16px;" id="logout">Log Out</button>
+        <button class="btn-create" style="margin-top:10px;" id="del">Delete Account</button>
 
       </div>
     </div>
   </div>
 
+  <script>
+    const back = document.getElementById("back")
+    const lo = document.getElementById("logout")
+    const del = document.getElementById("del")
+    back.addEventListener('click', function(){
+      window.location.href="profile.html"
+    })
+    lo.addEventListener('click', function(){
+      window.location.href="../auth/login.html"
+    })
+    del.addEventListener('click', function(){
+      window.location.href="../auth/login.html"
+    })
+  </script>
 </body>
 </html>
