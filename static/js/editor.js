@@ -161,6 +161,29 @@ function fmt(type) {
             cursorOffset = newText.length;
             selectLen = sel ? 0 : 9;
             break;
+
+        // lists and quote
+        case 'ul':
+            // same logic for heading
+            const prefixUl = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefixUl}- ${sel || 'List item'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 9;
+            break;
+
+        case 'ol':
+            const prefixOl = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefixOl}1. ${sel || 'List item'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 9;
+            break;
+        case 'quote':
+            const prefixQ = start === 0 || el.value[start - 1] === '\n' ? '' : '\n';
+            newText = `${prefixQ}> ${sel || 'Blockquote'}`;
+            cursorOffset = newText.length;
+            selectLen = sel ? 0 : 10;
+            break;
+            
         default:
             return;
     }
