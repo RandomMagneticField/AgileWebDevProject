@@ -838,3 +838,14 @@ body.mode-preview .md-preview {
 
 .md-preview::-webkit-scrollbar { display: none; }
 .md-preview { scrollbar-width: none; }
+
+
+.btn-save.unsaved {
+    background: var(--btn-danger-bg);
+    border-color: var(--btn-danger-border);
+    color: var(--btn-danger-color);
+}
+
+.btn-save.unsaved:hover {
+    background: var(--btn-danger-bg-hover);
+}

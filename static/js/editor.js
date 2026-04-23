@@ -32,6 +32,7 @@ noteTitle.addEventListener('input', () => {
 function setVis(v) {
     document.getElementById('vis-private').classList.toggle('active', v === 'private');
     document.getElementById('vis-public').classList.toggle('active', v === 'public');
+    markUnsaved();
 }
 
 function autoResizeTextarea(element) {
@@ -55,6 +56,7 @@ function handleTag(evnt) {
 
         // clear input
         evnt.target.value = '';
+         markUnsaved();
     }
 
     // function below makes backspace delete tags. Uncomment if we decide this is good UX. 
@@ -65,6 +67,7 @@ function handleTag(evnt) {
 }
 function removeTag(btn) { 
     btn.closest('.tag-removable').remove(); 
+     markUnsaved();
 }
 
 
@@ -371,4 +374,24 @@ function insertTable() {
     // re-render preview and close modal
     onEdit();
     closeTableModal();
+}
+
+
+// Track unsaved changes
+const saveBtn = document.getElementById('btn-save');
+
+function markUnsaved() {
+    saveBtn.classList.add('unsaved');
+}
+
+function markSaved() {
+    saveBtn.classList.remove('unsaved');
+}
+
+noteTitle.addEventListener('input', markUnsaved);
+textarea.addEventListener('input', markUnsaved);
+document.getElementById('note-description').addEventListener('input', markUnsaved);
+
+function saveNote() {
+    markSaved();
 }

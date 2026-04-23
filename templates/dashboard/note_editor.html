@@ -59,7 +59,7 @@
               <i class="bi bi-eye"></i> Preview
             </button>
           </div>
-          <button class="btn-save">Save</button>
+          <button class="btn-save" id="btn-save" onclick="saveNote()">Save</button>
         </div>
       </div>
 
@@ -128,7 +128,7 @@
 
           <div class="editor-side-card">
             <div class="editor-side-label">Description:</div>
-            <textarea class="side-textarea" placeholder="Add a short description..." oninput="autoResizeTextarea(this)"></textarea>
+            <textarea class="side-textarea" placeholder="Add a short description..." oninput="autoResizeTextarea(this)" id="note-description"></textarea>
           </div>
 
           <div class="editor-side-card">
