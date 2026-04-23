@@ -28,6 +28,8 @@
 
 .editor-title:focus {
     border-color: var(--editor-box-border);
+    overflow-x: auto;
+    text-overflow: clip;
 }
 
 .editor-header-right {
@@ -558,6 +560,15 @@ body.mode-preview .md-preview {
     .tb-btn::after {
         display: none;
     }
+
+    .editor-title {
+        width: 100%;
+        max-width: 100%;
+    }
+    .editor-header-left {
+        width: 100%;
+    }
+
 }
 
 /* Preview Text Stylings*/
