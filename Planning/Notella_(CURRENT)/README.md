@@ -64,7 +64,7 @@ Student focused website that allows student to take notes, create flashcards, sh
 - As a student, I want to flip through cards in a study session
 - As a student, I want to mark each card as right or wrong during a session
 - As a student, I want to see a results summary at the end of a session showing which cards I got right and wrong
-- As a student, I want session results to not be saved so there is no pressure and it is just for self checking
+- As a student, I want the results of last session to be saved so i can check my progress at any time
 - As a student, I want to mark a deck as public so other students can discover and copy it
 - As a student, I want to copy a public deck into my own account to personalise it
 ### AI Quiz
