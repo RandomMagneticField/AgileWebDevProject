@@ -132,6 +132,7 @@ function bindAnchorLinks() {
 function renderPreview() {
     preview.innerHTML = marked.parse(textarea.value || '');
     bindAnchorLinks();
+    buildToc();
 }
 
 
@@ -362,10 +363,18 @@ function fmt(type) {
     } else {
         el.value = before + newText + after;
     }
+
+   // save scroll position before focusing
+    const scrollTop = el.scrollTop;
+
     // focus back on textarea and set cursor selection
     el.focus();
     el.selectionStart = start + cursorOffset - selectLen;
     el.selectionEnd = start + cursorOffset;
+
+    // restore scroll position
+    el.scrollTop = scrollTop;
+
     // re render preview
     onEdit();
 }
@@ -531,4 +540,54 @@ document.getElementById('note-description').addEventListener('input', markUnsave
 
 function saveNote() {
     markSaved();
+}
+
+function buildToc() {
+    const list = document.getElementById('toc-list');
+
+    // query all h1, h2, h3 elements from the preview
+    const headings = preview.querySelectorAll('h1, h2, h3');
+
+    if (headings.length === 0) {
+        list.innerHTML = '<div class="toc-empty">No headings yet.</div>';
+        return;
+    }
+
+    // clear existing toc before rebuilding
+    list.innerHTML = '';
+
+    headings.forEach(heading => {
+
+        // wrapper row for the heading button and copy button
+        const item = document.createElement('div');
+        item.className = 'toc-item-row';
+
+        // heading button 
+        const btn = document.createElement('button');
+        // toc-h1 (or h2 h3) class controls the indent level
+        btn.className = `toc-item toc-${heading.tagName.toLowerCase()}`;
+        btn.textContent = heading.textContent;
+        btn.addEventListener('click', () => {
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // copy button (copies id)
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'heading-id-copy';
+        copyBtn.innerHTML = '<i class="bi bi-copy"></i>';
+        copyBtn.addEventListener('click', () => {
+            // write #id to clipboard
+            navigator.clipboard.writeText(`#${heading.id}`).then(() => {
+                // show check icon briefly to confirm copy
+                copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="bi bi-copy"></i>';
+                }, 1500);
+            });
+        });
+
+        item.appendChild(btn);
+        item.appendChild(copyBtn);
+        list.appendChild(item);
+    });
 }

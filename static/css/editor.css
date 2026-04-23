@@ -874,3 +874,84 @@ body.mode-preview .md-preview {
 .back-btn:hover {
     color: var(--text-primary);
 }
+
+
+.toc-item {
+    display: block;
+    padding: 3px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s;
+    font-family: var(--font);
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.toc-item:hover {
+    color: var(--text-primary);
+}
+
+.toc-h1 { 
+    padding-left: 0px; 
+    font-weight: 500; 
+}
+.toc-h2 { 
+    padding-left: 10px; 
+    font-weight: 400; 
+}
+.toc-h3 { 
+    padding-left: 20px; 
+    font-weight: 300; 
+}
+
+.toc-empty {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.toc-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.heading-id-copy {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    flex-shrink: 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    opacity: 0;
+}
+
+.toc-item-row:hover .heading-id-copy {
+    opacity: 1;
+}
+
+.heading-id-copy:hover {
+    color: var(--text-primary);
+    background: var(--nav-active-bg);
+}
+
+#toc-list {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#toc-list::-webkit-scrollbar {
+    display: none;
+}
