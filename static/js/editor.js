@@ -79,8 +79,7 @@ function handleResponsiveMode() {
     }
 }
 
-window.addEventListener('resize', handleResponsiveMode);
-handleResponsiveMode();
+
 
 // Markdown preview rendering
 
@@ -89,6 +88,9 @@ marked.setOptions({ breaks: true, gfm: true });
 
 const textarea = document.getElementById('md-input');
 const preview = document.getElementById('md-preview');
+
+window.addEventListener('resize', handleResponsiveMode);
+handleResponsiveMode();
 
 const isMobile = window.innerWidth <= 900;
 document.body.classList.add(isMobile ? 'mode-edit' : 'mode-split');
@@ -102,6 +104,105 @@ renderPreview()
 
 function onEdit() {
     renderPreview();
+}
+
+function insertAtCursor(text) {
+    const element = textarea;
+    const start = element.selectionStart;
+    element.value = element.value.substring(0, start) + text + element.value.substring(element.selectionEnd);
+    element.selectionStart = element.selectionEnd = start + text.length;
+    onEdit();
+}
+
+
+function handleKeys(event) {
+
+    if ((event.ctrlKey || event.metaKey) && event.key === 'b') {
+        event.preventDefault();
+        fmt('bold');
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key === 'i') {
+        event.preventDefault();
+        fmt('italic');
+    }
+
+    // Auto continue lists on enter. 
+    if (event.key === 'Enter') {
+        const cursorPos = textarea.selectionStart;
+        const textBefore = textarea.value.substring(0, cursorPos);
+
+        // used /n to split lines, and used pop to get last (current) line
+        const currentLine = textBefore.split('\n').pop();
+
+        // check if current line is a bullet/num list item
+        const ulMatch = currentLine.match(/^(\s*)-\s/);
+        const olMatch = currentLine.match(/^(\s*)(\d+)\.\s/);
+
+        if (ulMatch) {
+            event.preventDefault();
+            // ulMatch[1] captures (\s*), which is the indent (white spaces)
+            const indent = ulMatch[1];
+
+            // check if line is just a empty dash when enter is pressed
+            if (currentLine.trim() === '-') {
+                // if so, break out of list with a new line (delete the dash and add a new line)
+                const newValue = textarea.value.substring(0, cursorPos - currentLine.length) + '\n' + textarea.value.substring(cursorPos);
+                textarea.value = newValue;
+                textarea.selectionStart = textarea.selectionEnd = cursorPos - currentLine.length + 1;
+                onEdit();
+            } else {
+                // continue bullet list with same indent
+                insertAtCursor(`\n${indent}- `);
+            }
+
+        } else if (olMatch) {
+            event.preventDefault();
+            const indent = olMatch[1];
+
+            if (currentLine.trim() === `${olMatch[2]}.`) {
+                const newValue = textarea.value.substring(0, cursorPos - currentLine.length) + '\n' + textarea.value.substring(cursorPos);
+                textarea.value = newValue;
+                textarea.selectionStart = textarea.selectionEnd = cursorPos - currentLine.length + 1;
+                onEdit();
+            } else {
+                // continue numbered list with same indent
+                insertAtCursor(`\n${indent}1. `);
+            }
+        }
+    }
+
+    // Tab indents and dedents (only lists)
+    if (event.key === 'Tab') {
+
+        event.preventDefault();
+
+        const cursorPos = textarea.selectionStart;
+        const textBefore = textarea.value.substring(0, cursorPos);
+        
+        const currentLine = textBefore.split('\n').pop();
+        const isListLine = currentLine.match(/^(\s*)[-\d]/);
+
+        if (isListLine) {
+            const lineStart = cursorPos - currentLine.length;
+
+            if (event.shiftKey) {
+                // dedent 
+                if (currentLine.startsWith('    ')) {
+                    textarea.value = textarea.value.substring(0, lineStart) + currentLine.substring(4) + textarea.value.substring(cursorPos);
+                    textarea.selectionStart = textarea.selectionEnd = cursorPos - 4;
+                    onEdit();
+                }
+            } else {
+                // indent
+                textarea.value = textarea.value.substring(0, lineStart) + '    ' + currentLine + textarea.value.substring(cursorPos);
+                textarea.selectionStart = textarea.selectionEnd = cursorPos + 4;
+                onEdit();
+            }
+        } else {
+            // not a list line, act as normal tab (insert 4 spaces)
+            insertAtCursor('    ');
+        }
+    }
 }
 
 function fmt(type) {
