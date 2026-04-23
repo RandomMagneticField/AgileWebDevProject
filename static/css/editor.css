@@ -647,6 +647,24 @@ body.mode-preview .md-preview {
 
 /* .md-preview pre::-webkit-scrollbar { display: none; }
 .md-preview pre { scrollbar-width: none; } */
+
+.md-preview pre::-webkit-scrollbar { 
+    height: 3px; 
+}
+.md-preview pre::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.md-preview pre::-webkit-scrollbar-thumb { 
+    background: var(--sidebar-divider); 
+    border-radius: 2px; 
+}
+.md-preview pre::-webkit-scrollbar-thumb:hover { 
+    background: var(--editor-box-border); 
+}
+.md-preview pre { 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--sidebar-divider) transparent; 
+}
 .md-preview hr { 
     border: none; 
     border-top: 1px solid var(--editor-box-border); 
