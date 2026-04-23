@@ -83,8 +83,20 @@ function handleResponsiveMode() {
 
 // Markdown preview rendering
 
+const renderer = new marked.Renderer();
+renderer.heading = function({ text, depth }) {
+    const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+    return `<h${depth} id="${id}">${text}</h${depth}>`;
+};
+
+
+
 // breaks treat breaks as br, gfm = github flavoured markdown, adds tables, strikethough etc.
-marked.setOptions({ breaks: true, gfm: true });
+marked.setOptions({ 
+    breaks: true, 
+    gfm: true,
+    renderer: renderer
+});
 
 const textarea = document.getElementById('md-input');
 const preview = document.getElementById('md-preview');
@@ -94,8 +106,32 @@ handleResponsiveMode();
 
 const isMobile = window.innerWidth <= 900;
 document.body.classList.add(isMobile ? 'mode-edit' : 'mode-split');
+
+
+function bindAnchorLinks() {
+    // find all links in preview that start with #
+    const anchorLinks = preview.querySelectorAll('a[href^="#"]');
+
+    anchorLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            // get the anchor target e.g. "#html5-fundamentals" → "html5-fundamentals"
+            const targetId = link.getAttribute('href').substring(1);
+
+            // find the heading in the preview with that id
+            const targetEl = preview.querySelector(`#${targetId}`);
+
+            if (targetEl) {
+                // scroll the preview div to the heading
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+}
 function renderPreview() {
     preview.innerHTML = marked.parse(textarea.value || '');
+    bindAnchorLinks();
 }
 
 
