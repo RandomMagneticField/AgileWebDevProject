@@ -103,7 +103,7 @@
     /* Preview */
     --preview-code-bg:            rgba(98, 98, 98, 0.2);
     --preview-code-color:         #c8c8c8;
-    --preview-pre-bg:             rgba(32, 32, 32, 0.6);
+    --preview-pre-bg:             rgba(32, 32, 32, 0.5);
 }
 
 body {

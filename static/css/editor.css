@@ -641,8 +641,11 @@ body.mode-preview .md-preview {
 }
 .md-preview pre code { 
     background: transparent; 
-    padding: 5px; 
+    padding: 0px; 
 }
+
+.md-preview pre::-webkit-scrollbar { display: none; }
+.md-preview pre { scrollbar-width: none; }
 .md-preview hr { 
     border: none; 
     border-top: 1px solid var(--editor-box-border); 
