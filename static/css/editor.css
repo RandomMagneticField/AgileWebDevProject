@@ -863,3 +863,14 @@ body.mode-preview .md-preview {
 .btn-save.unsaved:hover {
     background: var(--btn-danger-bg-hover);
 }
+
+.back-btn {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-right: 6px;
+    transition: color 0.15s;
+}
+
+.back-btn:hover {
+    color: var(--text-primary);
+}
