@@ -100,13 +100,13 @@
           </div>
           <div class="editor-pane">
 
-              <div class="editor-pane-label write-label">MD Section</div>
+              <!-- <div class="editor-pane-label write-label">MD Section</div> -->
                 <textarea class="md-textarea" id="md-input" placeholder="Start writing your note in Markdown..." spellcheck="false" oninput="onEdit()" onkeydown="handleKeys(event)"></textarea>
                 
                 <div class="pane-divider"></div>
 
                 <div class="editor-pane-right">
-                  <div class="editor-pane-label preview-label">Preview Section</div>
+                  <!-- <div class="editor-pane-label preview-label">Preview Section</div> -->
                   <div class="md-preview" id="md-preview"></div>
               </div>
 
@@ -160,6 +160,33 @@
 
     </div>
   </div>
+
+  <!-- Table modal backdrop -->
+<div id="table-modal-backdrop" onclick="closeTableModal()"></div>
+
+<!-- Table modal -->
+<div id="table-modal">
+  <div class="table-modal-title">Insert Table</div>
+  <div class="table-modal-section">
+    <div class="table-modal-hint">Click to set size — <span id="grid-label">1 × 1</span></div>
+    <div id="grid-picker"></div>
+  </div>
+  <div class="table-modal-inputs">
+    <div class="table-modal-input-group">
+      <div class="table-modal-input-label">Columns</div>
+      <input id="tbl-cols" type="number" min="1" max="20" value="3" oninput="syncFromInputs()"/>
+    </div>
+    <div class="table-modal-input-group">
+      <div class="table-modal-input-label">Rows (excl. header)</div>
+      <input id="tbl-rows" type="number" min="1" max="50" value="3" oninput="syncFromInputs()"/>
+    </div>
+  </div>
+  <div id="tbl-preview-label" class="table-modal-preview">3 columns × 3 rows (+ 1 header row)</div>
+  <div class="table-modal-actions">
+    <button onclick="closeTableModal()" class="table-modal-btn-cancel">Cancel</button>
+    <button onclick="insertTable()" class="table-modal-btn-insert">Insert Table</button>
+  </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="../../static/js/editor.js"></script>

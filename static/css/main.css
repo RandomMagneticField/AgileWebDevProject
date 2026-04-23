@@ -69,9 +69,41 @@
     --tb-btn-color:               #AAAAAA;
     --tb-tooltip-bg:              #1a1a1a;
 
-     --editor-caret:               #aaa;
-     --editor-pane-divider:        #434343;
+    --editor-caret:               #aaa;
+    --editor-pane-divider:        #434343;
 
+
+     /* Table modal */
+    --modal-bg:      rgba(32, 32, 32, 0.20);
+    --modal-shadow:               rgba(0, 0, 0, 0.6);
+    --modal-backdrop-bg:          rgba(0, 0, 0, 0.6);
+    --modal-title-color:          #888;
+    --modal-hint-color:           #666;
+    --modal-hint-span-color:      #aaa;
+    --modal-input-bg:             #1a1a1a;
+    --modal-input-color:          #f0f0f0;
+    --modal-preview-color:        #888;
+
+
+    --modal-cancel-bg:            rgba(200, 60, 60, 0.06);
+    --modal-cancel-bg-hover:      rgba(200, 60, 60, 0.14);
+    --modal-cancel-color:         #cc7070;
+    --modal-cancel-border:        rgba(200, 60, 60, 0.30);
+
+    --modal-insert-bg:            rgba(26, 58, 20, 0.20);
+    --modal-insert-bg-hover:      rgba(26, 58, 20, 0.40);
+    --modal-insert-border:        #5BAE6B;
+    --modal-insert-color:         #5BAE6B;
+
+    /* Grid picker */
+    --grid-cell-bg:               rgba(32, 32, 32, 0.4);
+    --grid-cell-active-bg:        rgba(98, 98, 98, 0.4);
+    --grid-cell-active-border:    rgba(160, 160, 160, 1);
+
+    /* Preview */
+    --preview-code-bg:            rgba(98, 98, 98, 0.2);
+    --preview-code-color:         #c8c8c8;
+    --preview-pre-bg:             rgba(32, 32, 32, 0.6);
 }
 
 body {

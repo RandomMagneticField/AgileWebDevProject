@@ -367,7 +367,7 @@
     position: relative;
 }
 
-.editor-pane-label {
+/* .editor-pane-label {
     position: absolute;
     top: 10px;
     font-size: 11px;
@@ -375,7 +375,7 @@
     color: var(--text-muted);
     pointer-events: none;
     z-index: 1;
-}
+} */
 
 /* .write-label { 
     left: 16px; 
@@ -389,9 +389,9 @@
     position: relative;
 }
 
-.preview-label, .write-label { 
+/* .preview-label, .write-label { 
     left: 16px; 
-}
+} */
 
 /* Textarea */
 .md-textarea {
@@ -405,7 +405,7 @@
     font-family: 'DM Mono', 'Courier New', monospace;
     font-size: 13px;
     line-height: 1.8;
-    padding: 32px 16px 16px;
+    padding: 16px 16px 16px;
     caret-color: var(--editor-caret);
 }
 
@@ -426,7 +426,7 @@
     flex: 1;
     min-width: 0;
     overflow-y: auto;
-    padding: 32px 16px 16px;
+    padding: 16px 16px 16px;
     display: none;
     font-family: var(--font)
 }
@@ -475,9 +475,9 @@ body.mode-preview .md-preview {
     display: block; 
     flex: 1; 
 }
-body.mode-preview .write-label { 
+/* body.mode-preview .write-label { 
     display: none; 
-}
+} */
 
 @media (max-width: 900px) {
 
@@ -649,3 +649,192 @@ body.mode-preview .write-label {
     color: var(--text-primary);
     text-decoration: underline;
 }
+
+/* Table in preview stylings */
+.md-preview th, .md-preview td { 
+    border: 1px solid var(--editor-box-border); 
+    padding: 6px 10px; 
+    font-size: 13px; 
+    color: var(--text-muted);
+    font-family: var(--font);
+}
+.md-preview th { 
+    background: var(--preview-pre-bg); 
+    color: var(--text-primary); 
+    white-space: nowrap;
+}
+
+
+/* Table modal */
+#table-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: var(--modal-backdrop-bg);
+    backdrop-filter: blur(4px);
+}
+
+
+#table-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg);
+    border: 1px solid var(--editor-box-border);
+    border-radius: 18px;
+    padding: 24px;
+    width: 320px;
+    font-family: var(--font);
+    box-shadow: 0 24px 60px var(--modal-shadow);
+    
+    
+}
+
+.table-modal-title {
+    font-size: 10px;
+    color: var(--modal-title-color);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.table-modal-section {
+    margin-bottom: 18px;
+}
+
+.table-modal-hint {
+    font-size: 11px;
+    color: var(--modal-hint-color);
+    margin-bottom: 8px;
+}
+
+.table-modal-hint span {
+    color: var(--modal-hint-span-color);
+}
+
+#grid-picker {
+    display: grid;
+    grid-template-columns: repeat(8, 28px);
+    gap: 3px;
+    justify-content: center;
+}
+
+.table-modal-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.table-modal-input-group {
+    flex: 1;
+}
+
+.table-modal-input-label {
+    font-size: 10px;
+    color: var(--modal-title-color);
+    margin-bottom: 5px;
+    font-weight: 200;
+}
+
+.table-modal-input-group input {
+    width: 100%;
+    background: var(--modal-input-bg);
+    border: 1px solid var(--editor-box-border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--modal-input-color);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    font-weight: 100;
+}
+
+/* removes spin buttons from number inputs */
+.table-modal-input-group input::-webkit-inner-spin-button,
+.table-modal-input-group input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+/* same but firefox */
+.table-modal-input-group input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.table-modal-preview {
+    font-size: 10px;
+    color: var(--modal-preview-color);
+    margin-bottom: 16px;
+    line-height: 1.6;
+    font-weight: 100;
+}
+
+.table-modal-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.table-modal-btn-cancel {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--modal-cancel-bg);
+    border: 1px solid var( --modal-cancel-border);
+    color: var(--modal-cancel-color);
+    font-family: var(--font);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-weight: 200;
+}
+
+.table-modal-btn-cancel:hover {
+    background: var(--modal-cancel-bg-hover);
+}
+
+.table-modal-btn-insert {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--modal-insert-bg);
+    border: 1px solid var(--modal-insert-border);
+    color: var(--modal-insert-color);
+    font-family: var(--font);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+     font-weight: 200;
+}
+
+.table-modal-btn-insert:hover {
+    background: var(--modal-insert-bg-hover);
+}
+
+.grid-cell {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: 1px solid var(--editor-box-border);
+    background: var(--grid-cell-bg);
+    cursor: pointer;
+    transition: background 0.1s, border-color 0.1s;
+}
+
+.md-preview table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin-bottom: 1em; 
+}
+
+
+
+
+
+.md-textarea::-webkit-scrollbar { display: none; }
+.md-textarea { scrollbar-width: none; }
+
+.md-preview::-webkit-scrollbar { display: none; }
+.md-preview { scrollbar-width: none; }
