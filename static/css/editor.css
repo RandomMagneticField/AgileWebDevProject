@@ -148,8 +148,9 @@
     font-weight: 400;
     color: var(--text-muted);
     margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--editor-box-border);
 }
-
 
 .btn-quiz {
     width: 100%;
@@ -955,3 +956,4 @@ body.mode-preview .md-preview {
 #toc-list::-webkit-scrollbar {
     display: none;
 }
+
