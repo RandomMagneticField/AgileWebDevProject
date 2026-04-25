@@ -1,0 +1,115 @@
+
+.viewer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 24px !important;
+    margin-top: 32px !important;
+}
+
+.fc-card {
+    width: 480px !important;
+    height: 280px !important;
+    perspective: 1000px !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    transform-style:preserve-3d !important;
+}
+
+.fc-inner {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    transform-style: preserve-3d !important;
+    transition: transform 0.5s ease !important;
+}
+
+.fc-inner.flipped {
+    transform: rotateY(180deg) !important;
+}
+
+.fc-front, .fc-back {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 24px !important;
+}
+
+.fc-back {
+    transform: rotateY(180deg) !important;
+}
+
+.fc-nav-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: var(--btn-login-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-primary) !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.2s !important;
+    flex-shrink: 0 !important;
+}
+
+.fc-nav-btn:hover {
+    background: var(--btn-login-hover) !important;
+}
+
+.fc-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.fc-text {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text-primary);
+    text-align: center;
+    outline: none;
+    width: 100%;
+    min-height: 40px;
+}
+
+.fc-counter {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+}
+
+.flip-btn {
+    padding: 8px 20px;
+    border-radius: 10px;
+    background: var(--btn-green-bg);
+    border: 1px solid var(--btn-green-border);
+    color: var(--btn-green-color);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-left: 2px;
+}
+
+.flip-btn:hover {
+    background: var(--btn-green-bg-hover);
+}
