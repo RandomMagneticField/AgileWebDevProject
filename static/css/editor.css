@@ -997,3 +997,56 @@ body.mode-preview .md-preview {
     scrollbar-width: thin; 
     scrollbar-color: var(--sidebar-divider) transparent; 
 }
+
+/* h4, h5, h6 */
+.md-preview h4 { 
+    font-size: 15px; 
+    font-weight: 400; 
+}
+.md-preview h5 { 
+    font-size: 13px; 
+    font-weight: 400; 
+}
+.md-preview h6 { 
+    font-size: 12px; 
+    font-weight: 400; 
+}
+
+/* images */
+.md-preview img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.8em;
+}
+
+/* task list checkboxes */
+
+.md-preview input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 13px;
+    height: 13px;
+    border: 1px solid var(--editor-box-border);
+    border-radius: 50%;
+    margin-right: 6px;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    flex-shrink: 0;
+}
+
+.md-preview input[type="checkbox"]:checked {
+    border-color: var(--text-muted);
+}
+
+.md-preview input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
