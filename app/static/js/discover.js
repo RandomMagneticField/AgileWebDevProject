@@ -132,7 +132,7 @@ function copyDeck(btn){
 //sort the notes and decks 
 const sortBtn = document.getElementById('sort-btn')
 const sortDropdown = document.getElementById('sort-dropdown')
-let currentSort = 'date'
+let currentSort = 'alpha'
 
 sortBtn.addEventListener('click', function(){
     sortDropdown.style.display = 
@@ -143,7 +143,7 @@ document.querySelectorAll('.select-option').forEach(function(option){
     option.addEventListener('click', function(e){
         currentSort = this.dataset.value
         sortBtn.innerHTML = this.textContent + ' <i class="bi bi-chevron-down" style="font-size:11px;"></i>'
-        document.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'))
+        document.querySelectorAll('.select-option').forEach(o => o.classList.remove('active'))
         this.classList.add('active')
         sortDropdown.style.display = 'none'
         renderCards()

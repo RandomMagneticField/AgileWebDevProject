@@ -75,10 +75,47 @@ function createDeckCard(deck) {
     `;
 }
 
+//sort the notes and decks 
+const sortBtn = document.getElementById('sort-btn')
+const sortDropdown = document.getElementById('sort-dropdown')
+let currentSort = 'alpha'
+
+sortBtn.addEventListener('click', function(){
+    sortDropdown.style.display = 
+        sortDropdown.style.display === 'block' ? 'none' : 'block'
+})
+
+document.querySelectorAll('.select-option').forEach(function(option){
+    option.addEventListener('click', function(e){
+        currentSort = this.dataset.value
+        sortBtn.innerHTML = this.textContent + ' <i class="bi bi-chevron-down" style="font-size:11px;"></i>'
+        document.querySelectorAll('.select-option').forEach(o => o.classList.remove('active'))
+        this.classList.add('active')
+        sortDropdown.style.display = 'none'
+        renderCards()
+    })
+})
+
+document.addEventListener('click', function(e){
+    if(!e.target.closest('#sort-wrapper')){
+        sortDropdown.style.display = 'none'
+    }
+})
+
+function sortdata(data){
+    const sorted = [...data]
+    if(currentSort === 'alpha'){
+        sorted.sort((a,b) => a.title.localeCompare(b.title))
+    } else if(currentSort === 'date'){
+        sorted.sort((a,b) => new Date(b.date) - new Date(a.date))
+    }
+    return sorted
+}
+
 // ── Render ──
 function renderCards() {
-    document.getElementById('notes-grid').innerHTML = notesData.map(createNoteCard).join('');
-    document.getElementById('decks-grid').innerHTML = decksData.map(createDeckCard).join('');
+    document.getElementById('notes-grid').innerHTML = sortdata(notesData).map(createNoteCard).join('');
+    document.getElementById('decks-grid').innerHTML = sortdata(decksData).map(createDeckCard).join('');
 }
 
 renderCards();
