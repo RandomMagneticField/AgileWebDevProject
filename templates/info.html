@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Notetella — Dashboard</title>
+  <title>Notella — Information</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../../static/css/auth.css"/>
+  <link rel="stylesheet" href="../../static/css/profile.css"/>
+  <link rel="stylesheet" href="../../static/css/info.css"/>
 </head>
+
+
 <body class="dashboard-body">
 
   <!-- Sidebar -->
@@ -37,9 +42,55 @@
   <!-- Main -->
     <div class="dash-main">
         <div class="dash-container">
+            <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                <img class="logo-img" src="../../assets/images/svg/notella_logo_plain.svg" alt="Notella logo"/>
+            </div>
 
+            <hr>
 
+            <!--About-->
+            <div class="info-section">
+                <p class="label">ABOUT</p>
+                <h2 class="heading">What is Notella?</h2>
+                <p class="desc">Notella is a student-focused study platform, combining note-taking with markdown toolbar, flashcard decks, and AI generated quizzes into a single workspace. Built to help students study easier.</p>
+            </div>
 
+            <hr>
+
+            <!--FAQ-->
+            <div class="info-section">
+                <p class="label">FAQs</p>
+                <h2 class="heading">Frequently asked questions</h2>
+                <div class="faq-q">
+                    <details>
+                        <summary class="question">Is my data private?</summary>
+                        <p class="ans">Yes, your notes and flashcard decks are private by default. You can choose what to make public.</p>
+                    </details>
+                </div>
+                <div class="faq-q">
+                    <details>
+                        <summary class="question">Can I copy someone else's notes?</summary>
+                        <p class="ans">Yes, you can copy and personalise any public notes and flashcard decks.</p>
+                    </details>
+                </div>
+                <div class="faq-q">
+                    <details>
+                        <summary class="question">How does the AI quiz work?</summary>
+                        <p class="ans">The AI reads your note and automatically generates multiple choice questions. Results are not 100% accurate.</p>
+                    </details>
+                </div>
+                <div class="faq-q">
+                    <details>
+                        <summary class="question">Are my quiz results saved?</summary>
+                        <p class="ans">Yes, AI quiz results can be saved or discarded. However, the flashcard session results are not saved. They are just for self checking.</p>
+                    </details>
+                </div>
+            </div>
+
+            <!--Credits-->
+            <div class="info-section">
+                <p class="desc">Built for CITS3403, The University of Western Australia, 2026</p>
+            </div>
         </div>
     </div>
 
