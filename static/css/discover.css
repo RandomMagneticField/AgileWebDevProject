@@ -1,0 +1,16 @@
+.like-btn, .copy-btn{
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+.like-btn:hover, .copy-btn:hover{
+    color: var(--text-primary);
+}
