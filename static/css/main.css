@@ -42,6 +42,68 @@
     --note-title:    rgba(255, 255, 255, 1);
     --note-text:     #A0A0A0;
     --note-tag-text: #626262;
+
+    /* Deck card */
+    --deck-play-bg:        rgba(80, 80, 80, 0.20);
+    --deck-play-bg-hover:  rgba(80, 80, 80, 0.40);
+    --deck-play-border:    rgba(98, 98, 98, 1);
+    --deck-progress-bg:    rgba(80, 80, 80, 0.20);
+    --deck-progress-fill:  #FFFFFF;
+    --deck-progress-text:  #A0A0A0;
+
+    /* Editor */
+    --editor-box-bg:           rgba(32, 32, 32, 0.40);
+    --editor-box-border:       rgba(98, 98, 98, 1);
+
+    --btn-green-bg:            rgba(26, 58, 20, 0.20);
+    --btn-green-bg-hover:      rgba(26, 58, 20, 0.40);
+    --btn-green-border:        #5BAE6B;
+    --btn-green-color:         #5BAE6B;
+    --btn-danger-bg:           rgba(200, 60, 60, 0.06);
+    --btn-danger-bg-hover:     rgba(200, 60, 60, 0.14);
+    --btn-danger-border:       rgba(200, 60, 60, 0.30);
+    --btn-danger-color:        #cc7070;
+
+    --side-card-bg:            rgba(32, 32, 32, 0.40);
+
+    --tb-btn-color:               #AAAAAA;
+    --tb-tooltip-bg:              #1a1a1a;
+
+    --editor-caret:               #aaa;
+    --editor-pane-divider:        #434343;
+
+
+     /* Table modal */
+    --modal-bg:      rgba(32, 32, 32, 0.20);
+    --modal-shadow:               rgba(0, 0, 0, 0.6);
+    --modal-backdrop-bg:          rgba(0, 0, 0, 0.6);
+    --modal-title-color:          #888;
+    --modal-hint-color:           #666;
+    --modal-hint-span-color:      #aaa;
+    --modal-input-bg:             #1a1a1a;
+    --modal-input-color:          #f0f0f0;
+    --modal-preview-color:        #888;
+
+
+    --modal-cancel-bg:            rgba(200, 60, 60, 0.06);
+    --modal-cancel-bg-hover:      rgba(200, 60, 60, 0.14);
+    --modal-cancel-color:         #cc7070;
+    --modal-cancel-border:        rgba(200, 60, 60, 0.30);
+
+    --modal-insert-bg:            rgba(26, 58, 20, 0.20);
+    --modal-insert-bg-hover:      rgba(26, 58, 20, 0.40);
+    --modal-insert-border:        #5BAE6B;
+    --modal-insert-color:         #5BAE6B;
+
+    /* Grid picker */
+    --grid-cell-bg:               rgba(32, 32, 32, 0.4);
+    --grid-cell-active-bg:        rgba(98, 98, 98, 0.4);
+    --grid-cell-active-border:    rgba(160, 160, 160, 1);
+
+    /* Preview */
+    --preview-code-bg:            rgba(98, 98, 98, 0.2);
+    --preview-code-color:         #c8c8c8;
+    --preview-pre-bg:             rgba(32, 32, 32, 0.5);
 }
 
 body {
@@ -176,28 +238,45 @@ body::before {
     height: 100%;
 }
 
-
 @media (max-width: 900px) {
+
+
+    body::before {
+        width: 300px;
+        height: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+        top: -50px;
+    }
+
+    .dash-container {
+        width: 100%;
+    }
+
+    .dash-main {
+        width: 100%;
+    }
 
     .dashboard-body {
         padding: 16px;
-        padding-bottom: 100px;
-        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
     }
 
     .sidebar {
         position: fixed;
+        bottom: 16px;
         top: auto;
-        bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
+        flex-direction: row;
         width: auto;
         height: auto;
-        flex-direction: row;
-        align-items: center;
         border-radius: 20px;
-        padding: 10px 10px;
+        padding: 10px;
         gap: 5px;
+        z-index: 100;
     }
 
     .sidebar-divider {
@@ -208,9 +287,24 @@ body::before {
 
     .dash-main {
         margin-left: 0;
-        height: 100%;
-        max-height:calc(100dvh - 120px); ;
+        flex: 1;
+        min-height: 0;
+        height: auto;
+        padding-bottom: 85px;
     }
 
-   
+    .dash-container {
+        height: auto;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+
+    .dash-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    
 }
