@@ -60,6 +60,8 @@ function flipCard(){
 
 //results
 function displayResults(){
+    const percent = Math.round(correct_ans/cards.length *100)
+    document.getElementById('results-percentage').textContent = `${percent} percent correct`
     document.getElementById('results-correct').textContent = `${correct_ans} correct`
     document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
     document.querySelector('.editor-layout > div').style.display = 'none' //hide the card
