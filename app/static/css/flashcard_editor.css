@@ -113,3 +113,25 @@
 .flip-btn:hover {
     background: var(--btn-green-bg-hover);
 }
+
+.btn-retry{
+    padding: 8px 20px;
+    border-radius: 10px;
+    background: var(--btn-login-bg);
+    border: 1px solid var(--btn-login-border);
+    color: var(--btn-login-color);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-left: 2px;
+    margin: 0 auto;
+}
+
+.btn-retry:hover{
+    background: var(--btn-login-hover);
+}
