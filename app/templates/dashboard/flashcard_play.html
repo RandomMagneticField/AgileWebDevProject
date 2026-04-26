@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../../static/css/dashboard.css"/>
   <link rel="stylesheet" href="../../static/css/editor.css"/>
   <link rel="stylesheet" href="../../static/css/flashcard.css"/>
+  <link rel="stylesheet" href="../../static/css/flashcard_editor.css"/>
 </head>
 <body class="dashboard-body">
 
@@ -52,6 +53,15 @@
                     Decks Name
                 </div>
             </div>
+
+            <!--Progress Information-->
+            <div class="editor-header-center">
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+                <span class="progress-label" id="progress-label"> 0/0</span>
+            </div>
+            
             <div class="editor-header-right">
                 <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
             </div>
@@ -60,8 +70,7 @@
         <div class="dash-divider"></div>
 
         <!--Main layout-->
-        <div class="editor-layout">
-            
+        <div class="editor-layout" id="card-viewer">
             <!--card viewer-->
             <div style="flex:1; display:flex; flex-direction:column;">
                 <div class="viewer">
@@ -90,17 +99,37 @@
                     </button>
                 </div>
             </div>
-
-            <!--Result page-->
-            <div id="result-page" style="display: none; text-align: center; padding: 40px; margin: 0 auto; max-width: 400px;">
+        </div>
+        <!--Result page-->
+        <div id="result-page" style="display:none; padding:40px; margin:0 auto; max-width:800px; overflow-y: auto; scrollbar-width: none;">
+            <!--General info about their results-->
+            <div style="text-align:center; margin-bottom:20px;">
                 <h2>Session Completed</h2>
                 <p id="results-percentage"></p>
                 <p id="results-correct"></p>
                 <p id="results-wrong"></p>
-                <div style="display: flex; justify-content: center; margin-top: 10px;">
-                    <button class="btn-retry" onclick="restartDeck()">Try Again</button>
-                    <button class="btn-retry" onclick="window.location.href='flashcard_editor.html'">Edit Deck</button>
-                </div>
+            </div>
+
+            <!--Showing the correct cards-->
+            <div style="text-align: left; margin-top: 20px;">
+                <p style="color: var(--btn-green-color);">
+                    <i class="bi bi-check"></i> Correct cards :
+                </p>
+                <div id="correct-list"></div>
+            </div>
+
+            <!--Showing the incorrect cards-->
+            <div style="text-align: left; margin-top: 20px;">
+                <p style="color: var(--btn-danger-color);">
+                    <i class="bi bi-x"></i> Wrong cards :
+                </p>
+                <div id="wrong-list"></div>
+            </div>
+
+            <!--Buttons-->
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                <button class="btn-retry" onclick="restartDeck()">Try Again</button>
+                <button class="btn-retry" onclick="window.location.href='flashcard_editor.html'">Edit Deck</button>
             </div>
         </div>
     </div>
