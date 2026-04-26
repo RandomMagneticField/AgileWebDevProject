@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../static/css/main.css"/>
   <link rel="stylesheet" href="../../static/css/dashboard.css"/>
   <link rel="stylesheet" href="../../static/css/editor.css"/>
+  <link rel="stylesheet" href="../../static/css/flashcard.css"/>
   <link rel="stylesheet" href="../../static/css/flashcard_editor.css"/>
 </head>
 <body class="dashboard-body">
@@ -43,17 +44,23 @@
         <div class="editor-header">
             <div class="editor-header-left">
                 <div class="dash-greeting">
-                    <a href="index.html" class="back-btn">
-                        <i class="bi bi-arrow-left"></i>
-                        Flashcard editor
-                    </a> 
+                    Decks editor
                 </div>
                 <div class="dash-title editor-title" contenteditable="true" spellcheck="false" id="decks-title">
-                    Decks Name
+                    Card Decks Name
                 </div>
             </div>
+
+            <!--Progress Information-->
+            <div class="editor-header-center">
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+                <span class="progress-label" id="progress-label"> 0/0</span>
+            </div>
+
+
             <div class="editor-header-right">
-                <button class="btn-add" id="add-card" title="Add card">+</button>
                 <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
             </div>
         </div>
@@ -62,44 +69,27 @@
 
         <!--Main layout-->
         <div class="editor-layout">
-            
-            <!--card viewer-->
-            <div style="flex:1; display:flex; flex-direction:column;">
-                <div class="viewer">
-                    <button class="fc-nav-btn" id="btn-prev">
-                        <i class="bi bi-chevron-left"></i>
-                    </button>
-                    <div class="fc-card" id="card">
-                        <div class="fc-inner" id="inner">
-                            <div class="fc-front">
-                                <p class="fc-label">FRONT</p>
-                                <div class="fc-text" contenteditable="true" spellcheck="false" id="front-text">Click to edit front</div>
-                            </div>
-                            <div class="fc-back">
-                                <p class="fc-label">BACK</p>
-                                <div class="fc-text" contenteditable="true" spellcheck="false" id="back-text">Click to edit back</div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="fc-nav-btn" id="btn-next">
-                        <i class="bi bi-chevron-right"></i>
-                    </button>
+            <!--Card list-->
+            <div class="card-list-wrap">
+                <div class="card-list" id="card-list">
+                    <!--cards will be handled by JavaScript-->
                 </div>
-                <div class="fc-counter" id="counter">Card 1 of 1</div>
-                <div style="display:flex; justify-content:center; margin-top:7px;">
-                    <button class="flip-btn" onclick="flipCard()">
-                        <i class="bi bi-arrow-repeat"></i> Flip card
-                    </button>
-                </div>
-                <div style="display:flex; justify-content:center; margin-top:7px;">
-                    <button class="btn-danger" id="btn-delete" style="width:auto; padding:8px 20px;">
-                        <i class="bi bi-trash"></i> Delete card
-                    </button>
+
+                <!--Add new card button-->
+                <div class="btn-add-card" id="btn-add-card">
+                    <i class="bi bi-plus">Add Card</i>
                 </div>
             </div>
 
             <!--side panel-->
             <div class="editor-side">
+                <div class="editor-side-card">
+                    <div class="editor-side-label">Play Flashcard:</div>
+                        <button class="btn-quiz" onclick="window.location='flashcard_play.html'">
+                            <i class="bi bi-lightning-charge"></i> Play
+                        </button>
+                    <div class="quiz-disclaimer">Practice your cards in flip mode</div>
+                </div>
                 <div class="editor-side-card">
                     <div class="editor-side-label">Visibility</div>
                     <div class="vis-toggle">
@@ -127,7 +117,6 @@
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
