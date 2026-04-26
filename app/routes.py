@@ -1,0 +1,72 @@
+from flask import Blueprint, render_template
+
+main = Blueprint('main', __name__)
+
+# starting page
+@main.route('/')
+def home():
+    return render_template('intro.html')
+
+
+#login page
+@main.route('/login')
+def login():
+    return render_template('auth/login.html')
+
+
+#signup page
+@main.route('/signup')
+def signup():
+    return render_template('auth/signuppage.html')
+
+
+#dashboard page
+@main.route('/dashboard')
+def dashboard():
+    return render_template('dashboard/index.html')
+
+@main.route('/dashboard/note_editor')
+def note_editor():
+    return render_template('dashboard/note_editor.html')
+
+@main.route('/dashboard/flashcard_editor')
+def flashcard_editor():
+    return render_template('dashboard/flashcard_editor.html')
+
+@main.route('/dashboard/flashcard')
+def flashcard():
+    return render_template('dashboard/flashcard_play.html')
+
+#discover page
+@main.route('/discover')
+def discover():
+    return render_template('discover/index.html')
+
+
+#quiz page
+@main.route('/quiz/active')
+def quiz_active():
+    return render_template('quiz/active.html')
+
+@main.route('/quiz/history')
+def quiz_history():
+    return render_template('quiz/history.html')
+
+@main.route('/quiz/results')
+def quiz_results():
+    return render_template('quiz/results.html')
+
+
+#profile
+@main.route('/profile')
+def profile():
+    return render_template('profile.html')
+
+@main.route('/change_password')
+def change_password():
+    return render_template('change_password.html')
+
+#info page
+@main.route('/info')
+def info():
+    return render_template('info.html')
