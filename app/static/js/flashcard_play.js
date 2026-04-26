@@ -26,6 +26,15 @@ function renderCard(){
     document.getElementById('counter').textContent = `Card ${currentIndex + 1} of ${cards.length}`
     document.getElementById('inner').classList.remove('flipped')
     isFlipped = false
+    updateProgress()
+}
+
+//Progress Bar
+function updateProgress(){
+    const total = cards.length
+    const percentage = total === 0 ? 0 : ((currentIndex) / total) * 100
+    document.getElementById('progress-bar').style.width = percentage + '%'
+    document.getElementById('progress-label').textContent = `${currentIndex} / ${total}`
 }
 
 
@@ -64,42 +73,59 @@ function flipCard(){
 
 //results
 function displayResults(){
+    //update the progress bar to be full
+    document.getElementById('progress-bar').style.width = '100%'
+    document.getElementById('progress-label').textContent = `${cards.length} / ${cards.length}`
+    //count the percentage of correct ans
     const percent = Math.round(correct_ans/cards.length *100)
+    //print out the general info of the results
     document.getElementById('results-percentage').textContent = `${percent}% correct`
     document.getElementById('results-correct').textContent = `${correct_ans} correct`
     document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
 
+    //print out the cards user clicked correct
     const correctList = document.getElementById('correct-list')
-    correctList.innerHTML = correct_cards.map((c, i) => `
-        <div class="card-body" style="margin-bottom: 8px;">
-            <div class="card-side">
-                <div class="card-side-label">FRONT</div>
-                <div class="card-side-text">${c.front}</div>
+    if(correct_cards.length === 0){
+        correctList.innerHTML = "<p style='color:var(--text-muted);'>None</p>"
+    }
+    else{
+        correctList.innerHTML = correct_cards.map((c, i) => `
+            <div class="card-body" style="margin-bottom: 8px;">
+                <div class="card-side">
+                    <div class="card-side-label">FRONT</div>
+                    <div class="card-side-text">${c.front}</div>
+                </div>
+                <div class="card-side-divider"></div>
+                <div class="card-side">
+                    <div class="card-side-label">BACK</div>
+                    <div class="card-side-text">${c.back}</div>
+                </div>
             </div>
-            <div class="card-side-divider"></div>
-            <div class="card-side">
-                <div class="card-side-label">BACK</div>
-                <div class="card-side-text">${c.back}</div>
-            </div>
-        </div>
-    `).join('')
+        `).join('')
+    }
 
+    //print out the cards user clicked incorrect
     const wrongList = document.getElementById('wrong-list')
-    wrongList.innerHTML = wrong_cards.map((c, i) => `
-        <div class="card-body" style="margin-bottom: 8px;">
-            <div class="card-side">
-                <div class="card-side-label">FRONT</div>
-                <div class="card-side-text">${c.front}</div>
+    if(wrong_cards.length === 0){
+        wrongList.innerHTML = "<p style='color:var(--text-muted);'>None</p>"
+    }
+    else{
+        wrongList.innerHTML = wrong_cards.map((c, i) => `
+            <div class="card-body" style="margin-bottom: 8px;">
+                <div class="card-side">
+                    <div class="card-side-label">FRONT</div>
+                    <div class="card-side-text">${c.front}</div>
+                </div>
+                <div class="card-side-divider"></div>
+                <div class="card-side">
+                    <div class="card-side-label">BACK</div>
+                    <div class="card-side-text">${c.back}</div>
+                </div>
             </div>
-            <div class="card-side-divider"></div>
-            <div class="card-side">
-                <div class="card-side-label">BACK</div>
-                <div class="card-side-text">${c.back}</div>
-            </div>
-        </div>
-    `).join('')
+        `).join('')
+    }
 
-    document.querySelector('.editor-layout > div').style.display = 'none' //hide the card
+    document.getElementById("card-viewer").style.display = 'none' //hide the card
     document.getElementById('result-page').style.display = 'block' //show result page
 }
 
@@ -109,7 +135,7 @@ function restartDeck(){
     currentIndex = 0
     correct_cards = []
     wrong_cards = []
-    document.querySelector('.editor-layout > div').style.display = 'block'
+    document.getElementById("card-viewer").style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
     renderCard()
 }
