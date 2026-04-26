@@ -153,6 +153,22 @@
             transform: translateY(-1px);
         }
 
+        .quiz-mcq-box.quiz-option-selected {
+            background: var(--btn-blue-bg);
+            border-color: var(--btn-blue-border);
+        }
+
+        .quiz-mcq-box.quiz-option-selected:hover {
+            background: var(--btn-blue-bg-hover);
+            border-color: var(--btn-blue-border);
+        }
+
+        .quiz-mcq-box.quiz-option-selected .quiz-option-letter {
+            background: rgba(111, 147, 255, 0.14);
+            border-color: var(--btn-blue-border);
+            color: var(--btn-blue-color);
+        }
+
         .quiz-question-title {
             font-size: 24px;
             font-weight: 600;
@@ -450,5 +466,6 @@
 
         </div>
     </div>
+    <script src="../../static/js/quiz.js"></script>
 </body>
 </html>
