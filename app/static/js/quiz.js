@@ -2,6 +2,8 @@ const OPTION_SELECTOR = ".quiz-mcq-box";
 const PANEL_SELECTOR = ".quiz-mcq-panel";
 const SELECTED_CLASS = "quiz-option-selected";
 const MCQ_CONTAINER_ID = "quiz-mcq-container";
+const QUESTION_LIST_ID = "quiz-question-list";
+const QUESTION_ITEM_SELECTOR = ".quiz-question-item";
 
 // ── Dummy data ──
 const quizData = [
@@ -124,17 +126,48 @@ function renderQuestions() {
 	container.innerHTML = quizData.map(createQuestionPanel).join("");
 }
 
+function createQuestionListItem(questionNumber) {
+	return `
+		<a class="quiz-question-item" href="#question-${questionNumber}" data-question-number="${questionNumber}">Question ${questionNumber}</a>
+	`;
+}
+
+function renderQuestionList() {
+	const container = document.getElementById(QUESTION_LIST_ID);
+	if (!container) {
+		return;
+	}
+
+	container.innerHTML = quizData.map((_, index) => createQuestionListItem(index + 1)).join("");
+}
+
+function setQuestionListItemCompleted(questionId, isCompleted) {
+	if (!questionId) {
+		return;
+	}
+
+	const item = document.querySelector(`${QUESTION_ITEM_SELECTOR}[href="#${questionId}"]`);
+	if (!item) {
+		return;
+	}
+
+	item.classList.toggle("is-completed", isCompleted);
+}
+
 function setSelectedOption(option) {
 	const panel = option.closest(PANEL_SELECTOR);
 	if (!panel) {
 		return;
 	}
 
+	const questionId = panel.dataset.questionId;
+
 	const selected = panel.querySelector(`${OPTION_SELECTOR}.${SELECTED_CLASS}`);
 
 	if (selected === option) {
 		option.classList.remove(SELECTED_CLASS);
 		option.setAttribute("aria-pressed", "false");
+		setQuestionListItemCompleted(questionId, false);
 		return;
 	}
 
@@ -145,6 +178,7 @@ function setSelectedOption(option) {
 
 	option.classList.add(SELECTED_CLASS);
 	option.setAttribute("aria-pressed", "true");
+	setQuestionListItemCompleted(questionId, true);
 }
 
 function initializeOptions() {
@@ -182,4 +216,5 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderQuestions(); // render dummy data
+renderQuestionList();
 initializeOptions();
