@@ -140,5 +140,15 @@ function restartDeck(){
     renderCard()
 }
 
+const backBtn = document.getElementById("back")
+const params = new URLSearchParams(window.location.search)
+const from = params.get('from')
+if(from === "flashcard_editor"){
+    backBtn.href="flashcard_editor.html"
+}
+else{
+    backBtn.href="index.html?tab=decks"
+}
+
 
 renderCard()
