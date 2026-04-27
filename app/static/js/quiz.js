@@ -5,6 +5,7 @@ const MCQ_CONTAINER_ID = "quiz-mcq-container";
 const QUESTION_LIST_ID = "quiz-question-list";
 const QUESTION_ITEM_SELECTOR = ".quiz-question-item";
 const SUBMIT_BUTTON_ID = "btn-submit";
+const SUBMIT_INCOMPLETE_CLASS = "quiz-submit-btn-unsaved";
 
 // ── Dummy data ──
 const quizData = [
@@ -165,7 +166,7 @@ function updateSubmitState() {
 	const answeredCount = document.querySelectorAll(`${PANEL_SELECTOR} ${OPTION_SELECTOR}.${SELECTED_CLASS}`).length;
 	const allAnswered = panels.length > 0 && answeredCount === panels.length;
 
-	submitButton.classList.toggle("unsaved", !allAnswered);
+	submitButton.classList.toggle(SUBMIT_INCOMPLETE_CLASS, !allAnswered);
 }
 
 function setSelectedOption(option) {
