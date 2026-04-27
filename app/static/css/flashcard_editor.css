@@ -55,6 +55,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 20px 0;
 }
 
 .card-num {
@@ -175,5 +176,6 @@
 }
 
 .card-row.drag-over {
-    border-top: 2px solid var(--btn-green-bg);
+    width : 10px;
+    background: #303B6A;
 }

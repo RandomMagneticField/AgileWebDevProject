@@ -18,7 +18,6 @@ function renderCards(){
     cards.forEach(function(card, index){
         const row = document.createElement('div') //create a new <div> for each flashcard (one row)
         row.className = 'card-row'
-        row.draggable = true
         row.dataset.index = index //track which card is being dragged
 
         //display all card 
@@ -52,6 +51,14 @@ function renderCards(){
             cards[index].back = this.value
         })
 
+        const handle = row.querySelector('.card-drag-handle')
+
+        handle.addEventListener('mousedown', function(){
+            row.draggable = true
+        })
+        handle.addEventListener('mouseup', function(){
+            row.draggable = false
+        })
 
         //drag (to move the card order)
         row.addEventListener('dragstart', ondragstart)
@@ -182,5 +189,18 @@ function ondragend(){
     })
     dragIndex = null
 }
+
+// Auto scroll when dragging near edges
+document.addEventListener('dragover', function(e){
+    const scrollable = document.querySelector('.card-list-wrap')
+    const rect = scrollable.getBoundingClientRect()
+    const threshold = 60  // pixels from edge to start scrolling
+
+    if(e.clientY < rect.top + threshold){
+        scrollable.scrollTop -= 8  // scroll up
+    } else if(e.clientY > rect.bottom - threshold){
+        scrollable.scrollTop += 8  // scroll down
+    }
+})
 
 renderCards() //initializer
