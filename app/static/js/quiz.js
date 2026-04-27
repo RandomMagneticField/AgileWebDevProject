@@ -4,6 +4,7 @@ const SELECTED_CLASS = "quiz-option-selected";
 const MCQ_CONTAINER_ID = "quiz-mcq-container";
 const QUESTION_LIST_ID = "quiz-question-list";
 const QUESTION_ITEM_SELECTOR = ".quiz-question-item";
+const SUBMIT_BUTTON_ID = "btn-submit";
 
 // ── Dummy data ──
 const quizData = [
@@ -154,6 +155,19 @@ function setQuestionListItemCompleted(questionId, isCompleted) {
 	item.classList.toggle("is-completed", isCompleted);
 }
 
+function updateSubmitState() {
+	const submitButton = document.getElementById(SUBMIT_BUTTON_ID);
+	if (!submitButton) {
+		return;
+	}
+
+	const panels = document.querySelectorAll(PANEL_SELECTOR);
+	const answeredCount = document.querySelectorAll(`${PANEL_SELECTOR} ${OPTION_SELECTOR}.${SELECTED_CLASS}`).length;
+	const allAnswered = panels.length > 0 && answeredCount === panels.length;
+
+	submitButton.classList.toggle("unsaved", !allAnswered);
+}
+
 function setSelectedOption(option) {
 	const panel = option.closest(PANEL_SELECTOR);
 	if (!panel) {
@@ -168,6 +182,7 @@ function setSelectedOption(option) {
 		option.classList.remove(SELECTED_CLASS);
 		option.setAttribute("aria-pressed", "false");
 		setQuestionListItemCompleted(questionId, false);
+		updateSubmitState();
 		return;
 	}
 
@@ -179,6 +194,7 @@ function setSelectedOption(option) {
 	option.classList.add(SELECTED_CLASS);
 	option.setAttribute("aria-pressed", "true");
 	setQuestionListItemCompleted(questionId, true);
+	updateSubmitState();
 }
 
 function initializeOptions() {
@@ -218,3 +234,4 @@ document.addEventListener("keydown", (event) => {
 renderQuestions(); // render dummy data
 renderQuestionList();
 initializeOptions();
+updateSubmitState();
