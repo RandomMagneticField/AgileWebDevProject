@@ -78,7 +78,7 @@ function createDeckCard(deck) {
 //sort the notes and decks 
 const sortBtn = document.getElementById('sort-btn')
 const sortDropdown = document.getElementById('sort-dropdown')
-let currentSort = 'alpha'
+let currentSort = 'date'
 
 sortBtn.addEventListener('click', function(){
     sortDropdown.style.display = 
