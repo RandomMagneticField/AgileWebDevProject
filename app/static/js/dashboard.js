@@ -112,6 +112,12 @@ function sortdata(data){
     return sorted
 }
 
+//open the decks tab from flashcard_editor and flashcard_play
+const params = new URLSearchParams(window.location.search)
+if(params.get('tab') === 'decks'){
+    switchTab('decks', document.querySelectorAll('.tab-btn')[1])
+}
+
 // ── Render ──
 function renderCards() {
     document.getElementById('notes-grid').innerHTML = sortdata(notesData).map(createNoteCard).join('');

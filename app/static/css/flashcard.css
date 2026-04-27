@@ -8,7 +8,7 @@
 }
 
 .fc-card {
-    width: 480px !important;
+    width: min(480px, 90%) !important;
     height: 280px !important;
     perspective: 1000px !important;
     cursor: pointer !important;
@@ -134,4 +134,14 @@
 
 .btn-retry:hover{
     background: var(--btn-login-hover);
+}
+
+/*for mobile view*/
+@media (max-height: 700px) {
+    .fc-card {
+        height: 200px !important;
+    }
+    .viewer {
+        margin-top: 8px !important;
+    }
 }
