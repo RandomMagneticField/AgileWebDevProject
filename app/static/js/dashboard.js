@@ -29,7 +29,7 @@ function switchTab(tab, el) {
 function createNoteCard(note) {
     const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
     return `
-        <div class="note-card" onclick="window.location='note_editor.html'">
+        <div class="note-card" onclick="window.location=ROUTES.note_editor">
             <div class="note-card-content">
                 <div class="note-card-title">${note.title}</div>
                 <div class="note-card-body">${note.body}</div>
@@ -46,10 +46,10 @@ function createDeckCard(deck) {
     const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
     const pct = Math.round((deck.lastScore / deck.lastTotal) * 100);
     return `
-        <div class="deck-card" onclick="window.location='flashcard_editor.html'">
+        <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor">
             <div class="deck-card-content">
                 <div class="deck-card-header">
-                    <a href="flashcard_play.html" class="deck-play-btn" >
+                    <a href="${ROUTES.flashcard_play}" class="deck-play-btn" >
                         <i class="bi bi-play-fill"></i>
                     </a>
                     <div class="deck-card-info">
