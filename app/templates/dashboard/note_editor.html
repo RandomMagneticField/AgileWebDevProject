@@ -139,6 +139,22 @@
 
         </div>
       </div>
+  <div id="note-data" data-note-id="{{ note.note_id if note else '' }}"></div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  
+
+  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+  <script>
+    function goToQuiz() {
+        window.location.href = "{{ url_for('main.quiz_active') }}";
+    }
+  </script>
+{% endblock %}
+
+
+
+{% block modals %}
 
 
   <!-- Table modal backdrop -->
@@ -168,15 +184,5 @@
   </div>
 </div>
 
-  <div id="note-data" data-note-id="{{ note.note_id if note else '' }}"></div>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-  
-
-  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
-  <script>
-    function goToQuiz() {
-        window.location.href = "{{ url_for('main.quiz_active') }}";
-    }
-  </script>
 {% endblock %}
+
