@@ -9,6 +9,8 @@ const SUBMIT_INCOMPLETE_CLASS = "quiz-submit-btn-unsaved";
 const OPTION_KEYS = ["A", "B", "C", "D"];
 const IS_RESULTS_MODE = Boolean(window.__QUIZ_RESULTS_MODE__);
 
+document.body.classList.toggle("quiz-results-mode", IS_RESULTS_MODE);
+
 function getQuestionResultState(question) {
 	if (!IS_RESULTS_MODE) {
 		return null;
@@ -27,8 +29,6 @@ function getOptionClasses(question, optionIndex) {
 
 	return classes.join(" ");
 }
-
- 
 
 function getOptionIconHtml(question, optionIndex) {
 	if (!IS_RESULTS_MODE) {
@@ -58,10 +58,21 @@ function escapeHtml(value) {
 		.replace(/'/g, "&#39;");
 }
 
+function createOptionMarkup(question, optionIndex, optionLetter) {
+	return `
+		<div class="${getOptionClasses(question, optionIndex)}" data-option="${optionLetter}">
+			<div class="quiz-option-letter">${optionLetter}</div>
+			<div class="note-card-body quiz-option-text">${escapeHtml(question[`option_${optionLetter}`])}</div>
+			${getOptionIconHtml(question, optionIndex)}
+		</div>
+	`;
+}
+
 function createQuestionPanel(question, index) {
 	const questionNumber = index + 1;
 	const questionId = `question-${questionNumber}`;
 	const correctLetter = OPTION_KEYS[question.correct] || "";
+	const optionMarkup = OPTION_KEYS.map((optionLetter, optionIndex) => createOptionMarkup(question, optionIndex, optionLetter)).join("");
 
 	return `
 		<div
@@ -73,27 +84,7 @@ function createQuestionPanel(question, index) {
 			<div class="quiz-question-title">Question ${questionNumber}</div>
 			<div class="quiz-question-prompt">${escapeHtml(question.description)}</div>
 			${IS_RESULTS_MODE ? `<div class="quiz-correct-answer">Correct answer: ${escapeHtml(correctLetter)}</div>` : ``}
-			<div class="quiz-mcq-stack">
-				<div class="${getOptionClasses(question, 0)}" data-option="A">
-				<div class="quiz-option-letter">A</div>
-				<div class="note-card-body quiz-option-text">${escapeHtml(question.option_A)}</div>
-				${getOptionIconHtml(question, 0)}
-			</div>
-			<div class="${getOptionClasses(question, 1)}" data-option="B">
-				<div class="quiz-option-letter">B</div>
-				<div class="note-card-body quiz-option-text">${escapeHtml(question.option_B)}</div>
-				${getOptionIconHtml(question, 1)}
-			</div>
-			<div class="${getOptionClasses(question, 2)}" data-option="C">
-				<div class="quiz-option-letter">C</div>
-				<div class="note-card-body quiz-option-text">${escapeHtml(question.option_C)}</div>
-				${getOptionIconHtml(question, 2)}
-			</div>
-			<div class="${getOptionClasses(question, 3)}" data-option="D">
-				<div class="quiz-option-letter">D</div>
-				<div class="note-card-body quiz-option-text">${escapeHtml(question.option_D)}</div>
-				${getOptionIconHtml(question, 3)}
-				</div>
+			<div class="quiz-mcq-stack">${optionMarkup}
 			</div>
 		</div>
 	`;

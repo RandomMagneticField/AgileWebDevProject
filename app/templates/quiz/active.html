@@ -1,6 +1,6 @@
 {% extends 'base_app.html' %}
 
-{% block title %}Notella — Quiz{% endblock %}
+{% block title %}Notella — Active Quiz{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
@@ -24,7 +24,7 @@
         <a
             class="quiz-submit-btn quiz-submit-btn-unsaved"
             id="btn-submit"
-            href="{{ url_for('main.note_editor') }}"
+            href="{{ url_for('main.quiz_results') }}"
         >
             Submit
         </a>
@@ -48,9 +48,7 @@
     </div>
 </div>
 
-        </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/quiz_dummy.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
-</body>
-</html>
+<script src="{{ url_for('static', filename='js/quiz_dummy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+
+{% endblock %}
