@@ -8,7 +8,7 @@
 
 {% block page_content %}
         <!-- Header -->
-            <div class="dash-greeting">Good morning, User</div>
+            <div class="dash-greeting">Good morning, {{ user.username }}</div>
             <div class="dash-title">Your Dashboard</div>
 
             <!-- Controls -->
@@ -42,6 +42,8 @@
             flashcard_play: "{{ url_for('main.flashcard') }}"
         };
     </script>
+
+    
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 {% endblock %}

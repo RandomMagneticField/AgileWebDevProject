@@ -35,7 +35,14 @@ Text
     flask db upgrade
     ```
 
-5. Run the app
+5. (Optional) Seed the database with sample data
+    ```bash
+        python seed.py
+    ```
+
+    This creates 3 sample users (alice, bob, charlie) with password `password123`
+
+6. Run the app
     ```bash
     flask run 
     ```

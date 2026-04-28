@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, jsonify
 from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
+from app.models import User, Note, Deck
+
 
 def login_required(f):
     @wraps(f)
@@ -57,7 +59,34 @@ def logout():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard/index.html', active='dashboard')
+    user = User.query.get(session['user_id'])
+    return render_template('dashboard/index.html', active='dashboard', user=user)
+
+@main.route('/api/dashboard')
+@login_required
+def dashboard_data():
+    user = User.query.get(session['user_id'])
+    notes = Note.query.filter_by(user_id=user.user_id).order_by(Note.updated_at.desc()).all()
+    decks = Deck.query.filter_by(user_id=user.user_id).order_by(Deck.accessed_at.desc()).all()
+    
+    return jsonify({
+        'notes': [{
+            'id': n.note_id,
+            'title': n.title,
+            'body': n.description or '',
+            'tags': [t.name for t in n.tags],
+            'date': n.updated_at.strftime('%d %b')
+        } for n in notes],
+        'decks': [{
+            'id': d.deck_id,
+            'title': d.title,
+            'count': len(d.flashcards),
+            'lastScore': 0,
+            'lastTotal': len(d.flashcards),
+            'tags': [t.name for t in d.tags],
+            'date': d.accessed_at.strftime('%d %b')
+        } for d in decks]
+    })
 
 @main.route('/dashboard/note_editor')
 @login_required
@@ -102,7 +131,8 @@ def profile():
 @main.route('/change_password')
 @login_required
 def change_password():
-    return render_template('change_password.html' , active='profile')
+    user = User.query.get(session['user_id'])
+    return render_template('change_password.html' , active='profile', user=user)
 
 @main.route('/info')
 @login_required
