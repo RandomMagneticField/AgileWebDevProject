@@ -162,6 +162,20 @@ def delete_note(note_id):
     db.session.commit()
     return jsonify({'success': True})
 
+@main.route('/api/notes', methods=['POST'])
+@login_required
+def create_note():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    note = Note(
+        title=data.get('title', 'Untitled'),
+        content_md='',
+        user_id=user.user_id
+    )
+    db.session.add(note)
+    db.session.commit()
+    return jsonify({'id': note.note_id})
+
 @main.route('/dashboard/flashcard_editor')
 @login_required
 def flashcard_editor():

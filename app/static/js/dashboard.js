@@ -88,3 +88,27 @@ function renderCards() {
     document.getElementById('notes-grid').innerHTML = notesData.map(createNoteCard).join('');
     document.getElementById('decks-grid').innerHTML = decksData.map(createDeckCard).join('');
 }
+
+
+function openCreateModal() {
+    document.getElementById('create-note-backdrop').style.display = 'block';
+    document.getElementById('create-note-modal').style.display = 'block';
+}
+
+function closeCreateModal() {
+    document.getElementById('create-note-backdrop').style.display = 'none';
+    document.getElementById('create-note-modal').style.display = 'none';
+}
+
+function submitCreateNote() {
+    const title = document.getElementById('new-note-title').value.trim() || 'Untitled';
+    fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+    })
+    .then(res => res.json())
+    .then(data => {
+        window.location.href = ROUTES.note_editor + '?id=' + data.id;
+    });
+}

@@ -452,3 +452,30 @@
     border-radius: 2px;
     transition: width 0.3s ease;
 }
+
+
+#create-note-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: var(--modal-backdrop-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#create-note-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg);
+    border: 1px solid var(--editor-box-border);
+    border-radius: 18px;
+    padding: 24px;
+    width: 320px;
+    font-family: var(--font);
+    box-shadow: 0 24px 60px var(--modal-shadow);
+}
