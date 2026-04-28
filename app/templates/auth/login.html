@@ -18,29 +18,46 @@
           <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
         </div>
         <div class="welcome">Welcome</div>
-        <div class="fields">
-          <input class="field" type="text" placeholder="username" autocomplete="off"/>
-          <input class="field" type="password" placeholder="password" autocomplete="off"/>
-        </div>
-        <button class="btn-login" onclick="goToDashboard()">Login</button>
+        
+
+
+          <form method="POST" class="authForm">
+              {{ form.hidden_tag() }}
+              {% for message in get_flashed_messages() %}
+                  <p class="errors">{{ message }}</p>
+              {% endfor %}
+              <div class="fields">
+                  {{ form.username(class="field", placeholder="username", autocomplete="off") }}
+                  {{ form.password(class="field", placeholder="password", autocomplete="off") }}
+              </div>
+              
+              {{ form.submit(class="btn-login") }}
+          </form>
+
+
+
         <div class="divider">
           <div class="divider-line"></div>
           <span class="divider-text">or</span>
           <div class="divider-line"></div>
         </div>
-        <button class="btn-create" onclick="goToSignup()">Create an Account</button>
+
+        <!-- </div> -->
+           <p style="font-size:13px; color:var(--text-muted); margin-bottom: 0px;">
+            Don't have an account? <a href="{{ url_for('main.register') }}" style="color:var(--text-primary);">Sign Up</a>
+          </p>
+
+        <!-- </div> -->
+        <!-- <button class="btn-create" onclick="goToSignup()">Create an Account</button> -->
       </div>
     </div>
   </div>
 
-  <script>
-    function goToDashboard() {
-        window.location.href = "{{ url_for('main.dashboard') }}";
-    }
+  <!-- <script>
     function goToSignup() {
-        window.location.href = "{{ url_for('main.signup') }}";
+        window.location.href = "{{ url_for('main.register') }}";
     }
-</script>
+</script> -->
 
 </body>
 </html>

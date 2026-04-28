@@ -27,7 +27,7 @@ Text
 
 3. Install dependencies
     ```bash
-    pip install flask flask-sqlalchemy flask-migrate
+    pip install flask flask-sqlalchemy flask-migrate flask-wtf email-validator
     ```
 
 4. Set up the database

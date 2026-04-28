@@ -1,4 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for, flash, session
+from app import db
+from app.models import User
+from app.forms import RegisterForm, LoginForm
 
 main = Blueprint('main', __name__)
 
@@ -6,13 +9,41 @@ main = Blueprint('main', __name__)
 def home():
     return render_template('intro.html')
 
-@main.route('/login')
-def login():
-    return render_template('auth/login.html')
+# @main.route('/login')
+# def login():
+#     return render_template('auth/login.html')
 
-@main.route('/signup')
-def signup():
-    return render_template('auth/signuppage.html')
+# @main.route('/signup')
+# def signup():
+#     return render_template('auth/signuppage.html')
+
+@main.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        session['user_id'] = user.user_id
+        return redirect(url_for('main.dashboard'))
+    return render_template('auth/signuppage.html', form=form)
+
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            session['user_id'] = user.user_id
+            return redirect(url_for('main.dashboard'))
+        flash('Invalid username or password')
+    return render_template('auth/login.html', form=form)
+
+@main.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('main.login'))
 
 @main.route('/dashboard')
 def dashboard():
