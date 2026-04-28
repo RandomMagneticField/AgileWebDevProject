@@ -6,6 +6,7 @@ const QUESTION_LIST_ID = "quiz-question-list";
 const QUESTION_ITEM_SELECTOR = ".quiz-question-item";
 const SUBMIT_BUTTON_ID = "btn-submit";
 const SUBMIT_INCOMPLETE_CLASS = "quiz-submit-btn-unsaved";
+const OPTION_KEYS = ["A", "B", "C", "D"];
 const IS_RESULTS_MODE = Boolean(window.__QUIZ_RESULTS_MODE__);
 
 function getQuestionResultState(question) {
@@ -60,8 +61,7 @@ function escapeHtml(value) {
 function createQuestionPanel(question, index) {
 	const questionNumber = index + 1;
 	const questionId = `question-${questionNumber}`;
-	const letters = ["A", "B", "C", "D"];
-	const correctLetter = letters[question.correct] || "";
+	const correctLetter = OPTION_KEYS[question.correct] || "";
 
 	return `
 		<div
@@ -123,7 +123,10 @@ function createQuestionListItem(question, questionNumber) {
 	}
 
 	return `
-		<a class="quiz-question-item" href="#question-${questionNumber}" data-question-number="${questionNumber}">Question ${questionNumber}</a>
+		<a class="quiz-question-item" href="#question-${questionNumber}" data-question-number="${questionNumber}">
+			<span class="quiz-question-item-full">Question ${questionNumber}</span>
+			<span class="quiz-question-item-short">${questionNumber}</span>
+		</a>
 	`;
 }
 
