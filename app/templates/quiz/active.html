@@ -1,85 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notetella — Active Quiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="../../static/css/main.css"/>
-    <link rel="stylesheet" href="../../static/css/dashboard.css"/>
-    <link rel="stylesheet" href="../../static/css/quiz.css"/>
-</head>
-<body class="dashboard-body">
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <a href="dashboard/index.html" class="nav-icon">
-            <i class="bi bi-house" style="font-size: 20px;"></i>
-        </a>
-        <div class="sidebar-divider"></div>
-        <a href="info.html" class="nav-icon">
-            <i class="bi bi-info" style="font-size: 25px;"></i>
-        </a>
-        <div class="sidebar-divider"></div>
-        <a href="discover/index.html" class="nav-icon">
-            <i class="bi bi-search" style="font-size: 18px;"></i>
-        </a>
-        <div class="sidebar-divider"></div>
-        <a href="profile.html" class="nav-icon active">
-            <i class="bi bi-person" style="font-size: 22px;"></i>
-        </a>
-        <div class="sidebar-divider"></div>
-        <a href="auth/login.html" class="nav-icon">
-            <i class="bi bi-box-arrow-right" style="font-size: 20px;"></i>
-        </a>
-    </nav>
+{% extends 'base_app.html' %}
 
-    <!-- Main -->
-    <div class="dash-main">
-        <div class="dash-container">
+{% block title %}Notella — Quiz{% endblock %}
 
-            <!-- Header -->
-            <div class="quiz-header">
-                <div class="quiz-header-left">
-                    <div class="dash-greeting">
-                        <a href="../dashboard/note_editor.html" class="quiz-back-btn">
-                            <i class="bi bi-arrow-left"></i>
-                            Note Editor
-                        </a>
-                    </div>
-                    <div class="dash-title quiz-title">Quiz Title</div>
-                </div>
-                <div class="quiz-header-right">
-                    <button
-                        class="quiz-submit-btn quiz-submit-btn-unsaved"
-                        id="btn-submit"
-                        onclick="window.location='../dashboard/note_editor.html'"
-                    >
-                        Submit
-                    </button>
-                </div>
-            </div>
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
+{% endblock %}
 
-            <div class="dash-divider"></div>
+{% block page_content %}
 
-            <!-- MCQ Questions -->
-            <div class="quiz-active-layout">
-                <div class="quiz-active-placeholder">
-                    <div id="quiz-mcq-container"></div>
-                </div>
+<!-- Header -->
+<div class="quiz-header">
+    <div class="quiz-header-left">
+        <div class="dash-greeting">
+            <a href="../dashboard/note_editor.html" class="quiz-back-btn">
+                <i class="bi bi-arrow-left"></i>
+                Note Editor
+            </a>
+        </div>
+        <div class="dash-title quiz-title">Quiz Title</div>
+    </div>
+    <div class="quiz-header-right">
+        <button
+            class="quiz-submit-btn quiz-submit-btn-unsaved"
+            id="btn-submit"
+            onclick="window.location='../dashboard/note_editor.html'"
+        >
+            Submit
+        </button>
+    </div>
+</div>
 
-                <!-- Questions list -->
-                <div class="quiz-active-side">
-                    <div class="quiz-side-card quiz-question-list-card">
-                        <div class="quiz-side-label">Questions</div>
-                        <div class="quiz-question-list" id="quiz-question-list"></div>
-                    </div>
-                </div>
-            </div>
+<div class="dash-divider"></div>
 
+<!-- MCQ Questions -->
+<div class="quiz-active-layout">
+    <div class="quiz-active-placeholder">
+        <div id="quiz-mcq-container"></div>
+    </div>
+
+    <!-- Questions list -->
+    <div class="quiz-active-side">
+        <div class="quiz-side-card quiz-question-list-card">
+            <div class="quiz-side-label">Questions</div>
+            <div class="quiz-question-list" id="quiz-question-list"></div>
         </div>
     </div>
-    <script src="../../static/js/quiz.js"></script>
-</body>
-</html>
+</div>
+
+<script src="../../static/js/quiz.js"></script>
+{% endblock %}
