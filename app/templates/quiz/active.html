@@ -2,6 +2,51 @@
 
 {% block title %}Notella — Quiz{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
+{% endblock %}
+
 {% block page_content %}
-    This is quiz active
+
+<!-- Header -->
+<div class="quiz-header">
+    <div class="quiz-header-left">
+        <div class="dash-greeting">
+            <a href="{{ url_for('main.note_editor') }}" class="quiz-back-btn">
+                <i class="bi bi-arrow-left"></i>
+                Note Editor
+            </a>
+        </div>
+        <div class="dash-title quiz-title">Quiz Title</div>
+    </div>
+    <div class="quiz-header-right">
+        <a
+            class="quiz-submit-btn quiz-submit-btn-unsaved"
+            id="btn-submit"
+            href="{{ url_for('main.note_editor') }}"
+        >
+            Submit
+        </a>
+    </div>
+</div>
+
+<div class="dash-divider"></div>
+
+<!-- MCQ Questions -->
+<div class="quiz-active-layout">
+    <div class="quiz-active-placeholder">
+        <div id="quiz-mcq-container"></div>
+    </div>
+
+    <!-- Questions list -->
+    <div class="quiz-active-side">
+        <div class="quiz-side-card quiz-question-list-card">
+            <div class="quiz-side-label">Questions</div>
+            <div class="quiz-question-list" id="quiz-question-list"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
 {% endblock %}
