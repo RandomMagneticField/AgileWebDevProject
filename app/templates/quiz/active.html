@@ -13,7 +13,7 @@
 <div class="quiz-header">
     <div class="quiz-header-left">
         <div class="dash-greeting">
-            <a href="../dashboard/note_editor.html" class="quiz-back-btn">
+            <a href="{{ url_for('main.note_editor') }}" class="quiz-back-btn">
                 <i class="bi bi-arrow-left"></i>
                 Note Editor
             </a>
@@ -21,13 +21,13 @@
         <div class="dash-title quiz-title">Quiz Title</div>
     </div>
     <div class="quiz-header-right">
-        <button
+        <a
             class="quiz-submit-btn quiz-submit-btn-unsaved"
             id="btn-submit"
-            onclick="window.location='../dashboard/note_editor.html'"
+            href="{{ url_for('main.note_editor') }}"
         >
             Submit
-        </button>
+        </a>
     </div>
 </div>
 
@@ -48,5 +48,5 @@
     </div>
 </div>
 
-<script src="../../static/js/quiz.js"></script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
 {% endblock %}

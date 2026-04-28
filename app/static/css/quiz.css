@@ -47,6 +47,10 @@
     font-family: var(--font);
     font-size: 13px;
     font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     cursor: pointer;
     transition: background 0.2s;
     white-space: nowrap;
