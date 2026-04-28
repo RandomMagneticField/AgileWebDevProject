@@ -93,8 +93,8 @@ def dashboard_data():
 def note_editor():
     note_id = request.args.get('id', type=int)
     if note_id:
-        note = Note.query.get_or_404(note_id)
-        if note.user_id != session['user_id']:
+        note = Note.query.get(note_id)
+        if note is None or note.user_id != session['user_id']:
             return redirect(url_for('main.dashboard'))
     else:
         note = None
