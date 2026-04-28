@@ -162,6 +162,10 @@ function saveNote() {
 let dragIndex = null
 
 function ondragstart(e){
+    if (e.target.tagName === 'TEXTAREA'){
+        e.preventDefault()
+        return
+    }
     dragIndex = parseInt(this.dataset.index)
     this.classList.add('dragging')
 }
@@ -186,6 +190,7 @@ function ondragend(){
     document.querySelectorAll('.card-row').forEach(r => {
         r.classList.remove('dragging')
         r.classList.remove('drag-over')
+        r.draggable = false
     })
     dragIndex = null
 }
