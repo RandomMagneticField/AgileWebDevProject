@@ -6,6 +6,7 @@ const QUESTION_LIST_ID = "quiz-question-list";
 const QUESTION_ITEM_SELECTOR = ".quiz-question-item";
 const SUBMIT_BUTTON_ID = "btn-submit";
 const SUBMIT_INCOMPLETE_CLASS = "quiz-submit-btn-unsaved";
+const OPTION_KEYS = ["A", "B", "C", "D"];
 
 // ── Dummy data ──
 const quizData = [
@@ -87,6 +88,15 @@ function escapeHtml(value) {
 function createQuestionPanel(question, index) {
 	const questionNumber = index + 1;
 	const questionId = `question-${questionNumber}`;
+	const optionMarkup = OPTION_KEYS.map((key) => {
+		const optionText = escapeHtml(question[`option_${key}`]);
+		return `
+				<div class="quiz-mcq-box" data-option="${key}">
+					<div class="quiz-option-letter">${key}</div>
+					<div class="note-card-body quiz-option-text">${optionText}</div>
+				</div>
+		`;
+	}).join("");
 
 	return `
 		<div
@@ -98,22 +108,7 @@ function createQuestionPanel(question, index) {
 			<div class="quiz-question-title">Question ${questionNumber}</div>
 			<div class="quiz-question-prompt">${escapeHtml(question.description)}</div>
 			<div class="quiz-mcq-stack">
-				<div class="quiz-mcq-box" data-option="A">
-					<div class="quiz-option-letter">A</div>
-					<div class="note-card-body quiz-option-text">${escapeHtml(question.option_A)}</div>
-				</div>
-				<div class="quiz-mcq-box" data-option="B">
-					<div class="quiz-option-letter">B</div>
-					<div class="note-card-body quiz-option-text">${escapeHtml(question.option_B)}</div>
-				</div>
-				<div class="quiz-mcq-box" data-option="C">
-					<div class="quiz-option-letter">C</div>
-					<div class="note-card-body quiz-option-text">${escapeHtml(question.option_C)}</div>
-				</div>
-				<div class="quiz-mcq-box" data-option="D">
-					<div class="quiz-option-letter">D</div>
-					<div class="note-card-body quiz-option-text">${escapeHtml(question.option_D)}</div>
-				</div>
+				${optionMarkup}
 			</div>
 		</div>
 	`;
@@ -130,7 +125,10 @@ function renderQuestions() {
 
 function createQuestionListItem(questionNumber) {
 	return `
-		<a class="quiz-question-item" href="#question-${questionNumber}" data-question-number="${questionNumber}">Question ${questionNumber}</a>
+		<a class="quiz-question-item" href="#question-${questionNumber}" data-question-number="${questionNumber}">
+			<span class="quiz-question-item-full">Question ${questionNumber}</span>
+			<span class="quiz-question-item-short">${questionNumber}</span>
+		</a>
 	`;
 }
 
