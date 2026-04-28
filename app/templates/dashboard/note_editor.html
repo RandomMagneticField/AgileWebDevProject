@@ -115,8 +115,7 @@
           <div class="editor-side-card">
             <div class="editor-side-label">Tags:</div>
             <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tag-input').focus()">
-              <span class="note-tag tag-removable">CITS3000 <button class="tag-remove" onclick="removeTag(this)">×</button></span>
-              <span class="note-tag tag-removable">week-2 <button class="tag-remove" onclick="removeTag(this)">×</button></span>
+
               <input class="tag-input" id="tag-input" placeholder="Add tag..." onkeydown="handleTag(event)" maxlength="20"/>
             </div>
           </div>
@@ -133,7 +132,7 @@
 
           <div class="editor-side-card">
             <div class="editor-side-label">Danger Zone:</div>
-            <button class="btn-danger">
+            <button class="btn-danger" onclick="deleteNote()">
               <i class="bi bi-trash"></i> Delete Note
             </button>
           </div>
@@ -169,7 +168,11 @@
   </div>
 </div>
 
+  <div id="note-data" data-note-id="{{ note.note_id if note else '' }}"></div>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  
+
   <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
   <script>
     function goToQuiz() {

@@ -37,7 +37,7 @@ function switchTab(tab, el) {
 function createNoteCard(note) {
     const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
     return `
-        <div class="note-card" onclick="window.location=ROUTES.note_editor">
+        <div class="note-card" onclick="window.location=ROUTES.note_editor + '?id=${note.id}'">
             <div class="note-card-content">
                 <div class="note-card-title">${note.title}</div>
                 <div class="note-card-body">${note.body}</div>
@@ -88,5 +88,3 @@ function renderCards() {
     document.getElementById('notes-grid').innerHTML = notesData.map(createNoteCard).join('');
     document.getElementById('decks-grid').innerHTML = decksData.map(createDeckCard).join('');
 }
-
-renderCards();

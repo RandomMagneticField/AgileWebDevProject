@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, session, jsonify, request
 from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
-from app.models import User, Note, Deck
+from app.models import User, Note, Deck, Tag
 
 
 def login_required(f):
@@ -91,7 +91,76 @@ def dashboard_data():
 @main.route('/dashboard/note_editor')
 @login_required
 def note_editor():
-    return render_template('dashboard/note_editor.html', active='dashboard')
+    note_id = request.args.get('id', type=int)
+    if note_id:
+        note = Note.query.get_or_404(note_id)
+        if note.user_id != session['user_id']:
+            return redirect(url_for('main.dashboard'))
+    else:
+        note = None
+    return render_template('dashboard/note_editor.html', active='dashboard', note=note)
+
+# Get a single note
+@main.route('/api/notes/<int:note_id>', methods=['GET'])
+@login_required
+def get_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    return jsonify({
+        'id': note.note_id,
+        'title': note.title,
+        'content': note.content_md or '',
+        'description': note.description or '',
+        'is_public': note.is_public,
+        'tags': [t.name for t in note.tags]
+    })
+
+# Save/update a note
+@main.route('/api/notes/<int:note_id>', methods=['POST'])
+@login_required
+def save_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    data = request.get_json()
+    note.title = data.get('title', note.title)
+    note.content_md = data.get('content', note.content_md)
+    note.description = data.get('description', note.description)
+    note.is_public = data.get('is_public', note.is_public)
+
+    # handle tags
+    if 'tags' in data:
+        tag_names = data['tags']
+        tags = []
+        for name in tag_names:
+            tag = Tag.query.filter_by(name=name).first()
+            if not tag:
+                tag = Tag(name=name)
+                db.session.add(tag)
+            tags.append(tag)
+        note.tags = tags
+
+    db.session.commit()
+    return jsonify({'success': True})
+
+@main.route('/api/notes/<int:note_id>', methods=['DELETE'])
+@login_required
+def delete_note(note_id):
+    from app.models import QuizSession, QuizQuestion
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    
+    # delete related quiz sessions and questions first
+    for quiz in note.quiz_sessions:
+        for question in quiz.questions:
+            db.session.delete(question)
+        db.session.delete(quiz)
+    
+    db.session.delete(note)
+    db.session.commit()
+    return jsonify({'success': True})
 
 @main.route('/dashboard/flashcard_editor')
 @login_required
