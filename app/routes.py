@@ -4,6 +4,7 @@ from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
 from app.models import User, Note, Deck, Tag
+from datetime import datetime, timezone
 
 
 def login_required(f):
@@ -66,8 +67,8 @@ def dashboard():
 @login_required
 def dashboard_data():
     user = User.query.get(session['user_id'])
-    notes = Note.query.filter_by(user_id=user.user_id).order_by(Note.updated_at.desc()).all()
-    decks = Deck.query.filter_by(user_id=user.user_id).order_by(Deck.accessed_at.desc()).all()
+    notes = Note.query.filter_by(user_id=user.user_id).order_by(Note.created_at.desc()).all()
+    decks = Deck.query.filter_by(user_id=user.user_id).order_by(Deck.created_at.desc()).all()
     
     return jsonify({
         'notes': [{
@@ -75,7 +76,7 @@ def dashboard_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.updated_at.strftime('%d %b')
+            'date': n.created_at.strftime('%d %b')
         } for n in notes],
         'decks': [{
             'id': d.deck_id,
@@ -84,7 +85,7 @@ def dashboard_data():
             'lastScore': 0,
             'lastTotal': len(d.flashcards),
             'tags': [t.name for t in d.tags],
-            'date': d.accessed_at.strftime('%d %b')
+            'date': d.created_at.strftime('%d %b')
         } for d in decks]
     })
 
@@ -128,6 +129,7 @@ def save_note(note_id):
     note.content_md = data.get('content', note.content_md)
     note.description = data.get('description', note.description)
     note.is_public = data.get('is_public', note.is_public)
+    note.updated_at = datetime.now(timezone.utc)
 
     # handle tags
     if 'tags' in data:
