@@ -47,44 +47,44 @@ def logout():
 
 @main.route('/dashboard')
 def dashboard():
-    return render_template('dashboard/index.html')
+    return render_template('dashboard/index.html', active='dashboard')
 
 @main.route('/dashboard/note_editor')
 def note_editor():
-    return render_template('dashboard/note_editor.html')
+    return render_template('dashboard/note_editor.html', active='dashboard')
 
 @main.route('/dashboard/flashcard_editor')
 def flashcard_editor():
-    return render_template('dashboard/flashcard_editor.html')
+    return render_template('dashboard/flashcard_editor.html', active='dashboard')
 
 @main.route('/dashboard/flashcard')
 def flashcard():
-    return render_template('dashboard/flashcard_play.html')
+    return render_template('dashboard/flashcard_play.html', active='dashboard')
 
 @main.route('/discover')
 def discover():
-    return render_template('discover/index.html')
+    return render_template('discover/index.html', active='discover')
 
 @main.route('/quiz/active')
 def quiz_active():
-    return render_template('quiz/active.html')
+    return render_template('quiz/active.html' , active='dashboard')
 
 @main.route('/quiz/history')
 def quiz_history():
-    return render_template('quiz/history.html')
+    return render_template('quiz/history.html' , active='dashboard')
 
 @main.route('/quiz/results')
 def quiz_results():
-    return render_template('quiz/results.html')
+    return render_template('quiz/results.html' , active='dashboard')
 
 @main.route('/profile')
 def profile():
-    return render_template('profile.html')
+    return render_template('profile.html' , active='profile')
 
 @main.route('/change_password')
 def change_password():
-    return render_template('change_password.html')
+    return render_template('change_password.html' , active='profile')
 
 @main.route('/info')
 def info():
-    return render_template('info.html')
+    return render_template('info.html', active='info')
