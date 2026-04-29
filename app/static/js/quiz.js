@@ -16,6 +16,10 @@ function getQuestionResultState(question) {
 		return null;
 	}
 
+	if (question.selected === null || question.selected === undefined) {
+		return "unanswered";
+	}
+
 	return question.selected === question.correct ? "correct" : "incorrect";
 }
 
@@ -102,9 +106,15 @@ function renderQuestions() {
 function createQuestionListItem(question, questionNumber) {
 	if (IS_RESULTS_MODE) {
 		const resultState = getQuestionResultState(quizData[questionNumber - 1]);
-		const iconHtml = resultState === "correct"
-			? `<i class="bi bi-check-circle-fill" style="color: var(--btn-green-color);"></i>`
-			: `<i class="bi bi-x-circle-fill" style="color: var(--btn-danger-color);"></i>`;
+		let iconHtml = "";
+
+		if (resultState === "correct") {
+			iconHtml = `<i class="bi bi-check-circle-fill" style="color: var(--btn-green-color);"></i>`;
+		} else if (resultState === "incorrect") {
+			iconHtml = `<i class="bi bi-x-circle-fill" style="color: var(--btn-danger-color);"></i>`;
+		} else if (resultState === "unanswered") {
+			iconHtml = `<i class="bi bi-circle" style="color: var(--text-secondary-color);"></i>`;
+		}
 
 		return `
 			<a class="quiz-question-item is-result-${resultState}" href="#question-${questionNumber}" data-question-number="${questionNumber}">

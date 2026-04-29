@@ -24,7 +24,7 @@ const quizData = [
 		option_B: 'Transport layer',
 		option_C: 'Internet layer',
 		option_D: 'Network Access layer',
-		selected: 3,
+		selected: null,
 		correct: 3
 	},
 	{
