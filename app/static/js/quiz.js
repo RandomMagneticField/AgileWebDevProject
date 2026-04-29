@@ -118,7 +118,10 @@ function createQuestionListItem(question, questionNumber) {
 
 		return `
 			<a class="quiz-question-item is-result-${resultState}" href="#question-${questionNumber}" data-question-number="${questionNumber}">
-				<span>${iconHtml} Question ${questionNumber}</span>
+				<span>
+					<span class="quiz-question-item-full">${iconHtml} Question ${questionNumber}</span>
+					<span class="quiz-question-item-short">${iconHtml} ${questionNumber}</span>
+				</span>
 			</a>
 		`;
 	}

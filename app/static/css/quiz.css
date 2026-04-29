@@ -239,12 +239,23 @@
     color: var(--btn-danger-color);
 }
 
+.quiz-question-item.is-result-unanswered {
+    /* Use the same neutral styling as the active page list items */
+    background: rgba(74, 74, 74, 0.22);
+    color: rgba(220, 220, 220, 0.82);
+}
+
+.quiz-question-item.is-result-unanswered:hover {
+    background: rgba(82, 82, 82, 0.34);
+    color: var(--text-primary);
+}
+
 .quiz-question-item span {
     display: flex;
     align-items: center;
     gap: 6px;
-    justify-content: space-between;
-    flex-direction: row-reverse;
+    justify-content: flex-start;
+    flex-direction: row;
 }
 
 .quiz-question-item span i {
