@@ -27,22 +27,30 @@ Text
 
 3. Install dependencies
     ```bash
-    pip install flask flask-sqlalchemy flask-migrate flask-wtf email-validator
+    pip install flask flask-sqlalchemy flask-migrate flask-wtf email-validator python-dotenv
     ```
 
-4. Set up the database
+4. Set up environment variables
+    Create a `.env` file in the root directory with the following:
+    ```
+    SECRET_KEY=your-secret-key-here
+    DATABASE_URL=sqlite:///notella.db
+    OPENAI_API_KEY=your-openai-key-here  # Required for AI quiz feature
+    ```
+
+5. Set up the database
     ```bash
     flask db upgrade
     ```
 
-5. (Optional) Seed the database with sample data
+6. (Optional) Seed the database with sample data
     ```bash
-        python seed.py
+    python seed.py
     ```
 
     This creates 3 sample users (alice, bob, charlie) with password `password123`
 
-6. Run the app
+7. Run the app
     ```bash
     flask run 
     ```
