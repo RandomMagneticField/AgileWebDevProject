@@ -2,6 +2,7 @@
 .editor-header-center{
     flex: 1;
     display: flex;
+    min-width: 0;
     align-items: center;
     gap: 12px;
     padding: 0 24px;
@@ -9,6 +10,7 @@
 
 .progress-bar-wrap {
     flex: 1;
+    min-width: 0;
     height: 10px;
     background: var(--input-border);
     border-radius: 999px;
@@ -126,6 +128,7 @@
     border: none;
     font-family: var(--font);
     width: 100%;
+    scrollbar-width: none;
 }
 
 .card-side-text::placeholder { color: var(--text-muted); }
@@ -178,4 +181,21 @@
 .card-row.drag-over {
     width : 10px;
     /*background: #303B6A;*/
+}
+
+/* Progress bar — mobile fixes */
+@media (max-width: 900px) {
+    .editor-header-center {
+        padding: 0 12px;   
+        gap: 8px;
+        width: 100%;
+    }
+
+    .progress-bar-wrap {
+        min-width: 60px;  
+    }
+
+    .progress-label {
+        font-size: 13px; 
+    }
 }

@@ -73,6 +73,28 @@ function renderCards(){
     updateProgress()//update the progress bar
 }
 
+const deckTitle = document.getElementById('decks-title')
+
+deckTitle.addEventListener('blur', () => {
+    if (deckTitle.textContent.trim() === '') {
+        deckTitle.textContent = 'Enter Note Name...';
+    }
+    deckTitle.scrollLeft = 0;
+});
+
+deckTitle.addEventListener('input', () => {
+    if (deckTitle.textContent.length > 50) {
+        deckTitle.textContent = deckTitle.textContent.substring(0, 50);
+        // keep cursor at end
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(noteTitle);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+});
+
 
 //add new card
 document.getElementById('btn-add-card').addEventListener('click', function(){
