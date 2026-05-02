@@ -37,7 +37,7 @@ function switchTab(tab, el) {
 function createNoteCard(note) {
     const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
     return `
-        <div class="note-card" onclick="window.location=ROUTES.note_editor">
+        <div class="note-card" onclick="window.location=ROUTES.note_editor + '?id=${note.id}'">
             <div class="note-card-content">
                 <div class="note-card-title">${note.title}</div>
                 <div class="note-card-body">${note.body}</div>
@@ -89,4 +89,60 @@ function renderCards() {
     document.getElementById('decks-grid').innerHTML = decksData.map(createDeckCard).join('');
 }
 
-renderCards();
+
+function openCreateModal() {
+    document.getElementById('create-note-backdrop').style.display = 'block';
+    document.getElementById('create-note-modal').style.display = 'block';
+}
+
+function closeCreateModal() {
+    document.getElementById('create-note-backdrop').style.display = 'none';
+    document.getElementById('create-note-modal').style.display = 'none';
+}
+
+function submitCreateNote() {
+    const title = document.getElementById('new-note-title').value.trim() || 'Untitled';
+    fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+    })
+    .then(res => res.json())
+    .then(data => {
+        window.location.href = ROUTES.note_editor + '?id=' + data.id;
+    });
+}
+
+// AJAX search
+const searchInput = document.querySelector('.search-input');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+    // cancels previous search by restarting time (prevent too many request being sent by only sending a request if user stops typing for some time)
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+    
+    if (query === '') {
+        fetch('/api/dashboard')
+            .then(res => res.json())
+            .then(data => {
+                notesData = data.notes;
+                decksData = data.decks;
+                renderCards();
+            });
+        return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+        // encode to URL safe format (e.g. spaces to %20)
+        fetch(`/api/search?q=${encodeURIComponent(query)}`)
+            // "Promise". once receive data parse as JSON
+            .then(res => res.json())
+            // then use data
+            .then(data => {
+                notesData = data.notes;
+                decksData = data.decks;
+                renderCards();
+            });
+    }, 300);
+});

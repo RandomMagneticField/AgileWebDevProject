@@ -4,6 +4,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
 {% endblock %}
 
 {% block page_content %}
@@ -20,7 +21,7 @@
                 </div>
                 <div class="search-row">
                     <input class="search-input" type="text" placeholder="Search..."/>
-                    <button class="btn-add">+</button>
+                   <button class="btn-add" onclick="openCreateModal()">+</button>
                 </div>
             </div>
             <div class="dash-divider"></div>
@@ -46,4 +47,22 @@
     
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
+{% endblock %}
+
+
+{% block modals %}
+<div id="create-note-backdrop" onclick="closeCreateModal()"></div>
+<div id="create-note-modal">
+  <div class="table-modal-title">New Note</div>
+  <div class="table-modal-inputs">
+    <div class="table-modal-input-group">
+      <div class="table-modal-input-label">Title</div>
+      <input id="new-note-title" type="text" placeholder="Note title..." maxlength="50"/>
+    </div>
+  </div>
+  <div class="table-modal-actions">
+    <button onclick="closeCreateModal()" class="table-modal-btn-cancel">Cancel</button>
+    <button onclick="submitCreateNote()" class="table-modal-btn-insert">Create</button>
+  </div>
+</div>
 {% endblock %}
