@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block page_content %}
-        <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
         <!-- Header -->
             <div class="dash-greeting">Good morning, {{ user.username }}</div>
             <div class="dash-title">Your Dashboard</div>
@@ -55,6 +54,6 @@
     </script>
 
     
-
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 {% endblock %}

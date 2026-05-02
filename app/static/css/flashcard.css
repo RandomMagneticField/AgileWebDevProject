@@ -1,27 +1,57 @@
 
 .viewer {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 24px !important;
-    margin-top: 32px !important;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
 }
 
+.flashcard-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.dash-container:has(.flashcard-layout) {
+    overflow: hidden !important;
+    flex-direction: column !important;
+    padding: 20px 24px !important;
+    align-content: center;
+}
+
+.dash-container:has(.result-page) {
+    align-content: center !important;
+}
+
+
 .fc-card {
-    width: min(480px, 90%) !important;
-    height: 280px !important;
-    perspective: 1000px !important;
-    cursor: pointer !important;
-    flex-shrink: 0 !important;
-    transform-style:preserve-3d !important;
+    width: min(700px, 90%);
+    height: 100%;
+    max-width: 600px;
+    perspective: 1000px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transform-style:preserve-3d;
+}
+
+.fc-controls{
+    flex-shrink: 0;
+    padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .fc-inner {
-    width: 100% !important;
-    height: 100% !important;
-    position: relative !important;
-    transform-style: preserve-3d !important;
-    transition: transform 0.5s ease !important;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
 }
 
 .fc-inner.flipped {
@@ -107,7 +137,6 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border-left: 2px;
 }
 
 .flip-btn:hover {
@@ -136,12 +165,62 @@
     background: var(--btn-login-hover);
 }
 
+.fc-stage{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 16px 0;
+    gap: 12px;
+}
+
+.fc-btns{
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.result-page{
+    display:none;  
+    margin:0; 
+    width: 100%;
+    max-width: 800px;
+    overflow-y:auto; 
+    scrollbar-width:none;
+    align-self: center;
+    padding: 0;
+    text-align: center;
+}
+
+.card-body.correct {
+    border-color: var(--btn-green-border);
+    background: var(--btn-green-bg);
+}
+
+.card-body.wrong {
+    border-color: var(--btn-danger-border);
+    background: var(--btn-danger-bg);
+}
+
+
 /*for mobile view*/
-@media (max-height: 700px) {
-    .fc-card {
-        height: 200px !important;
+@media (max-width: 900px) {
+    .fc-header {
+        flex-direction: row !important;
+        align-items: center;
+        gap: 8px;
     }
-    .viewer {
-        margin-top: 8px !important;
+
+    .fc-header .editor-header-left {
+        display: none;  /* hide title on mobile, saves space */
+    }
+
+    .fc-header .editor-header-right {
+        display: none;  /* hide save button during play */
+    }
+
+    .fc-header .editor-header-center {
+        width: 100%;
+        padding: 0;
     }
 }

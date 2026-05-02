@@ -14,8 +14,7 @@ let currentIndex = 0
 let isFlipped = false
 let correct_ans = 0
 let wrong_ans=0
-let correct_cards = []
-let wrong_cards = []
+let answer = []
 
 
 //get the card
@@ -41,7 +40,7 @@ function updateProgress(){
 //go to the next card after right answer
 document.getElementById('btn-correct').addEventListener('click', function(){
     correct_ans++
-    correct_cards.push(cards[currentIndex])
+    answer.push({ card: cards[currentIndex], result: 'correct' })
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
@@ -54,7 +53,7 @@ document.getElementById('btn-correct').addEventListener('click', function(){
 //go to the next card after wrong answer
 document.getElementById('btn-wrong').addEventListener('click', function(){
     wrong_ans++
-    wrong_cards.push(cards[currentIndex])
+    answer.push({card: cards[currentIndex], result: 'wrong'})
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
@@ -83,47 +82,22 @@ function displayResults(){
     document.getElementById('results-correct').textContent = `${correct_ans} correct`
     document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
 
-    //print out the cards user clicked correct
-    const correctList = document.getElementById('correct-list')
-    if(correct_cards.length === 0){
-        correctList.innerHTML = "<p style='color:var(--text-muted);'>None</p>"
-    }
-    else{
-        correctList.innerHTML = correct_cards.map((c, i) => `
-            <div class="card-body" style="margin-bottom: 8px;">
-                <div class="card-side">
-                    <div class="card-side-label">FRONT</div>
-                    <div class="card-side-text">${c.front}</div>
-                </div>
-                <div class="card-side-divider"></div>
-                <div class="card-side">
-                    <div class="card-side-label">BACK</div>
-                    <div class="card-side-text">${c.back}</div>
-                </div>
-            </div>
-        `).join('')
-    }
+    const list = document.getElementById('correct-list')
+    document.getElementById('wrong-list').style.display = 'none'
 
-    //print out the cards user clicked incorrect
-    const wrongList = document.getElementById('wrong-list')
-    if(wrong_cards.length === 0){
-        wrongList.innerHTML = "<p style='color:var(--text-muted);'>None</p>"
-    }
-    else{
-        wrongList.innerHTML = wrong_cards.map((c, i) => `
-            <div class="card-body" style="margin-bottom: 8px;">
-                <div class="card-side">
-                    <div class="card-side-label">FRONT</div>
-                    <div class="card-side-text">${c.front}</div>
-                </div>
-                <div class="card-side-divider"></div>
-                <div class="card-side">
-                    <div class="card-side-label">BACK</div>
-                    <div class="card-side-text">${c.back}</div>
-                </div>
+    list.innerHTML = answer.map((entry, i) => `
+        <div class="card-body ${entry.result}" style="margin-bottom: 8px;">
+            <div class="card-side">
+                <div class="card-side-label">FRONT</div>
+                <div class="card-side-text">${entry.card.front}</div>
             </div>
-        `).join('')
-    }
+            <div class="card-side-divider"></div>
+            <div class="card-side">
+                <div class="card-side-label">BACK</div>
+                <div class="card-side-text">${entry.card.back}</div>
+            </div>
+        </div>
+    `).join('')
 
     document.getElementById("card-viewer").style.display = 'none' //hide the card
     document.getElementById('result-page').style.display = 'block' //show result page
@@ -133,8 +107,7 @@ function restartDeck(){
     correct_ans = 0
     wrong_ans = 0
     currentIndex = 0
-    correct_cards = []
-    wrong_cards = []
+    answer = []
     document.getElementById("card-viewer").style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
     renderCard()
