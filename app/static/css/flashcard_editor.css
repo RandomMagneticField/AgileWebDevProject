@@ -1,16 +1,25 @@
+.editor-header-left{
+    flex: 1;
+    max-width: 450px;
+    flex-shrink: 1;
+}
+
+
 /*Progress bar*/
 .editor-header-center{
     flex: 1;
     display: flex;
+    flex-shrink: 0;
     min-width: 0;
     align-items: center;
     gap: 12px;
     padding: 0 24px;
 }
 
+
 .progress-bar-wrap {
     flex: 1;
-    min-width: 0;
+    min-width: 120px;
     height: 10px;
     background: var(--input-border);
     border-radius: 999px;
@@ -191,17 +200,35 @@
 
 /* Progress bar — mobile fixes */
 @media (max-width: 900px) {
-    .editor-header-center {
-        padding: 0 12px;   
-        gap: 8px;
-        width: 100%;
+    .dash-container .editor-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
     }
 
-    .progress-bar-wrap {
-        min-width: 60px;  
+    .dash-container .editor-header-left {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
-    .progress-label {
-        font-size: 13px; 
+    .dash-container .editor-header-center {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 0 !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+    }
+
+    .dash-container .editor-header-right {
+        display: none !important;
+    }
+
+    .dash-container .editor-title {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
     }
 }
