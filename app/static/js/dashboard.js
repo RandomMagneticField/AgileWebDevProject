@@ -112,3 +112,37 @@ function submitCreateNote() {
         window.location.href = ROUTES.note_editor + '?id=' + data.id;
     });
 }
+
+// AJAX search
+const searchInput = document.querySelector('.search-input');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+    // cancels previous search by restarting time (prevent too many request being sent by only sending a request if user stops typing for some time)
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+    
+    if (query === '') {
+        fetch('/api/dashboard')
+            .then(res => res.json())
+            .then(data => {
+                notesData = data.notes;
+                decksData = data.decks;
+                renderCards();
+            });
+        return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+        // encode to URL safe format (e.g. spaces to %20)
+        fetch(`/api/search?q=${encodeURIComponent(query)}`)
+            // "Promise". once receive data parse as JSON
+            .then(res => res.json())
+            // then use data
+            .then(data => {
+                notesData = data.notes;
+                decksData = data.decks;
+                renderCards();
+            });
+    }, 300);
+});

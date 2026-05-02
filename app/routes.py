@@ -178,6 +178,46 @@ def create_note():
     db.session.commit()
     return jsonify({'id': note.note_id})
 
+@main.route('/api/search')
+@login_required
+def search():
+    # q is URL param, and returns '' if not present
+    query = request.args.get('q', '').strip()
+    user = User.query.get(session['user_id'])
+    
+    if not query:
+        return jsonify({'notes': [], 'decks': []})
+    
+    notes = Note.query.filter(
+        Note.user_id == user.user_id,
+        # ilike is case insensitive version of SQLs LIKE operator
+        Note.title.ilike(f'%{query}%')
+    ).order_by(Note.created_at.desc()).all()
+    
+    decks = Deck.query.filter(
+        Deck.user_id == user.user_id,
+        Deck.title.ilike(f'%{query}%')
+    ).order_by(Deck.created_at.desc()).all()
+    
+    return jsonify({
+        'notes': [{
+            'id': n.note_id,
+            'title': n.title,
+            'body': n.description or '',
+            'tags': [t.name for t in n.tags],
+            'date': n.created_at.strftime('%d %b')
+        } for n in notes],
+        'decks': [{
+            'id': d.deck_id,
+            'title': d.title,
+            'count': len(d.flashcards),
+            'lastScore': 0,
+            'lastTotal': len(d.flashcards),
+            'tags': [t.name for t in d.tags],
+            'date': d.created_at.strftime('%d %b')
+        } for d in decks]
+    })
+
 @main.route('/dashboard/flashcard_editor')
 @login_required
 def flashcard_editor():
