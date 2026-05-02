@@ -1,0 +1,68 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Notetella — Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+{% endblock %}
+
+{% block page_content %}
+        <!-- Header -->
+            <div class="dash-greeting">Good morning, {{ user.username }}</div>
+            <div class="dash-title">Your Dashboard</div>
+
+            <!-- Controls -->
+            <div class="dash-controls">
+                <div class="tab-toggle">
+                    <button class="tab-btn active" onclick="switchTab('notes', this)">Notes</button>
+                    <div class="tab-divider"></div>
+                    <button class="tab-btn" onclick="switchTab('decks', this)">Flashcard Decks</button>
+                </div>
+                <div class="search-row">
+                    <input class="search-input" type="text" placeholder="Search..."/>
+                   <button class="btn-add" onclick="openCreateModal()">+</button>
+                </div>
+            </div>
+            <div class="dash-divider"></div>
+
+            <div id="panel-notes">
+                <div class="notes-grid" id="notes-grid"></div>
+            </div>
+
+            <div id="panel-decks" style="display:none;">
+                <div class="notes-grid" id="decks-grid"></div>
+            </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const ROUTES = {
+            note_editor: "{{ url_for('main.note_editor') }}",
+            flashcard_editor: "{{ url_for('main.flashcard_editor') }}",
+            flashcard_play: "{{ url_for('main.flashcard') }}"
+        };
+    </script>
+
+    
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock %}
+
+
+{% block modals %}
+<div id="create-note-backdrop" onclick="closeCreateModal()"></div>
+<div id="create-note-modal">
+  <div class="table-modal-title">New Note</div>
+  <div class="table-modal-inputs">
+    <div class="table-modal-input-group">
+      <div class="table-modal-input-label">Title</div>
+      <input id="new-note-title" type="text" placeholder="Note title..." maxlength="50"/>
+    </div>
+  </div>
+  <div class="table-modal-actions">
+    <button onclick="closeCreateModal()" class="table-modal-btn-cancel">Cancel</button>
+    <button onclick="submitCreateNote()" class="table-modal-btn-insert">Create</button>
+  </div>
+</div>
+{% endblock %}

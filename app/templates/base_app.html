@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body class="dashboard-body">
+  <nav class="sidebar">
+    <a href="{{ url_for('main.dashboard') }}" class="nav-icon {% if active == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-house" style="font-size: 20px;"></i>
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="{{ url_for('main.info') }}" class="nav-icon {% if active == 'info' %}active{% endif %}">
+      <i class="bi bi-info" style="font-size: 25px;"></i>
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="{{ url_for('main.discover') }}" class="nav-icon {% if active == 'discover' %}active{% endif %}">
+      <i class="bi bi-search" style="font-size: 18px;"></i>
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="{{ url_for('main.profile') }}" class="nav-icon {% if active == 'profile' %}active{% endif %}">
+      <i class="bi bi-person" style="font-size: 22px;"></i>
+    </a>
+    <div class="sidebar-divider"></div>
+    <a href="{{ url_for('main.logout') }}" class="nav-icon">
+      <i class="bi bi-box-arrow-right" style="font-size: 20px;"></i>
+    </a>
+  </nav>
+
+  <div class="dash-main">
+    <div class="dash-container">
+        {% block page_content %}{% endblock %}
+    </div>
+</div>
+{% block modals %}{% endblock %}
+</body>
+{% endblock %}

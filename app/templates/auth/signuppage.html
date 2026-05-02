@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Notella - Sign Up{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="login-card col-9 col-sm-10 col-md-8">
+          <!-- <button class="btn-create btn-back" id="back">← back to login</button> -->
+          <div class="mb-4">
+                <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
+          </div>
+
+          <div class="welcome">Create account</div>
+         
+            
+
+            <form method="POST" class="authForm">
+              {{ form.hidden_tag() }}
+               {% for field in form %}
+                {% for error in field.errors %}
+                  <p class="errors" >{{ error }}</p>
+                {% endfor %}
+              {% endfor %}
+              <div class="fields">
+                {{ form.email(class="field", placeholder="email", autocomplete="off") }}
+                {{ form.username(class="field", placeholder="username", autocomplete="off") }}
+                {{ form.password(class="field", placeholder="password", autocomplete="off") }}
+                {{ form.confirm_password(class="field", placeholder="confirm password", autocomplete="off") }}
+              </div>
+              {{ form.submit(class="btn-login") }}
+            </form>
+            <div class="divider">
+          <div class="divider-line"></div>
+          <span class="divider-text">or</span>
+          <div class="divider-line"></div>
+        </div>
+           <p style="font-size:13px; color:var(--text-muted); margin-bottom: 0px;">
+            Already have an account? <a href="{{ url_for('main.login') }}" style="color:var(--text-primary);">Sign In</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+<!-- 
+    <script>
+      const backbtn = document.getElementById("back")
+      backbtn.addEventListener('click', function(){
+        window.location.href = "{{ url_for('main.login') }}"
+      })
+    </script> -->
