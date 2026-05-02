@@ -55,9 +55,13 @@
 /*individual card row*/
 .card-row{
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 12px;
     /*padding: 20px 0;*/
+}
+
+.card-row.dragging * {
+    pointer-events: none;
 }
 
 .card-num {
@@ -133,7 +137,7 @@
 
 .card-side-text::placeholder { color: var(--text-muted); }
 
-/* Delete button on hover */
+
 .card-delete {
     background: none;
     border: none;
@@ -143,10 +147,12 @@
     font-size: 14px;
     flex-shrink: 0;
     transition: color 0.15s;
-    opacity: 0;
+    /*opacity: 0;* uncomment for delete button on hover*/ 
+    opacity: 1;
+
 }
 
-.card-row:hover .card-delete { opacity: 1; }
+/*.card-row:hover .card-delete { opacity: 1; }*/
 .card-delete:hover { color: var(--btn-danger-color); }
 
 /* Add card button */

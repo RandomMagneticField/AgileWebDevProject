@@ -23,7 +23,7 @@ function renderCards(){
         //display all card 
         row.innerHTML = `
             <span class="card-num">${index + 1}.</span>
-            <i class="bi bi-grip-vertical card-drag-handle"></i>
+                <i class="bi bi-grip-vertical card-drag-handle"></i>
             <div class="card-body">
                 <div class="card-side">
                     <div class="card-side-label">FRONT</div>
@@ -34,10 +34,10 @@ function renderCards(){
                     <div class="card-side-label">BACK</div>
                     <textarea class="card-side-text" placeholder="Back side..." rows="2">${card.back}</textarea>
                 </div>
+                <button class="card-delete" onclick="deleteCard(${index})" style="margin-right: 10px">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
-            <button class="card-delete" onclick="deleteCard(${index})">
-                <i class="bi bi-trash"></i>
-            </button>
         `
 
         //save edits made by user
