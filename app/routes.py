@@ -221,7 +221,89 @@ def search():
 @main.route('/dashboard/flashcard_editor')
 @login_required
 def flashcard_editor():
-    return render_template('dashboard/flashcard_editor.html', active='dashboard')
+    deck_id = request.args.get('id', type= int)
+    if deck_id:
+        deck = Deck.query.get(deck_id)
+        if deck is None or deck.user_id != session['user_id']:
+            return redirect(url_for('main.dashboard'))
+    else:
+        deck = None
+    return render_template('dashboard/flashcard_editor.html', active='dashboard', deck = deck)
+
+@main.route('/api/decks', methods=['POST'])
+@login_required
+def create_deck():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    deck = Deck(
+        title = data.get('title', 'Untitle'),
+        user_id = user.user_id
+    )
+    db.session.add(deck)
+    db.session.commit()
+    return jsonify({'id': deck.deck_id})
+
+@main.route('/api/decks/<int:deck_id>', methods=['GET'])
+@login_required
+def get_deck(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    return jsonify({
+        'id': deck.deck_id,
+        'title': deck.title,
+        'cards':[{'front': c.front, 'back': c.back} for c in deck.flashcards],
+        'is_public': deck.is_public,
+        'tags': [t.name for t in deck.tags]
+    })
+
+@main.route('/api/decks/<int:deck_id>', methods=['POST'])
+@login_required
+def save_deck(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    data = request.get_json()
+    deck.title = data.get('title', deck.title)
+    deck.is_public = data.get('is_public', deck.is_public)
+    
+    from app.models import Flashcard
+    if 'cards' in data:
+        for card in deck.flashcards:
+            db.session.delete(card)
+        db.session.flush()
+        for i, c in enumerate(data['cards']):
+            card = Flashcard(front = c['front'], back = c['back'], deck_id = deck.deck_id, order_index = i)
+            db.session.add(card)
+
+    # handle tags
+    if 'tags' in data:
+        tag_names = data['tags']
+        tags = []
+        for name in tag_names:
+            tag = Tag.query.filter_by(name=name).first()
+            if not tag:
+                tag = Tag(name=name)
+                db.session.add(tag)
+            tags.append(tag)
+        deck.tags = tags
+
+    db.session.commit()
+    return jsonify({'success': True})
+
+@main.route('/api/decks/<int:deck_id>', methods=['DELETE'])
+@login_required
+def delete_deck(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    
+    for card in deck.flashcards:
+        db.session.delete(card)
+
+    db.session.delete(deck)
+    db.session.commit()
+    return jsonify({'success': True})
 
 @main.route('/dashboard/flashcard')
 @login_required

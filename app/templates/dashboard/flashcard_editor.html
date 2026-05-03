@@ -69,12 +69,14 @@
             </div>
             <div class="editor-side-card">
                 <div class="editor-side-label">Danger Zone:</div>
-                <button class="btn-danger">
+                <button class="btn-danger" onclick="deleteDeck()">
                     <i class="bi bi-trash"></i> Delete Deck
                 </button>
             </div>
         </div>
     </div>
+
+    <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/flashcard_editor.js') }}"></script>

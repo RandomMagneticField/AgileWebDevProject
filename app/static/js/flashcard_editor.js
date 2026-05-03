@@ -1,14 +1,19 @@
 //dummy data
-let cards = [
-    { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
-    { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
-    { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
-    { front: 'Algor Mortis', back: 'Cooling of the body after death' },
-    { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
-    { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
-    { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
-    { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
-]
+// let cards = [
+//     { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
+//     { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
+//     { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
+//     { front: 'Algor Mortis', back: 'Cooling of the body after death' },
+//     { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
+//     { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
+//     { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
+//     { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
+// ]
+
+
+let cards = []
+const deckId = document.getElementById('deck-data').dataset.deckId
+console.log('deck id:', deckId)
 
 //render all cards as list
 function renderCards(){
@@ -175,8 +180,43 @@ function markSaved() {
 }
 
 
-function saveNote() {
-    markSaved();
+function saveDeck() {
+    if (!deckId) return;
+    
+    const data = {
+        title: document.getElementById('decks-title').innerText.trim(),
+        cards: cards,
+        is_public: document.getElementById('vis-public').classList.contains('active'),
+        tags: Array.from(document.querySelectorAll('#tags-wrap .tag-removable'))
+                .map(pill => pill.textContent.replace('×', '').trim())
+    };
+
+    fetch(`/api/decks/${deckId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            markSaved();
+        }
+    });
+}
+
+function deleteDeck() {
+    if (!deckId) return;
+    if (!confirm('Are you sure you want to delete this deck?')) return;
+    
+    fetch(`/api/decks/${deckId}`, {
+        method: 'DELETE',
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/dashboard?tab=decks';
+        }
+    });
 }
 
 //Drag and Drop
@@ -229,4 +269,15 @@ document.addEventListener('dragover', function(e){
     }
 })
 
-renderCards() //initializer
+if (deckId) {
+    fetch(`/api/decks/${deckId}`)
+        .then(res => res.json())
+        .then(deck => {
+            document.getElementById('decks-title').textContent = deck.title
+            cards = deck.cards
+            setVis(deck.is_public ? 'public' : 'private')
+            renderCards()
+        })
+} else {
+    renderCards()
+}
