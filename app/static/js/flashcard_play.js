@@ -1,14 +1,17 @@
 //dummy data
-let cards = [
-    { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
-    { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
-    { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
-    { front: 'Algor Mortis', back: 'Cooling of the body after death' },
-    { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
-    { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
-    { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
-    { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
-]
+// let cards = [
+//     { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
+//     { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
+//     { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
+//     { front: 'Algor Mortis', back: 'Cooling of the body after death' },
+//     { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
+//     { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
+//     { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
+//     { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
+// ]
+
+let cards = []
+const deckId = document.getElementById('deck-data').dataset.deckId
 
 let currentIndex = 0
 let isFlipped = false
@@ -113,15 +116,15 @@ function restartDeck(){
     renderCard()
 }
 
-const backBtn = document.getElementById("back")
-const params = new URLSearchParams(window.location.search)
-const from = params.get('from')
-if(from === "flashcard_editor"){
-    backBtn.href="flashcard_editor.html"
-}
-else{
-    backBtn.href="index.html?tab=decks"
-}
 
 
-renderCard()
+if (deckId) {
+    fetch(`/api/decks/${deckId}`)
+        .then(res => res.json())
+        .then(deck => {
+            cards = deck.cards
+            renderCard()
+        })
+} else {
+    renderCard()
+}

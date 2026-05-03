@@ -57,7 +57,7 @@ function createDeckCard(deck) {
         <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor + '?id=${deck.id}'">
             <div class="deck-card-content">
                 <div class="deck-card-header">
-                    <a href="${ROUTES.flashcard_play}" class="deck-play-btn" >
+                    <a href="${ROUTES.flashcard_play}?id=${deck.id}" class="deck-play-btn" >
                         <i class="bi bi-play-fill"></i>
                     </a>
                     <div class="deck-card-info">

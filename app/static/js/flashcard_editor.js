@@ -219,6 +219,10 @@ function deleteDeck() {
     });
 }
 
+function playDeck(){
+    window.location = '/dashboard/flashcard?id=' + deckId + '&from=flashcard_editor'
+}
+
 //Drag and Drop
 let dragIndex = null
 

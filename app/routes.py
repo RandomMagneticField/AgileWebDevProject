@@ -308,7 +308,14 @@ def delete_deck(deck_id):
 @main.route('/dashboard/flashcard')
 @login_required
 def flashcard():
-    return render_template('dashboard/flashcard_play.html', active='dashboard')
+    deck_id = request.args.get('id', type = int)
+    if deck_id:
+        deck = Deck.query.get(deck_id)
+        if deck is None or deck.user_id != session['user_id']:
+            return redirect(url_for('main.dashboard'))
+    else:
+        deck = None
+    return render_template('dashboard/flashcard_play.html', active='dashboard', deck = deck)
 
 @main.route('/discover')
 @login_required
