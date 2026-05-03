@@ -3,12 +3,13 @@
 {% block title %}Notetella — Discover{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="../../static/css/discover.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/discover.css') }}"/>
 {% endblock %}
 
 {% block page_content %}
 <!-- Header -->
-<div class="dash-greeting">EXPLORE</div>
+<div class="dash-greeting">Explore</div>
 <div class="dash-title">Discover</div>
 
 <!-- Controls -->
