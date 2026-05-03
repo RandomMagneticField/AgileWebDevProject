@@ -2,6 +2,80 @@
 
 {% block title %}Notella — Flashcard Editor{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
+{% endblock %}
+
 {% block page_content %}
-    this is flashcard_editor
+    <!--Header-->
+    <div class="editor-header">
+        <div class="editor-header-left">
+            <div class="dash-greeting">
+                <a href="{{ url_for('main.dashboard') }}?tab=decks" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Deck editor
+                </a>
+            </div>
+            <div class="dash-title editor-title" contenteditable="true" spellcheck="false" id="decks-title">Card Decks Name</div>
+        </div>
+        <div class="editor-header-center">
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <span class="progress-label" id="progress-label">0/0</span>
+            <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
+        </div>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <!--Main layout-->
+    <div class="editor-layout">
+        <div class="card-list-wrap">
+            <div class="card-list" id="card-list"></div>
+            <div class="btn-add-card" id="btn-add-card">
+                <i class="bi bi-plus"></i> Add Card
+            </div>
+        </div>
+
+        <div class="editor-side">
+            <div class="editor-side-card">
+                <div class="editor-side-label">Play Flashcard:</div>
+                <button class="btn-quiz" onclick="window.location='{{ url_for('main.flashcard')}}?from=flashcard_editor'">
+                    <i class="bi bi-lightning-charge"></i> Play
+                </button>
+                <div class="quiz-disclaimer">Practice your cards in flip mode</div>
+            </div>
+            <div class="editor-side-card">
+                <div class="editor-side-label">Visibility</div>
+                <div class="vis-toggle">
+                    <button class="vis-btn active" id="vis-private" onclick="setVis('private')">Private</button>
+                    <div class="vis-divider"></div>
+                    <button class="vis-btn" id="vis-public" onclick="setVis('public')">Public</button>
+                </div>
+            </div>
+            <div class="editor-side-card">
+                <div class="editor-side-label">Description:</div>
+                <textarea class="side-textarea" placeholder="Add a short description..." id="note-description"></textarea>
+            </div>
+            <div class="editor-side-card">
+                <div class="editor-side-label">Tags:</div>
+                <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tag-input').focus()">
+                    <input class="tag-input" id="tag-input" placeholder="Add tag..." onkeydown="handleTag(event)" maxlength="20"/>
+                </div>
+            </div>
+            <div class="editor-side-card">
+                <div class="editor-side-label">Danger Zone:</div>
+                <button class="btn-danger">
+                    <i class="bi bi-trash"></i> Delete Deck
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/flashcard_editor.js') }}"></script>
 {% endblock %}
