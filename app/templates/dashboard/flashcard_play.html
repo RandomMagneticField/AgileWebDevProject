@@ -1,7 +1,105 @@
 {% extends 'base_app.html' %}
 
-{% block title %}Notella — Flashcard Play{% endblock %}
+{% block title %}Notella — Flashcard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
+{% endblock %}
 
 {% block page_content %}
-    this is flashcard_play
+
+    <!--Header-->
+    <div class="editor-header fc-header">
+        <div class="editor-header-left">
+            <div class="dash-greeting">
+                <a href="{{ url_for('main.dashboard') }}?tab=decks" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Flashcard
+                </a>
+            </div>
+            <div class="dash-title editor-title" id="decks-title">
+                Deck title
+            </div>
+        </div>
+
+        <!--Progress-->
+        <div class="editor-header-center">
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <span class="progress-label" id="progress-label">0/0</span>
+        </div>
+
+        <div class="editor-header-right">
+            <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
+        </div>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <!--Card viewer-->
+    <div class="flashcard-layout" id="card-viewer">
+        <div class="fc-stage">
+            <div class="viewer">
+                <div class="fc-card" id="card">
+                    <div class="fc-inner" id="inner" onclick="flipCard()">
+                        
+                        <div class="fc-front">
+                            <p class="fc-label">FRONT</p>
+                            <div class="fc-text" id="front-text">Pallor Mortis</div>
+                        </div>
+
+                        <div class="fc-back">
+                            <p class="fc-label">BACK</p>
+                            <div class="fc-text" id="back-text">Paleness of death</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="fc-controls">
+                <div class="fc-counter" id="counter">Card 1 of 8</div>
+                <div class="fc-btns">
+                    <button class="flip-btn" id="btn-correct" style="width:auto; padding:8px 20px;">
+                        <i class="bi bi-check-circle-fill"></i> Correct
+                    </button>
+
+                    <button class="btn-danger" id="btn-wrong" style="width:auto; padding:8px 20px;">
+                        <i class="bi bi-x-circle-fill"></i> Wrong
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Result page-->
+    <div id="result-page" class="result-page">
+
+        <!--Test statistic-->
+        <div style="text-align:center; margin-bottom:20px;">
+            <h2>Session Completed</h2>
+            <p id="results-percentage"></p>
+            <p id="results-correct"></p>
+            <p id="results-wrong"></p>
+        </div>
+
+        <!--card view-->
+        <div id="correct-list"></div>
+        <div id="wrong-list"></div>
+
+        <!--Buttons-->
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+            <button class="btn-retry" onclick="restartDeck()">Try Again</button>
+            <button class="btn-retry" onclick="window.location.href='{{ url_for('main.flashcard_editor') }}'">Edit Deck</button>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/flashcard_play.js') }}"></script>
+
 {% endblock %}
