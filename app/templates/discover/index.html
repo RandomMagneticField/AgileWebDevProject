@@ -2,6 +2,55 @@
 
 {% block title %}Notetella — Discover{% endblock %}
 
-{% block page_content %}
+{% block styles %}
+<link rel="stylesheet" href="../../static/css/discover.css"/>
+{% endblock %}
 
+{% block page_content %}
+<!-- Header -->
+<div class="dash-greeting">EXPLORE</div>
+<div class="dash-title">Discover</div>
+
+<!-- Controls -->
+<div class="dash-controls">
+    <div class="tab-toggle">
+        <button class="tab-btn active" onclick="switchTab('notes', this)">Notes</button>
+        <div class="tab-divider"></div>
+        <button class="tab-btn" onclick="switchTab('decks', this)">Flashcard Decks</button>
+    </div>
+
+    <div class="search-row">
+        <!--search input-->
+        <input class="search-input" type="text" placeholder="Search..." id ="search-input"/>
+        <!--sort dropdown-->
+        <div class="select" id="sort-wrapper">
+            <button class="select-btn" id="sort-btn">
+                Most Likes <i class="bi bi-chevron-down" style="font-size: 11px;"></i>
+            </button>
+            <div class="select-dropdown" id="sort-dropdown">
+                <div class="select-option active" data-value="likes">Most Likes</div>
+                <div class="select-option" data-value="date">Last Updated</div>
+                <div class="select-option" data-value="alpha">Alphabetical</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dash-divider"></div>
+
+<!--Notes panel-->
+<div id="panel-notes">
+    <div class="notes-grid" id="notes-grid"></div>
+</div>
+
+<!--Decks panel-->
+<div id="panel-decks" style="display:none;">
+    <div class="notes-grid" id="decks-grid"></div>
+</div>
+
+<script src="{{ url_for('static', filename='js/discover.js') }}"></script>
+
+<!--
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+-->
 {% endblock %}
