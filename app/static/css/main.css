@@ -104,6 +104,12 @@
     --preview-code-bg:            rgba(98, 98, 98, 0.2);
     --preview-code-color:         #c8c8c8;
     --preview-pre-bg:             rgba(32, 32, 32, 0.5);
+
+    /* Quiz */
+    --btn-blue-bg:             rgba(38, 72, 170, 0.22);
+    --btn-blue-bg-hover:       rgba(38, 72, 170, 0.35);
+    --btn-blue-border:         #6f93ff;
+    --btn-blue-color:          #a9bfff;
 }
 
 body {

@@ -1,3 +1,5 @@
+const NOTE_ID = document.getElementById('note-data').dataset.noteId || null;
+
 function setMode(mode, element) {
     document.body.className = 'dashboard-body mode-' + mode;
     document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -539,9 +541,29 @@ textarea.addEventListener('input', markUnsaved);
 document.getElementById('note-description').addEventListener('input', markUnsaved);
 
 function saveNote() {
-    markSaved();
-}
+    if (!NOTE_ID) return;
+    
+    const data = {
+        title: document.getElementById('note-title').innerText.trim(),
+        content: document.getElementById('md-input').value,
+        description: document.getElementById('note-description').value,
+        is_public: document.getElementById('vis-public').classList.contains('active'),
+        tags: Array.from(document.querySelectorAll('#tags-wrap .tag-removable'))
+                .map(pill => pill.textContent.replace('×', '').trim())
+    };
 
+    fetch(`/api/notes/${NOTE_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            markSaved();
+        }
+    });
+}
 function buildToc() {
     const list = document.getElementById('toc-list');
 
@@ -589,5 +611,41 @@ function buildToc() {
         item.appendChild(btn);
         item.appendChild(copyBtn);
         list.appendChild(item);
+    });
+}
+
+
+if (NOTE_ID) {
+    fetch(`/api/notes/${NOTE_ID}`)
+        .then(res => res.json())
+        .then(note => {
+            document.getElementById('note-title').innerText = note.title;
+            document.getElementById('md-input').value = note.content;
+            document.getElementById('note-description').value = note.description;
+            setVis(note.is_public ? 'public' : 'private');
+            note.tags.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = 'note-tag tag-removable';
+                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+                const input = document.getElementById('tag-input');
+                document.getElementById('tags-wrap').insertBefore(pill, input);
+            });
+            renderPreview();
+            markSaved(); 
+        });
+}
+
+function deleteNote() {
+    if (!NOTE_ID) return;
+    if (!confirm('Are you sure you want to delete this note?')) return;
+    
+    fetch(`/api/notes/${NOTE_ID}`, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/dashboard';
+        }
     });
 }
