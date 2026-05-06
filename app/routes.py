@@ -284,6 +284,23 @@ def change_password():
     user = User.query.get(session['user_id'])
     return render_template('change_password.html' , active='profile', user=user)
 
+@main.route('/api/change_password', methods=['POST'])
+@login_required
+def change_password_api():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    
+    if not user.check_password(data.get('current_password', '')):
+        return jsonify({'error': 'Current password is incorrect'}), 400
+    
+    new_password = data.get('new_password', '')
+    if len(new_password) < 6:
+        return jsonify({'error': 'New password must be at least 6 characters'}), 400
+    
+    user.set_password(new_password)
+    db.session.commit()
+    return jsonify({'success': True})
+
 @main.route('/info')
 @login_required
 def info():
