@@ -317,6 +317,41 @@ def change_password_api():
     db.session.commit()
     return jsonify({'success': True})
 
+@main.route('/api/delete_account', methods=['DELETE'])
+@login_required
+def delete_account():
+    user = User.query.get(session['user_id'])
+    
+    # delete quiz questions and sessions
+    for quiz in user.quiz_sessions:
+        for question in quiz.questions:
+            db.session.delete(question)
+        db.session.delete(quiz)
+    
+    # delete flashcard results
+    for result in user.flashcard_results:
+        db.session.delete(result)
+    
+    # delete flashcards and decks
+    for deck in user.decks:
+        for card in deck.flashcards:
+            db.session.delete(card)
+        db.session.delete(deck)
+    
+    # delete notes (note_tags junction rows removed automatically)
+    for note in user.notes:
+        db.session.delete(note)
+    
+    # delete password resets
+    for reset in user.password_resets:
+        db.session.delete(reset)
+    
+    db.session.delete(user)
+    db.session.commit()
+    
+    session.pop('user_id', None)
+    return jsonify({'success': True})
+
 @main.route('/info')
 @login_required
 def info():

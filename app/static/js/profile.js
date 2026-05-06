@@ -83,3 +83,18 @@ document.getElementById('change_password').addEventListener('click', function() 
 document.getElementById('change_password_edit').addEventListener('click', function() {
     window.location.href = this.dataset.url;
 });
+
+document.getElementById('del').addEventListener('click', function() {
+    if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+    fetch('/api/delete_account', {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = this.dataset.url;
+        } else {
+            alert(data.error || 'Failed to delete account');
+        }
+    })
+});
