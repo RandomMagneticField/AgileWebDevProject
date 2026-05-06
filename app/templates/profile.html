@@ -50,46 +50,38 @@
     </div>
 
     <!-- Account (read-only) -->
-    <div class="settings-group" id="account-readonly">
-        <div class="settings-group-label">Account</div>
-        <div class="settings-row">
-            <span class="settings-label">username</span>
-            <span class="settings-value" id="display-username">{{ user.username if user else 'user1' }}</span>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">email</span>
-            <span class="settings-value" id="display-email">{{ user.email if user else 'user1@gmail.com' }}</span>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">password</span>
-            <span class="settings-value">••••••••</span>
-        </div>
+<div class="settings-group" id="account-readonly">
+    <div class="settings-group-label">Account</div>
+    <div class="settings-row">
+        <span class="settings-label">username</span>
+        <span class="settings-value" id="display-username">{{ user.username if user else 'user1' }}</span>
     </div>
+    <div class="settings-row">
+        <span class="settings-label">email</span>
+        <span class="settings-value" id="display-email">{{ user.email if user else 'user1@gmail.com' }}</span>
+    </div>
+    <div class="settings-row">
+        <span class="settings-label">password</span>
+        <button class="btn-back" id="change_password" data-url="{{ url_for('main.change_password') }}">Change Password</button>
+    </div>
+</div>
 
-    <!-- Account (edit mode, hidden by default) -->
-    <div class="settings-group" id="account-edit" style="display: none;">
-        <div class="settings-group-label">Edit Account</div>
-        <div class="settings-row">
-            <span class="settings-label">username</span>
-            <input class="profile-input" id="input-username" type="text" value="{{ user.username if user else '' }}" spellcheck="false"/>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">email</span>
-            <input class="profile-input" id="input-email" type="email" value="{{ user.email if user else '' }}" spellcheck="false"/>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">new password</span>
-            <input class="profile-input" id="input-new-password" type="password" placeholder="leave blank to keep current"/>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">confirm new password</span>
-            <input class="profile-input" id="input-confirm-password" type="password" placeholder="re-enter new password"/>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">current password</span>
-            <input class="profile-input" id="input-current-password" type="password" placeholder="required to save changes"/>
-        </div>
+<!-- Account (edit mode, hidden by default) -->
+<div class="settings-group" id="account-edit" style="display: none;">
+    <div class="settings-group-label">Edit Account</div>
+    <div class="settings-row">
+        <span class="settings-label">username</span>
+        <input class="profile-input" id="input-username" type="text" value="{{ user.username if user else '' }}" spellcheck="false"/>
     </div>
+    <div class="settings-row">
+        <span class="settings-label">email</span>
+        <input class="profile-input" id="input-email" type="email" value="{{ user.email if user else '' }}" spellcheck="false"/>
+    </div>
+    <div class="settings-row">
+        <span class="settings-label">password</span>
+        <button class="btn-back" id="change_password_edit" data-url="{{ url_for('main.change_password') }}">Change Password</button>
+    </div>
+</div>
 
     <!-- Preferences -->
     <div class="settings-group">

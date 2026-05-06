@@ -254,6 +254,30 @@ def profile():
     user = User.query.get(session['user_id'])
     return render_template('profile.html', active='profile', user=user)
 
+@main.route('/api/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    
+    new_username = data.get('username', '').strip()
+    new_email = data.get('email', '').strip()
+    
+    if not new_username or not new_email:
+        return jsonify({'error': 'Username and email cannot be empty'}), 400
+    
+    if new_username != user.username and User.query.filter_by(username=new_username).first():
+        return jsonify({'error': 'Username already taken'}), 400
+    
+    if new_email != user.email and User.query.filter_by(email=new_email).first():
+        return jsonify({'error': 'Email already in use'}), 400
+    
+    user.username = new_username
+    user.email = new_email
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
 @main.route('/change_password')
 @login_required
 def change_password():

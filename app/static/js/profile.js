@@ -23,38 +23,34 @@ function discardEdit() {
     editing = false;
     accountReadonly.style.display = 'block';
     accountEdit.style.display = 'none';
-    document.getElementById('input-current-password').value = '';
-    document.getElementById('input-new-password').value = '';
-    document.getElementById('input-confirm-password').value = '';
     headerBtns.innerHTML = `<button class="btn-save" id="btn-edit-profile" onclick="toggleEdit()">Edit Profile</button>`;
 }
 
 function saveProfile() {
     const username = document.getElementById('input-username').value.trim();
     const email = document.getElementById('input-email').value.trim();
-    const currentPassword = document.getElementById('input-current-password').value;
-    const newPassword = document.getElementById('input-new-password').value;
-    const confirmPassword = document.getElementById('input-confirm-password').value;
 
     if (!username || !email) {
         alert('Username and email cannot be empty.');
         return;
     }
 
-    if (!currentPassword) {
-        alert('Current password is required to save changes.');
+    // username: 3-50 chars, letters, numbers, underscores only
+    if (!/^[a-zA-Z0-9_]{3,50}$/.test(username)) {
+        alert('Username must be 3-50 characters and can only contain letters, numbers, and underscores.');
         return;
     }
 
-    if (newPassword && newPassword !== confirmPassword) {
-        alert('New passwords do not match.');
+    // basic email format check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
         return;
     }
 
     fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, current_password: currentPassword, new_password: newPassword || null })
+        body: JSON.stringify({ username, email })
     })
     .then(res => res.json())
     .then(data => {
@@ -77,5 +73,13 @@ function saveProfile() {
 // });
 
 document.getElementById('del').addEventListener('click', function() {
+    window.location.href = this.dataset.url;
+});
+
+document.getElementById('change_password').addEventListener('click', function() {
+    window.location.href = this.dataset.url;
+});
+
+document.getElementById('change_password_edit').addEventListener('click', function() {
     window.location.href = this.dataset.url;
 });
