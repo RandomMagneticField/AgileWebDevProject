@@ -3,7 +3,7 @@ from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
-from app.models import User, Note, Deck, Tag
+from app.models import User, Note, Deck, Tag, QuizSession
 from datetime import datetime, timezone
 
 
@@ -252,8 +252,24 @@ def quiz_results():
 @login_required
 def profile():
     user = User.query.get(session['user_id'])
-    return render_template('profile.html', active='profile', user=user)
+    note_count = Note.query.filter_by(user_id=user.user_id).count()
+    public_note_count = Note.query.filter_by(user_id=user.user_id, is_public=True).count()
+    deck_count = Deck.query.filter_by(user_id=user.user_id).count()
+    public_deck_count = Deck.query.filter_by(user_id=user.user_id, is_public=True).count()
 
+    quiz_count = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).count()
+    
+    # avg quiz score
+    quizzes = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).all()
+    if quizzes:
+        avg_score = str(round(sum(q.score / q.total * 100 for q in quizzes if q.total > 0) / len(quizzes))) + '%'
+    else:
+        avg_score = 'N/A'
+
+    return render_template('profile.html', active='profile', user=user,
+        note_count=note_count, public_note_count=public_note_count,
+        deck_count=deck_count, public_deck_count=public_deck_count,
+        quiz_count=quiz_count, avg_score=avg_score)
 @main.route('/api/profile/update', methods=['POST'])
 @login_required
 def update_profile():

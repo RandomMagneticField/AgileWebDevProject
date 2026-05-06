@@ -27,27 +27,27 @@
 
     <!-- Overview -->
     <div class="smallboxes">
-        <div class="smallbox">
-            <p class="transparent">Notes</p>
-            <p class="num">27</p>
-            <p class="transparent">5 public</p>
-        </div>
-        <div class="smallbox">
-            <p class="transparent">Decks</p>
-            <p class="num">40</p>
-            <p class="transparent">18 public</p>
-        </div>
-        <div class="smallbox">
-            <p class="transparent">Total Quizzes</p>
-            <p class="num">38</p>
-            <p class="transparent">past month</p>
-        </div>
-        <div class="smallbox">
-            <p class="transparent">Avg. Quiz Score</p>
-            <p class="num">78%</p>
-            <p class="transparent">across all notes</p>
-        </div>
+    <div class="smallbox">
+        <p class="transparent">Notes</p>
+        <p class="num">{{ note_count }}</p>
+        <p class="transparent">{{ public_note_count }} public</p>
     </div>
+    <div class="smallbox">
+        <p class="transparent">Decks</p>
+        <p class="num">{{ deck_count }}</p>
+        <p class="transparent">{{ public_deck_count }} public</p>
+    </div>
+    <div class="smallbox">
+        <p class="transparent">Total Quizzes</p>
+        <p class="num">{{ quiz_count }}</p>
+        <p class="transparent">saved</p>
+    </div>
+    <div class="smallbox">
+        <p class="transparent">Avg. Quiz Score</p>
+        <p class="num">{{ avg_score }}</p>
+        <p class="transparent">across all quizzes</p>
+    </div>
+</div>
 
     <!-- Account (read-only) -->
 <div class="settings-group" id="account-readonly">
