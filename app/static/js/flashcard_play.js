@@ -81,9 +81,7 @@ function displayResults(){
     //count the percentage of correct ans
     const percent = Math.round(correct_ans/cards.length *100)
     //print out the general info of the results
-    document.getElementById('results-percentage').textContent = `${percent}% correct`
-    document.getElementById('results-correct').textContent = `${correct_ans} correct`
-    document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
+    document.getElementById('results-percentage').textContent = `Score : ${percent}/100`
 
     const list = document.getElementById('correct-list')
     document.getElementById('wrong-list').style.display = 'none'

@@ -31,10 +31,10 @@
                 <div class="progress-bar-fill" id="progress-bar"></div>
             </div>
             <span class="progress-label" id="progress-label">0/0</span>
+            <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
         </div>
 
         <div class="editor-header-right">
-            <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
         </div>
     </div>
 
@@ -49,12 +49,12 @@
                         
                         <div class="fc-front">
                             <p class="fc-label">FRONT</p>
-                            <div class="fc-text" id="front-text">Pallor Mortis</div>
+                            <div class="fc-text" id="front-text"></div>
                         </div>
 
                         <div class="fc-back">
                             <p class="fc-label">BACK</p>
-                            <div class="fc-text" id="back-text">Paleness of death</div>
+                            <div class="fc-text" id="back-text"></div>
                         </div>
 
                     </div>
@@ -83,8 +83,6 @@
         <div style="text-align:center; margin-bottom:20px;">
             <h2>Session Completed</h2>
             <p id="results-percentage"></p>
-            <p id="results-correct"></p>
-            <p id="results-wrong"></p>
         </div>
 
         <!--card view-->
