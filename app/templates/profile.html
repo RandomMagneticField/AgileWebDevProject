@@ -5,91 +5,110 @@
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
 {% endblock %}
 
 {% block page_content %}
-            <div style="display: flex; justify-content: center; margin-bottom: 16px;">
-                <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
-            </div>
-            
-            <hr>
+<div class="profile-container">
 
-            <!--Overview-->
-            <div>
-                <p style="color: var(--text-primary); margin-bottom: 10px;">Overview</p>
-                <div class="smallboxes">
-                    <div class="smallbox">
-                        <p class="transparent">Notes</p>
-                        <p class="num">27</p>
-                        <p class="transparent">5 public</p>
-                    </div>
-                    <div class="smallbox">
-                        <p class="transparent">Decks</p>
-                        <p class="num">40</p>
-                        <p class="transparent">18 public</p>
-                    </div>
-                    <div class="smallbox">
-                        <p class="transparent">Total Quizzes</p>
-                        <p class="num">38</p>
-                        <p class="transparent">past month</p>
-                    </div>
-                    <div class="smallbox">
-                        <p class="transparent">Avg. Quiz Score</p>
-                        <p class="num">78%</p>
-                        <p class="transparent">across all notes</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Header -->
+    <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">{{ user.username[0].upper() if user else 'U' }}</div>
+        <div style="flex: 1;">
+            <div class="profile-name" id="profile-username">{{ user.username if user else 'user' }}</div>
+            <div class="profile-email" id="profile-email">{{ user.email if user else 'email' }}</div>
+        </div>
+        <div class="profile-header-btns" id="header-btns">
+            <button class="btn-save" id="btn-edit-profile" onclick="toggleEdit()">Edit Profile</button>
+        </div>
+    </div>
 
-            <hr>
+    <div class="dash-divider"></div>
 
-            <!-- Account -->
-            <p class="section-title">Account</p>
-            <div class="settings-row">
-                <span class="settings-label">username</span>
-                <span class="settings-value">user1</span>
-            </div>
-            <div class="settings-row">
-                <span class="settings-label">email</span>
-                <span class="settings-value">user1@gmail.com</span>
-            </div>
-            <div class="settings-row">
-                <span class="settings-label">password</span>
-                <div>
-                    <span class="settings-value">••••••••</span>
-                    <button class="btn-create btn-back" id="change_password">></button>
-                </div>
-            </div>
+    <!-- Overview -->
+    <div class="smallboxes">
+        <div class="smallbox">
+            <p class="transparent">Notes</p>
+            <p class="num">27</p>
+            <p class="transparent">5 public</p>
+        </div>
+        <div class="smallbox">
+            <p class="transparent">Decks</p>
+            <p class="num">40</p>
+            <p class="transparent">18 public</p>
+        </div>
+        <div class="smallbox">
+            <p class="transparent">Total Quizzes</p>
+            <p class="num">38</p>
+            <p class="transparent">past month</p>
+        </div>
+        <div class="smallbox">
+            <p class="transparent">Avg. Quiz Score</p>
+            <p class="num">78%</p>
+            <p class="transparent">across all notes</p>
+        </div>
+    </div>
 
-            <hr>
+    <!-- Account (read-only) -->
+    <div class="settings-group" id="account-readonly">
+        <div class="settings-group-label">Account</div>
+        <div class="settings-row">
+            <span class="settings-label">username</span>
+            <span class="settings-value" id="display-username">{{ user.username if user else 'user1' }}</span>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">email</span>
+            <span class="settings-value" id="display-email">{{ user.email if user else 'user1@gmail.com' }}</span>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">password</span>
+            <span class="settings-value">••••••••</span>
+        </div>
+    </div>
 
-            <!-- Preferences -->
-            <p class="section-title">Preference</p>
-            <div class="settings-row">
-                <span class="settings-label">dark mode</span>
-                <label class="switch">
-                <input type="checkbox" checked>
+    <!-- Account (edit mode, hidden by default) -->
+    <div class="settings-group" id="account-edit" style="display: none;">
+        <div class="settings-group-label">Edit Account</div>
+        <div class="settings-row">
+            <span class="settings-label">username</span>
+            <input class="profile-input" id="input-username" type="text" value="{{ user.username if user else '' }}" spellcheck="false"/>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">email</span>
+            <input class="profile-input" id="input-email" type="email" value="{{ user.email if user else '' }}" spellcheck="false"/>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">new password</span>
+            <input class="profile-input" id="input-new-password" type="password" placeholder="leave blank to keep current"/>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">confirm new password</span>
+            <input class="profile-input" id="input-confirm-password" type="password" placeholder="re-enter new password"/>
+        </div>
+        <div class="settings-row">
+            <span class="settings-label">current password</span>
+            <input class="profile-input" id="input-current-password" type="password" placeholder="required to save changes"/>
+        </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="settings-group">
+        <div class="settings-group-label">Preferences</div>
+        <div class="settings-row">
+            <span class="settings-label">dark mode</span>
+            <label class="switch">
+                <input type="checkbox" checked id="dark-toggle">
                 <span class="slider"></span>
             </label>
-            </div>
+        </div>
+    </div>
 
-            <!-- Buttons -->
-            <button class="btn-login" style="margin-top:16px;" id="logout">Log Out</button>
-            <button class="btn-create" style="margin-top:10px;" id="del">Delete Account</button>
+    <!-- Buttons -->
+    <div class="profile-actions">
+        <button class="btn-danger" id="del" data-url="{{ url_for('main.register') }}">Delete Account</button>
+    </div>
 
+</div>
 
-    <script>
-        const lo = document.getElementById("logout")
-        const del = document.getElementById("del")
-        const change_pass = document.getElementById("change_password")
-        lo.addEventListener('click', function(){
-            window.location.href="{{ url_for('main.logout') }}"
-        })
-        del.addEventListener('click', function(){
-            window.location.href="{{ url_for('main.register') }}"
-        })
-        change_pass.addEventListener('click', function(){
-            window.location.href = "{{ url_for('main.change_password') }}"
-        })
-    </script>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 {% endblock %}

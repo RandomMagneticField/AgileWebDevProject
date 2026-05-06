@@ -251,7 +251,8 @@ def quiz_results():
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html' , active='profile')
+    user = User.query.get(session['user_id'])
+    return render_template('profile.html', active='profile', user=user)
 
 @main.route('/change_password')
 @login_required
