@@ -102,6 +102,17 @@ function displayResults(){
 
     document.getElementById("card-viewer").style.display = 'none' //hide the card
     document.getElementById('result-page').style.display = 'block' //show result page
+
+    const results = answer.map(entry => ({
+        flashcard_id : entry.card.id,
+        is_correct : entry.result === 'correct'
+    }))
+
+    fetch(`/api/decks/${deckId}/results`,{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({results: results})
+    })
 }
 
 function restartDeck(){

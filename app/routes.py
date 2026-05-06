@@ -63,6 +63,22 @@ def dashboard():
     user = User.query.get(session['user_id'])
     return render_template('dashboard/index.html', active='dashboard', user=user)
 
+from app.models import FlashcardResult
+def get_last_score(deck, user_id):
+    correct = 0
+    total = 0
+    for card in deck.flashcards:
+        latest = FlashcardResult.query.filter_by(
+            flashcard_id = card.flashcard_id,
+            user_id = user_id
+        ).order_by(FlashcardResult.attempted_at.desc()).first()
+
+        if latest:
+            total += 1
+            if latest.is_correct:
+                correct += 1
+    return correct, total
+
 @main.route('/api/dashboard')
 @login_required
 def dashboard_data():
@@ -82,8 +98,8 @@ def dashboard_data():
             'id': d.deck_id,
             'title': d.title,
             'count': len(d.flashcards),
-            'lastScore': 0,
-            'lastTotal': len(d.flashcards),
+            'lastScore': get_last_score(d, user.user_id)[0],
+            'lastTotal': get_last_score(d, user.user_id)[1],
             'tags': [t.name for t in d.tags],
             'date': d.created_at.strftime('%d %b')
         } for d in decks]
@@ -211,8 +227,8 @@ def search():
             'id': d.deck_id,
             'title': d.title,
             'count': len(d.flashcards),
-            'lastScore': 0,
-            'lastTotal': len(d.flashcards),
+            'lastScore': get_last_score(d, user.user_id)[0],
+            'lastTotal': get_last_score(d, user.user_id)[1],
             'tags': [t.name for t in d.tags],
             'date': d.created_at.strftime('%d %b')
         } for d in decks]
@@ -252,7 +268,7 @@ def get_deck(deck_id):
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
-        'cards':[{'front': c.front, 'back': c.back} for c in deck.flashcards],
+        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} for c in deck.flashcards],
         'is_public': deck.is_public,
         'tags': [t.name for t in deck.tags]
     })
@@ -320,7 +336,7 @@ def flashcard():
 @main.route('/api/decks/<int:deck_id>/results', methods=["POST"])
 @login_required
 def save_flashcard_result(deck_id):
-    from models import FlashcardResult
+    from app.models import FlashcardResult
     data = request.get_json() or {}
     results = data.get('results', [])
     correct_ans = 0
