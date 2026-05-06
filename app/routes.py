@@ -317,6 +317,37 @@ def flashcard():
         deck = None
     return render_template('dashboard/flashcard_play.html', active='dashboard', deck = deck)
 
+@main.route('/api/decks/<int:deck_id>/results', methods=["POST"])
+@login_required
+def save_flashcard_result(deck_id):
+    from models import FlashcardResult
+    data = request.get_json() or {}
+    results = data.get('results', [])
+    correct_ans = 0
+    wrong_ans = 0
+    for ans in results:
+        correct = ans.get('is_correct', False)
+        flashcard_id = ans.get('flashcard_id')
+        if correct:
+            correct_ans += 1
+        else:
+            wrong_ans += 1
+        result = FlashcardResult(
+            user_id=session['user_id'],
+            flashcard_id=flashcard_id,
+            is_correct=correct
+        )
+        db.session.add(result)
+    db.session.commit()
+    total = correct_ans + wrong_ans
+    score = correct_ans / total if total > 0 else 0
+    return jsonify({
+        'success': True,
+        'correct': correct_ans,
+        'wrong': wrong_ans,
+        'score': score
+    })
+
 @main.route('/discover')
 @login_required
 def discover():
