@@ -21,6 +21,16 @@
                 </div>
                 <div class="search-row">
                     <input class="search-input" type="text" placeholder="Search..."/>
+                    <!--sort dropdown-->
+                    <div class="select" id="sort-wrapper">
+                        <button class="select-btn" id="sort-btn">
+                            Last Updated <i class="bi bi-chevron-down" style="font-size: 11px;"></i>
+                        </button>
+                        <div class="select-dropdown" id="sort-dropdown">
+                            <div class="select-option active" data-value="date">Last Updated</div>
+                            <div class="select-option" data-value="alpha">Alphabetical</div>
+                        </div>
+                    </div>
                    <button class="btn-add" onclick="openCreateModal()">+</button>
                 </div>
             </div>
