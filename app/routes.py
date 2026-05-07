@@ -364,6 +364,39 @@ def save_flashcard_result(deck_id):
         'score': score
     })
 
+#saving flashcard play progress
+@main.route('/api/decks/<int:deck_id>/progress', methods=['GET'])
+@login_required
+def get_progress(deck_id):
+    from app.models import DeckProgress
+    progress = DeckProgress.query.filter_by(
+        deck_id = deck_id,
+        user_id = session['user_id']
+    ).first()
+    return jsonify({'current_index': progress.current_index if progress else 0})
+
+@main.route('/api/decks/<int:deck_id>/progress', methods=['POST'])
+@login_required
+def save_progress(deck_id):
+    from app.models import DeckProgress
+    data = request.get_json()
+    progress = DeckProgress.query.filter_by(
+        deck_id = deck_id,
+        user_id = session['user_id']
+    ).first()
+    if progress:
+        progress.current_index = data['current_index']
+        progress.updated_at = datetime.now(timezone.utc)
+    else:
+        progress = DeckProgress(
+            user_id = session['user_id'],
+            deck_id = deck_id,
+            current_index = data['current_index']
+        )
+        db.session.add(progress)
+    db.session.commit()
+    return jsonify({'success' : True})
+
 @main.route('/discover')
 @login_required
 def discover():
@@ -406,6 +439,8 @@ def profile():
         note_count=note_count, public_note_count=public_note_count,
         deck_count=deck_count, public_deck_count=public_deck_count,
         quiz_count=quiz_count, avg_score=avg_score)
+
+
 @main.route('/api/profile/update', methods=['POST'])
 @login_required
 def update_profile():

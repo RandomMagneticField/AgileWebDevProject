@@ -210,3 +210,20 @@ class PasswordReset(db.Model):
 
     def __repr__(self):
         return f'<PasswordReset {self.pw_reset_id}>'
+    
+
+
+class DeckProgress(db.Model):
+    __tablename__ = 'deck_progress'
+    
+    progress_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    deck_id = db.Column(db.Integer, db.ForeignKey('decks.deck_id'), nullable=False)
+    current_index = db.Column(db.Integer, nullable=False, default=0)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = db.relationship('User', backref='deck_progress')
+    deck = db.relationship('Deck', backref='progress')
+
+    def __repr__(self):
+        return f'<DeckProgress {self.progress_id}>'

@@ -1,26 +1,12 @@
-//dummy data
-// let cards = [
-//     { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
-//     { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
-//     { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
-//     { front: 'Algor Mortis', back: 'Cooling of the body after death' },
-//     { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
-//     { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
-//     { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
-//     { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
-// ]
-
 let cards = []
 const deckId = document.getElementById('deck-data').dataset.deckId
 
 let currentIndex = 0
 let isFlipped = false
 let correct_ans = 0
-let wrong_ans=0
+let wrong_ans = 0
 let answer = []
 
-
-//get the card
 function renderCard(){
     const card = cards[currentIndex]
     document.getElementById('front-text').textContent = card.front
@@ -31,7 +17,6 @@ function renderCard(){
     updateProgress()
 }
 
-//Progress Bar
 function updateProgress(){
     const total = cards.length
     const percentage = total === 0 ? 0 : ((currentIndex) / total) * 100
@@ -39,54 +24,56 @@ function updateProgress(){
     document.getElementById('progress-label').textContent = `${currentIndex} / ${total}`
 }
 
+function saveProgress(){
+    fetch(`/api/decks/${deckId}/progress`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({current_index: currentIndex})
+    })
+}
 
-//go to the next card after right answer
 document.getElementById('btn-correct').addEventListener('click', function(){
     correct_ans++
     answer.push({ card: cards[currentIndex], result: 'correct' })
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
-    }
-    else{
+        saveProgress()
+    } else {
         displayResults()
     }
 })
 
-//go to the next card after wrong answer
 document.getElementById('btn-wrong').addEventListener('click', function(){
     wrong_ans++
-    answer.push({card: cards[currentIndex], result: 'wrong'})
+    answer.push({ card: cards[currentIndex], result: 'wrong' })
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
-    }
-    else{
+        saveProgress()
+    } else {
         displayResults()
     }
 })
 
-//flip card
 function flipCard(){
     const inner = document.getElementById('inner')
     isFlipped = !isFlipped
     inner.classList.toggle('flipped', isFlipped)
 }
 
-//results
 function displayResults(){
-    //update the progress bar to be full
-    document.getElementById('progress-bar').style.width = '100%'
-    document.getElementById('progress-label').textContent = `${cards.length} / ${cards.length}`
-    //count the percentage of correct ans
-    const percent = Math.round(correct_ans/cards.length *100)
-    //print out the general info of the results
+    document.getElementById('progress-wrap').style.display = 'none'
+    document.getElementById('progress-label').style.display = 'none'
+    document.getElementById('btn-save').style.display = 'block'
+    document.getElementById('btn-save').closest('.editor-header-right').style.display = 'flex'
+    const percent = Math.round(correct_ans / cards.length * 100)
     document.getElementById('results-percentage').textContent = `Score : ${percent}/100`
 
     const list = document.getElementById('correct-list')
     document.getElementById('wrong-list').style.display = 'none'
 
-    list.innerHTML = answer.map((entry, i) => `
+    list.innerHTML = answer.map((entry) => `
         <div class="card-body ${entry.result}" style="margin-bottom: 8px;">
             <div class="card-side">
                 <div class="card-side-label">FRONT</div>
@@ -100,18 +87,13 @@ function displayResults(){
         </div>
     `).join('')
 
-    document.getElementById("card-viewer").style.display = 'none' //hide the card
-    document.getElementById('result-page').style.display = 'block' //show result page
+    document.getElementById('card-viewer').style.display = 'none'
+    document.getElementById('result-page').style.display = 'block'
 
-    const results = answer.map(entry => ({
-        flashcard_id : entry.card.id,
-        is_correct : entry.result === 'correct'
-    }))
-
-    fetch(`/api/decks/${deckId}/results`,{
+    fetch(`/api/decks/${deckId}/progress`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({results: results})
+        body: JSON.stringify({current_index: 0})
     })
 }
 
@@ -120,20 +102,40 @@ function restartDeck(){
     wrong_ans = 0
     currentIndex = 0
     answer = []
-    document.getElementById("card-viewer").style.display = 'flex'
+    document.getElementById('progress-wrap').style.display = 'block'
+    document.getElementById('progress-label').style.display = 'block'
+    document.getElementById('btn-save').style.display = 'none'
+    document.getElementById('btn-save').closest('.editor-header-right').style.display = 'none'
+    document.getElementById('card-viewer').style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
     renderCard()
 }
 
+function SaveandExit(){
+    const results = answer.map(entry => ({
+        flashcard_id: entry.card.id,
+        is_correct: entry.result === 'correct'
+    }))
 
+    fetch(`/api/decks/${deckId}/results`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({results: results})
+    }).then(() => {
+        window.location.href = '{{ url_for("main.dashboard") }}?tab=decks'
+    })
+}
 
 if (deckId) {
     fetch(`/api/decks/${deckId}`)
         .then(res => res.json())
         .then(deck => {
             cards = deck.cards
+            return fetch(`/api/decks/${deckId}/progress`)
+        })
+        .then(res => res.json())
+        .then(data => {
+            currentIndex = data.current_index
             renderCard()
         })
-} else {
-    renderCard()
 }
