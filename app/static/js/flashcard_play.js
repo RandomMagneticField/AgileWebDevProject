@@ -7,6 +7,7 @@ let correct_ans = 0
 let wrong_ans = 0
 let answer = []
 
+//get the card
 function renderCard(){
     const card = cards[currentIndex]
     document.getElementById('front-text').textContent = card.front
@@ -17,6 +18,7 @@ function renderCard(){
     updateProgress()
 }
 
+//Progress Bar
 function updateProgress(){
     const total = cards.length
     const percentage = total === 0 ? 0 : ((currentIndex) / total) * 100
@@ -24,6 +26,7 @@ function updateProgress(){
     document.getElementById('progress-label').textContent = `${currentIndex} / ${total}`
 }
 
+//save progress
 function saveProgress(){
     fetch(`/api/decks/${deckId}/progress`, {
         method: 'POST',
@@ -32,6 +35,7 @@ function saveProgress(){
     })
 }
 
+//go to the next card after right answer
 document.getElementById('btn-correct').addEventListener('click', function(){
     correct_ans++
     answer.push({ card: cards[currentIndex], result: 'correct' })
@@ -44,6 +48,7 @@ document.getElementById('btn-correct').addEventListener('click', function(){
     }
 })
 
+//go to the next card after wrong answer
 document.getElementById('btn-wrong').addEventListener('click', function(){
     wrong_ans++
     answer.push({ card: cards[currentIndex], result: 'wrong' })
@@ -56,19 +61,57 @@ document.getElementById('btn-wrong').addEventListener('click', function(){
     }
 })
 
+//flip card
 function flipCard(){
     const inner = document.getElementById('inner')
     isFlipped = !isFlipped
     inner.classList.toggle('flipped', isFlipped)
 }
 
+//change the save state based on the saving state
+function saveProgress(){
+    const indicator = document.getElementById('save-indicator')
+    indicator.className = 'save-indicator saving'
+    indicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Saving...'
+
+    fetch(`/api/decks/${deckId}/progress`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({current_index: currentIndex})
+    })
+    .then(res => {
+        if (res.ok) {
+            indicator.className = 'save-indicator saved'
+            indicator.innerHTML = '<i class="bi bi-check2"></i> Saved'
+        } else {
+            indicator.className = 'save-indicator failed'
+            indicator.innerHTML = '<i class="bi bi-exclamation-circle"></i> Save failed'
+        }
+    })
+    .catch(() => {
+        indicator.className = 'save-indicator failed'
+        indicator.innerHTML = '<i class="bi bi-exclamation-circle"></i> Save failed'
+    })
+}
+
+//results
 function displayResults(){
-    document.getElementById('progress-wrap').style.display = 'none'
-    document.getElementById('progress-label').style.display = 'none'
-    document.getElementById('btn-save').style.display = 'block'
-    document.getElementById('btn-save').closest('.editor-header-right').style.display = 'flex'
+    //update the progress bar to be full
+    document.getElementById('progress-bar').style.width = '100%'
+    document.getElementById('progress-label').textContent = `${cards.length} / ${cards.length}`
+
+    //count the percentage of correct ans
     const percent = Math.round(correct_ans / cards.length * 100)
-    document.getElementById('results-percentage').textContent = `Score : ${percent}/100`
+
+    //swapping the save state to save button
+    const indicator = document.getElementById('save-indicator')
+    indicator.className = 'save-indicator'
+    indicator.innerHTML = '<button class="btn-save" onclick="saveAndExit()">Save</button>'
+
+    //print out the general info of the results
+    document.getElementById('results-percentage').textContent = `${percent}% correct`
+    document.getElementById('results-correct').textContent = `${correct_ans} correct`
+    document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
 
     const list = document.getElementById('correct-list')
     document.getElementById('wrong-list').style.display = 'none'
@@ -90,6 +133,7 @@ function displayResults(){
     document.getElementById('card-viewer').style.display = 'none'
     document.getElementById('result-page').style.display = 'block'
 
+    //reset progress
     fetch(`/api/decks/${deckId}/progress`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -97,21 +141,22 @@ function displayResults(){
     })
 }
 
+//restart deck
 function restartDeck(){
     correct_ans = 0
     wrong_ans = 0
     currentIndex = 0
     answer = []
-    document.getElementById('progress-wrap').style.display = 'block'
-    document.getElementById('progress-label').style.display = 'block'
-    document.getElementById('btn-save').style.display = 'none'
-    document.getElementById('btn-save').closest('.editor-header-right').style.display = 'none'
+    const indicator = document.getElementById('save-indicator')
+    indicator.className = 'save-indicator saved'
+    indicator.innerHTML = '<i class="bi bi-check2"></i> Saved'
     document.getElementById('card-viewer').style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
     renderCard()
 }
 
-function SaveandExit(){
+//save results and exit
+function saveAndExit(){
     const results = answer.map(entry => ({
         flashcard_id: entry.card.id,
         is_correct: entry.result === 'correct'
@@ -122,15 +167,16 @@ function SaveandExit(){
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({results: results})
     }).then(() => {
-        window.location.href = '{{ url_for("main.dashboard") }}?tab=decks'
-    })
+        window.location.href = '/dashboard?tab=decks'})
 }
 
+//load deck and resume progress
 if (deckId) {
     fetch(`/api/decks/${deckId}`)
         .then(res => res.json())
         .then(deck => {
             cards = deck.cards
+            document.getElementById('decks-title').textContent = deck.title
             return fetch(`/api/decks/${deckId}/progress`)
         })
         .then(res => res.json())
