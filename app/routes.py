@@ -3,7 +3,7 @@ from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
-from app.models import User, Note, Deck, Tag
+from app.models import User, Note, Deck, Tag, QuizSession
 from datetime import datetime, timezone
 
 
@@ -251,13 +251,106 @@ def quiz_results():
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html' , active='profile')
+    user = User.query.get(session['user_id'])
+    note_count = Note.query.filter_by(user_id=user.user_id).count()
+    public_note_count = Note.query.filter_by(user_id=user.user_id, is_public=True).count()
+    deck_count = Deck.query.filter_by(user_id=user.user_id).count()
+    public_deck_count = Deck.query.filter_by(user_id=user.user_id, is_public=True).count()
+
+    quiz_count = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).count()
+    
+    # avg quiz score
+    quizzes = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).all()
+    if quizzes:
+        avg_score = str(round(sum(q.score / q.total * 100 for q in quizzes if q.total > 0) / len(quizzes))) + '%'
+    else:
+        avg_score = 'N/A'
+
+    return render_template('profile.html', active='profile', user=user,
+        note_count=note_count, public_note_count=public_note_count,
+        deck_count=deck_count, public_deck_count=public_deck_count,
+        quiz_count=quiz_count, avg_score=avg_score)
+@main.route('/api/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    
+    new_username = data.get('username', '').strip()
+    new_email = data.get('email', '').strip()
+    
+    if not new_username or not new_email:
+        return jsonify({'error': 'Username and email cannot be empty'}), 400
+    
+    if new_username != user.username and User.query.filter_by(username=new_username).first():
+        return jsonify({'error': 'Username already taken'}), 400
+    
+    if new_email != user.email and User.query.filter_by(email=new_email).first():
+        return jsonify({'error': 'Email already in use'}), 400
+    
+    user.username = new_username
+    user.email = new_email
+    db.session.commit()
+    
+    return jsonify({'success': True})
 
 @main.route('/change_password')
 @login_required
 def change_password():
     user = User.query.get(session['user_id'])
     return render_template('change_password.html' , active='profile', user=user)
+
+@main.route('/api/change_password', methods=['POST'])
+@login_required
+def change_password_api():
+    data = request.get_json()
+    user = User.query.get(session['user_id'])
+    
+    if not user.check_password(data.get('current_password', '')):
+        return jsonify({'error': 'Current password is incorrect'}), 400
+    
+    new_password = data.get('new_password', '')
+    if len(new_password) < 6:
+        return jsonify({'error': 'New password must be at least 6 characters'}), 400
+    
+    user.set_password(new_password)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@main.route('/api/delete_account', methods=['DELETE'])
+@login_required
+def delete_account():
+    user = User.query.get(session['user_id'])
+    
+    # delete quiz questions and sessions
+    for quiz in user.quiz_sessions:
+        for question in quiz.questions:
+            db.session.delete(question)
+        db.session.delete(quiz)
+    
+    # delete flashcard results
+    for result in user.flashcard_results:
+        db.session.delete(result)
+    
+    # delete flashcards and decks
+    for deck in user.decks:
+        for card in deck.flashcards:
+            db.session.delete(card)
+        db.session.delete(deck)
+    
+    # delete notes (note_tags junction rows removed automatically)
+    for note in user.notes:
+        db.session.delete(note)
+    
+    # delete password resets
+    for reset in user.password_resets:
+        db.session.delete(reset)
+    
+    db.session.delete(user)
+    db.session.commit()
+    
+    session.pop('user_id', None)
+    return jsonify({'success': True})
 
 @main.route('/info')
 @login_required
