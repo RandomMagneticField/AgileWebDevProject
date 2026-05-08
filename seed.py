@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.models import User, Note, Tag, Deck, Flashcard, QuizSession, QuizQuestion
+from app.models import User, Note, Tag, Deck, Flashcard, Quiz, QuizQuestion
 
 app = create_app()
 
@@ -116,41 +116,37 @@ with app.app_context():
     db.session.add_all([f1, f2, f3, f4, f5])
     db.session.commit()
 
-    #quiz session
-    qs1 = QuizSession(
-        user_id=alice.user_id,
+    #quiz
+    q1 = Quiz(
         note_id=n1.note_id,
-        score=1,
-        total=2,
-        is_saved=True,
-        is_retake=False
+        name='Flask Basics Quiz',
+        total_questions=2,
+        total_correct=1
     )
-    db.session.add(qs1)
+    db.session.add(q1)
     db.session.commit()
 
-    # quiz q
+    # quiz questions
     qq1 = QuizQuestion(
-        session_id=qs1.quiz_id,
+        quiz_id=q1.quiz_id,
         question_text='What is Flask?',
         option_a='A database ORM',
         option_b='A Python micro-framework',
         option_c='A JavaScript library',
         option_d='A CSS framework',
-        correct_option='b',
+        correct_answer='b',
         user_answer='b',
-        is_correct=True,
         order_index=0
     )
     qq2 = QuizQuestion(
-        session_id=qs1.quiz_id,
+        quiz_id=q1.quiz_id,
         question_text='What decorator is used to define a route in Flask?',
         option_a='@app.url()',
         option_b='@app.path()',
         option_c='@app.route()',
         option_d='@app.endpoint()',
-        correct_option='c',
+        correct_answer='c',
         user_answer='a',
-        is_correct=False,
         order_index=1
     )
 
@@ -162,4 +158,4 @@ with app.app_context():
     print(f'Notes: {Note.query.count()} notes created')
     print(f'Decks: {Deck.query.count()} decks created')
     print(f'Flashcards: {Flashcard.query.count()} flashcards created')
-    print(f'Quiz sessions: {QuizSession.query.count()} sessions created')
+    print(f'Quizzes: {Quiz.query.count()} quizzes created')

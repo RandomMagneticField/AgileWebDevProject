@@ -3,7 +3,7 @@ from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
 from functools import wraps
-from app.models import User, Note, Deck, Tag, QuizSession
+from app.models import User, Note, Deck, Tag, Quiz, QuizQuestion
 from datetime import datetime, timezone
 
 
@@ -149,13 +149,12 @@ def save_note(note_id):
 @main.route('/api/notes/<int:note_id>', methods=['DELETE'])
 @login_required
 def delete_note(note_id):
-    from app.models import QuizSession, QuizQuestion
     note = Note.query.get_or_404(note_id)
     if note.user_id != session['user_id']:
         return jsonify({'error': 'Unauthorised'}), 403
     
-    # delete related quiz sessions and questions first
-    for quiz in note.quiz_sessions:
+    # delete related quizzes and questions first
+    for quiz in note.quizzes:
         for question in quiz.questions:
             db.session.delete(question)
         db.session.delete(quiz)
@@ -252,17 +251,22 @@ def quiz_results():
 @login_required
 def profile():
     user = User.query.get(session['user_id'])
-    note_count = Note.query.filter_by(user_id=user.user_id).count()
-    public_note_count = Note.query.filter_by(user_id=user.user_id, is_public=True).count()
+    
+    all_notes = Note.query.filter_by(user_id=user.user_id).all()
+    public_notes = [n for n in all_notes if n.is_public]
+    
+    note_count = len(all_notes)
+    public_note_count = len(public_notes)
+    
     deck_count = Deck.query.filter_by(user_id=user.user_id).count()
     public_deck_count = Deck.query.filter_by(user_id=user.user_id, is_public=True).count()
 
-    quiz_count = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).count()
+    # Calculate average quiz score from user's quizzes
+    all_quizzes = [quiz for note in all_notes for quiz in note.quizzes]
+    quiz_count = len(all_quizzes)
     
-    # avg quiz score
-    quizzes = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).all()
-    if quizzes:
-        avg_score = str(round(sum(q.score / q.total * 100 for q in quizzes if q.total > 0) / len(quizzes))) + '%'
+    if all_quizzes:
+        avg_score = str(round(sum(q.total_correct / q.total_questions * 100 for q in all_quizzes if q.total_questions > 0) / len(all_quizzes))) + '%'
     else:
         avg_score = 'N/A'
 
@@ -322,11 +326,12 @@ def change_password_api():
 def delete_account():
     user = User.query.get(session['user_id'])
     
-    # delete quiz questions and sessions
-    for quiz in user.quiz_sessions:
-        for question in quiz.questions:
-            db.session.delete(question)
-        db.session.delete(quiz)
+    # delete quizzes and questions related to user's notes
+    for note in user.notes:
+        for quiz in note.quizzes:
+            for question in quiz.questions:
+                db.session.delete(question)
+            db.session.delete(quiz)
     
     # delete flashcard results
     for result in user.flashcard_results:

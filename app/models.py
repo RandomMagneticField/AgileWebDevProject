@@ -41,7 +41,6 @@ class User(db.Model):
     # relationships
     notes = db.relationship('Note', back_populates='user', foreign_keys='Note.user_id')
     decks = db.relationship('Deck', back_populates='user', foreign_keys='Deck.user_id')
-    quiz_sessions = db.relationship('QuizSession', back_populates='user')
     flashcard_results = db.relationship('FlashcardResult', back_populates='user')
     password_resets = db.relationship('PasswordReset', back_populates='user')
 
@@ -74,7 +73,7 @@ class Note(db.Model):
     original = db.relationship('Note', remote_side='Note.note_id', foreign_keys=[copied_from])
     tags = db.relationship('Tag', secondary=note_tags, back_populates='notes')
     likes = db.relationship('User', secondary=note_likes, backref='liked_notes')
-    quiz_sessions = db.relationship('QuizSession', back_populates='note')
+    quizzes = db.relationship('Quiz', back_populates='note')
 
     def __repr__(self):
         return f'<Note {self.title}>'
@@ -133,47 +132,42 @@ class Flashcard(db.Model):
         return f'<Flashcard {self.flashcard_id}>'
 
 
-class QuizSession(db.Model):
-    __tablename__ = 'quiz_sessions'
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
 
     quiz_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     note_id = db.Column(db.Integer, db.ForeignKey('notes.note_id'), nullable=False)
-    source_session_id = db.Column(db.Integer, db.ForeignKey('quiz_sessions.quiz_id'), nullable=True)
-    score = db.Column(db.Integer, nullable=False, default=0)
-    total = db.Column(db.Integer, nullable=False, default=0)
-    is_saved = db.Column(db.Boolean, nullable=False, default=False)
-    is_retake = db.Column(db.Boolean, nullable=False, default=False)
-    taken_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    name = db.Column(db.String(30), nullable=False)
+    total_questions = db.Column(db.Integer, nullable=False, default=0)
+    total_correct = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    last_accessed = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # relationships
-    user = db.relationship('User', back_populates='quiz_sessions')
-    note = db.relationship('Note', back_populates='quiz_sessions')
-    original_session = db.relationship('QuizSession', remote_side='QuizSession.quiz_id', foreign_keys=[source_session_id])
-    questions = db.relationship('QuizQuestion', back_populates='session')
+    note = db.relationship('Note', back_populates='quizzes')
+    questions = db.relationship('QuizQuestion', back_populates='quiz')
 
     def __repr__(self):
-        return f'<QuizSession {self.quiz_id}>'
+        return f'<Quiz {self.quiz_id}>'
 
 
 class QuizQuestion(db.Model):
     __tablename__ = 'quiz_questions'
 
     question_id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.Integer, db.ForeignKey('quiz_sessions.quiz_id'), nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.quiz_id'), nullable=False)
     question_type = db.Column(db.String(10), nullable=False, default='mcq')
     question_text = db.Column(db.Text, nullable=False)
     option_a = db.Column(db.String(256), nullable=True)
     option_b = db.Column(db.String(256), nullable=True)
     option_c = db.Column(db.String(256), nullable=True)
     option_d = db.Column(db.String(256), nullable=True)
-    correct_option = db.Column(db.String(256), nullable=False)
+    correct_answer = db.Column(db.String(256), nullable=False)
     user_answer = db.Column(db.String(256), nullable=True)
-    is_correct = db.Column(db.Boolean, nullable=True)
     order_index = db.Column(db.Integer, nullable=False, default=0)
 
     # relationships
-    session = db.relationship('QuizSession', back_populates='questions')
+    quiz = db.relationship('Quiz', back_populates='questions')
 
     def __repr__(self):
         return f'<QuizQuestion {self.question_id}>'
