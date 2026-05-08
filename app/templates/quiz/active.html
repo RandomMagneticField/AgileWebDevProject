@@ -18,13 +18,13 @@
                 Note Editor
             </a>
         </div>
-        <div class="dash-title quiz-title">Quiz Title</div>
+        <div class="dash-title quiz-title">{{ quiz.name }}</div>
     </div>
     <div class="quiz-header-right">
         <a
             class="quiz-submit-btn quiz-submit-btn-unsaved"
             id="btn-submit"
-            href="{{ url_for('main.note_editor') }}"
+            href="{{ url_for('main.dashboard') }}"
         >
             Submit
         </a>
@@ -36,14 +36,46 @@
 <!-- MCQ Questions -->
 <div class="quiz-active-layout">
     <div class="quiz-active-placeholder">
-        <div id="quiz-mcq-container"></div>
+        <div id="quiz-mcq-container">
+            {% for question in quiz.questions|sort(attribute='order_index') %}
+            <div class="quiz-mcq-panel" id="question-{{ loop.index }}" data-question-number="{{ loop.index }}" data-question-id="question-{{ loop.index }}">
+                <div class="quiz-question-title">Question {{ loop.index }}</div>
+                <div class="quiz-question-prompt">{{ question.question_text }}</div>
+                <div class="quiz-mcq-stack">
+                    <div class="quiz-mcq-box" data-option="A">
+                        <div class="quiz-option-letter">A</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_a }}</div>
+                    </div>
+                    <div class="quiz-mcq-box" data-option="B">
+                        <div class="quiz-option-letter">B</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_b }}</div>
+                    </div>
+                    <div class="quiz-mcq-box" data-option="C">
+                        <div class="quiz-option-letter">C</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_c }}</div>
+                    </div>
+                    <div class="quiz-mcq-box" data-option="D">
+                        <div class="quiz-option-letter">D</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_d }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Questions list -->
     <div class="quiz-active-side">
         <div class="quiz-side-card quiz-question-list-card">
             <div class="quiz-side-label">Questions</div>
-            <div class="quiz-question-list" id="quiz-question-list"></div>
+            <div class="quiz-question-list" id="quiz-question-list">
+                {% for question in quiz.questions|sort(attribute='order_index') %}
+                <a class="quiz-question-item" href="#question-{{ loop.index }}" data-question-number="{{ loop.index }}">
+                    <span class="quiz-question-item-full">Question {{ loop.index }}</span>
+                    <span class="quiz-question-item-short">{{ loop.index }}</span>
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

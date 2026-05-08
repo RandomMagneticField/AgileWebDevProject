@@ -235,7 +235,20 @@ def discover():
 @main.route('/quiz/active')
 @login_required
 def quiz_active():
-    return render_template('quiz/active.html' , active='dashboard')
+    quiz_id = request.args.get('id', type=int)
+    if quiz_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    quiz = Quiz.query.get(quiz_id)
+    if quiz is None or quiz.note_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    # Check if the quiz's note belongs to the user
+    note = Note.query.get(quiz.note_id)
+    if note is None or note.user_id != session['user_id']:
+        return redirect(url_for('main.dashboard'))
+    
+    return render_template('quiz/active.html', active='dashboard', quiz=quiz)
 
 @main.route('/quiz/history')
 @login_required
