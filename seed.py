@@ -159,7 +159,7 @@ with app.app_context():
         note_id=n4.note_id,
         name='Untitled Quiz',
         total_questions=8,
-        total_correct=0
+        total_correct=5
     )
     db.session.add(q2)
     db.session.commit()
@@ -172,7 +172,7 @@ with app.app_context():
         option_c='18e^3x',
         option_d='18e^3',
         correct_answer='c',
-        user_answer=None,
+        user_answer='c',
         order_index=0
     )
     qq4 = QuizQuestion(
@@ -183,7 +183,7 @@ with app.app_context():
         option_c='The Internet is a subset of the WWW used only for websites',
         option_d='The WWW consists of web pages and browsers, while the Internet includes physical connections and routing',
         correct_answer='c',
-        user_answer=None,
+        user_answer='c',
         order_index=1
     )
     qq5 = QuizQuestion(
@@ -205,7 +205,7 @@ with app.app_context():
         option_c='250 m',
         option_d='300 m',
         correct_answer='c',
-        user_answer=None,
+        user_answer='a',
         order_index=3
     )
     qq7 = QuizQuestion(
@@ -216,7 +216,7 @@ with app.app_context():
         option_c='Static analyzers require compiled binaries and monitor memory usage during execution, while dynamic analyzers only read source files and provide compile-time warnings.',
         option_d='There is no meaningful difference; both static and dynamic analyzers perform identical checks on code at compile time without execution.',
         correct_answer='a',
-        user_answer=None,
+        user_answer='a',
         order_index=4
     )
     qq8 = QuizQuestion(
@@ -227,7 +227,7 @@ with app.app_context():
         option_c='Encryption, Decryption, Hashing',
         option_d='Prevention, Detection, Response',
         correct_answer='b',
-        user_answer=None,
+        user_answer='b',
         order_index=5
     )
     qq9 = QuizQuestion(
@@ -238,7 +238,7 @@ with app.app_context():
         option_c='Pure ALOHA eliminates collisions entirely by using acknowledgements, while slotted ALOHA introduces random transmission delays to reduce efficiency.',
         option_d='There is no difference between pure and slotted ALOHA; both operate identically with continuous transmission and equal collision probability.',
         correct_answer='a',
-        user_answer=None,
+        user_answer='a',
         order_index=6
     )
     qq10 = QuizQuestion(
@@ -249,7 +249,7 @@ with app.app_context():
         option_c='<link href="#MyTitle">Go to title</link>',
         option_d='<a link="#MyTitle">Go to title</a>',
         correct_answer='b',
-        user_answer=None,
+        user_answer='d',
         order_index=7
     )
 

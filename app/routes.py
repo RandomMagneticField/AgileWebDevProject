@@ -258,7 +258,20 @@ def quiz_history():
 @main.route('/quiz/results')
 @login_required
 def quiz_results():
-    return render_template('quiz/results.html' , active='dashboard')
+    quiz_id = request.args.get('id', type=int)
+    if quiz_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    quiz = Quiz.query.get(quiz_id)
+    if quiz is None or quiz.note_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    # Check if the quiz's note belongs to the user
+    note = Note.query.get(quiz.note_id)
+    if note is None or note.user_id != session['user_id']:
+        return redirect(url_for('main.dashboard'))
+    
+    return render_template('quiz/results.html', active='dashboard', quiz=quiz)
 
 @main.route('/profile')
 @login_required
