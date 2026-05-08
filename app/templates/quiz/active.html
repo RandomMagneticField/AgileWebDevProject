@@ -1,6 +1,6 @@
 {% extends 'base_app.html' %}
 
-{% block title %}Notella — Quiz{% endblock %}
+{% block title %}Notella — Active Quiz{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
@@ -13,7 +13,7 @@
 <div class="quiz-header">
     <div class="quiz-header-left">
         <div class="dash-greeting">
-            <a href="{{ url_for('main.note_editor') }}" class="quiz-back-btn">
+            <a href="{{ url_for('main.note_editor', id=quiz.note_id) }}" class="quiz-back-btn">
                 <i class="bi bi-arrow-left"></i>
                 Note Editor
             </a>
