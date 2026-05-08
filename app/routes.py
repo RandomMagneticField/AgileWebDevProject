@@ -283,13 +283,15 @@ def save_deck(deck_id):
     deck.title = data.get('title', deck.title)
     deck.is_public = data.get('is_public', deck.is_public)
     
-    from app.models import Flashcard
+    from app.models import Flashcard, FlashcardResult
+    #delete all flashcards inside the deck
     if 'cards' in data:
         for card in deck.flashcards:
+            FlashcardResult.query.filter_by(flashcard_id=card.flashcard_id).delete()
             db.session.delete(card)
         db.session.flush()
         for i, c in enumerate(data['cards']):
-            card = Flashcard(front = c['front'], back = c['back'], deck_id = deck.deck_id, order_index = i)
+            card = Flashcard(front=c['front'], back=c['back'], deck_id=deck.deck_id, order_index=i)
             db.session.add(card)
 
     # handle tags

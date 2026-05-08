@@ -200,6 +200,7 @@ function saveDeck() {
     .then(data => {
         if (data.success) {
             markSaved();
+            window.location.href = '/dashboard?tab=decks';
         }
     });
 }

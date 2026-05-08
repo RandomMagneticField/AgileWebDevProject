@@ -26,14 +26,6 @@ function updateProgress(){
     document.getElementById('progress-label').textContent = `${currentIndex} / ${total}`
 }
 
-//save progress
-function saveProgress(){
-    fetch(`/api/decks/${deckId}/progress`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({current_index: currentIndex})
-    })
-}
 
 //go to the next card after right answer
 document.getElementById('btn-correct').addEventListener('click', function(){
@@ -153,6 +145,7 @@ function restartDeck(){
     document.getElementById('card-viewer').style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
     renderCard()
+    saveProgress()
 }
 
 //save results and exit

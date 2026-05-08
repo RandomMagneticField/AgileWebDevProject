@@ -93,7 +93,7 @@
         <!--Buttons-->
         <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
             <button class="btn-retry" onclick="restartDeck()">Try Again</button>
-            <button class="btn-retry" onclick="window.location.href='{{ url_for('main.flashcard_editor') }}'">Edit Deck</button>
+            <button class="btn-retry" onclick="window.location.href='{{ url_for('main.flashcard_editor') }}?id={{ deck.deck_id if deck else '' }}'">Edit Deck</button>
         </div>
 
     </div>
