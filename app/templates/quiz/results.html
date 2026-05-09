@@ -33,10 +33,33 @@
 
 <div class="dash-divider"></div>
 
+
+
 <!-- MCQ Questions -->
 <div class="quiz-active-layout quiz-results-mode">
     <div class="quiz-active-placeholder">
         <div id="quiz-mcq-container">
+            <!-- Quiz statistics -->
+            <div class="quiz-mcq-panel quiz-results-summary-panel" id="quiz-results-statistics">
+                <h2>Quiz Completed</h2>
+                <div class="quiz-results-stats">
+                    <div class="quiz-results-score" id="results-score">Score: {{ results_summary.score_percentage }}%</div>
+                    <div class="quiz-results-stat quiz-results-stat-correct" id="results-correct">
+                        <span class="quiz-results-stat-text">{{ results_summary.correct }} Correct</span>
+                        <i class="bi bi-check-circle-fill quiz-results-stat-icon"></i>
+                    </div>
+                    <div class="quiz-results-stat quiz-results-stat-incorrect" id="results-incorrect">
+                        <span class="quiz-results-stat-text">{{ results_summary.incorrect }} Incorrect</span>
+                        <i class="bi bi-x-circle-fill quiz-results-stat-icon"></i>
+                    </div>
+                    <div class="quiz-results-stat quiz-results-stat-unanswered" id="results-unanswered">
+                        <span class="quiz-results-stat-text">{{ results_summary.unanswered }} Unanswered</span>
+                        <i class="bi bi-circle quiz-results-stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Results -->
             {% for question in quiz.questions|sort(attribute='order_index') %}
             {% set ua = question.user_answer %}
             {% set ca = question.correct_answer %}
@@ -100,8 +123,12 @@
     <!-- Questions list -->
     <div class="quiz-active-side">
         <div class="quiz-side-card quiz-question-list-card">
-            <div class="quiz-side-label">Questions</div>
+            <div class="quiz-side-label">Quiz Navigation</div>
             <div class="quiz-question-list" id="quiz-question-list">
+                <a class="quiz-question-item quiz-question-item-summary" href="#quiz-results-statistics" data-question-number="summary">
+                    <span class="quiz-question-item-full"><i class="bi bi-percent quiz-question-item-summary-icon"></i> Quiz Results</span>
+                    <span class="quiz-question-item-short"><i class="bi bi-percent quiz-question-item-summary-icon"></i></span>
+                </a>
                 {% for question in quiz.questions|sort(attribute='order_index') %}
                 {% set ua = question.user_answer %}
                 {% set ca = question.correct_answer %}

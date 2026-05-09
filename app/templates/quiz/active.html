@@ -71,7 +71,7 @@
         <!-- Questions list -->
         <div class="quiz-active-side">
             <div class="quiz-side-card quiz-question-list-card">
-                <div class="quiz-side-label">Questions</div>
+                <div class="quiz-side-label">Quiz Navigation</div>
                 <div class="quiz-question-list" id="quiz-question-list">
                     {% for question in quiz.questions|sort(attribute='order_index') %}
                     <a class="quiz-question-item" href="#question-{{ loop.index }}" data-question-number="{{ loop.index }}">

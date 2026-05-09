@@ -329,6 +329,24 @@
     color: var(--text-primary);
 }
 
+.quiz-question-item-summary {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(74, 74, 74, 0.22);
+    color: rgba(220, 220, 220, 0.82);
+}
+
+.quiz-question-item-summary:hover {
+    background: rgba(82, 82, 82, 0.34);
+    color: var(--text-primary);
+}
+
+.quiz-question-item-summary-icon {
+    flex-shrink: 0;
+    line-height: 1;
+}
+
 .quiz-question-item span {
     display: flex;
     align-items: center;
@@ -339,6 +357,58 @@
 
 .quiz-question-item span i {
     flex-shrink: 0;
+}
+
+.quiz-results-summary-panel {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.quiz-results-summary-panel h2 {
+    margin-bottom: 0px;
+}
+
+.quiz-results-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.quiz-results-score {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.quiz-results-stat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.2;
+}
+
+.quiz-results-stat-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.quiz-results-stat-icon {
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.quiz-results-stat-correct {
+    color: var(--btn-green-color);
+}
+
+.quiz-results-stat-incorrect {
+    color: var(--btn-danger-color);
+}
+
+.quiz-results-stat-unanswered {
+    color: rgba(220, 220, 220, 0.82);
 }
 
 .quiz-question-item:focus-visible {
@@ -660,5 +730,24 @@
 
     .quiz-question-item .quiz-question-item-short {
         display: inline;
+    }
+
+    .quiz-question-item-summary {
+        justify-content: flex-start;
+    }
+
+    .quiz-question-item-summary .quiz-question-item-full {
+        display: none;
+    }
+
+    .quiz-question-item-summary .quiz-question-item-short {
+        display: inline-flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quiz-question-item-summary-icon {
+        font-size: 18px;
     }
 }

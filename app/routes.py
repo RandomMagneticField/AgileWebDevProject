@@ -405,8 +405,26 @@ def quiz_results():
     note = Note.query.get(quiz.note_id)
     if note is None or note.user_id != session['user_id']:
         return redirect(url_for('main.dashboard'))
-    
-    return render_template('quiz/results.html', active='dashboard', quiz=quiz)
+
+    total_questions = len(quiz.questions)
+    correct_count = sum(
+        1
+        for question in quiz.questions
+        if question.user_answer and question.user_answer == question.correct_answer
+    )
+    unanswered_count = sum(1 for question in quiz.questions if not question.user_answer)
+    incorrect_count = total_questions - correct_count - unanswered_count
+    score_percentage = round((correct_count / total_questions) * 100) if total_questions else 0
+
+    results_summary = {
+        'score_percentage': score_percentage,
+        'correct': correct_count,
+        'incorrect': incorrect_count,
+        'unanswered': unanswered_count,
+        'total': total_questions,
+    }
+
+    return render_template('quiz/results.html', active='dashboard', quiz=quiz, results_summary=results_summary)
 
 @main.route('/profile')
 @login_required
