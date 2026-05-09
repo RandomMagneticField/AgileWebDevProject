@@ -340,11 +340,18 @@ def save_deck(deck_id):
 @main.route('/api/decks/<int:deck_id>', methods=['DELETE'])
 @login_required
 def delete_deck(deck_id):
+    from app.models import DeckProgress, SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != session['user_id']:
         return jsonify({'error': 'Unauthorised'}), 403
     
+    #delete progress and session answers
+    DeckProgress.query.filter_by(deck_id = deck_id).delete()
+    SessionAnswer.query.filter_by(deck_id = deck_id).delete()
+
+    #delete flashcard results and flashcards
     for card in deck.flashcards:
+        FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
         db.session.delete(card)
 
     db.session.delete(deck)
