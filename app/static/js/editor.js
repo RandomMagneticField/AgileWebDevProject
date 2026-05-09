@@ -664,6 +664,19 @@ function closeQuizDeleteModal() {
     pendingDeleteQuizId = null;
 }
 
+function removeQuizHistoryItem(quizId) {
+    const quizItem = document.querySelector(`.quiz-history-item[data-quiz-id="${quizId}"]`);
+    const quizHistoryList = document.getElementById('quiz-history-list');
+
+    if (quizItem) {
+        quizItem.remove();
+    }
+
+    if (quizHistoryList && !quizHistoryList.querySelector('.quiz-history-item')) {
+        quizHistoryList.innerHTML = '<div class="quiz-history-empty">No quizzes generated yet.</div>';
+    }
+}
+
 function confirmQuizDelete() {
     if (!pendingDeleteQuizId) return;
 
@@ -678,7 +691,8 @@ function confirmQuizDelete() {
                 return;
             }
 
-            window.location.href = `/dashboard/note_editor?id=${data.note_id}`;
+            removeQuizHistoryItem(pendingDeleteQuizId);
+            closeQuizDeleteModal();
         })
         .catch(() => {
             alert('Failed to delete quiz.');

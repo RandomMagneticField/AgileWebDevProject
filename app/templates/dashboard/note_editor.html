@@ -135,7 +135,7 @@
                 {% for quiz in note.quizzes|sort(attribute='created_at', reverse=true) %}
                   {% set score_percentage = ((quiz.total_correct / quiz.total_questions) * 100)|round|int if quiz.total_questions else 0 %}
                   {% set quiz_target = url_for('main.quiz_results', id=quiz.quiz_id) if quiz.is_completed else url_for('main.quiz_active', id=quiz.quiz_id) %}
-                  <div class="quiz-history-item" data-quiz-target="{{ quiz_target }}">
+                  <div class="quiz-history-item" data-quiz-id="{{ quiz.quiz_id }}" data-quiz-target="{{ quiz_target }}">
                     <span class="quiz-history-name" title="{{ quiz.name }}">{{ quiz.name }}</span>
                     <span class="quiz-history-score{% if quiz.is_completed %} is-completed{% endif %}">
                       {% if quiz.is_completed %}
