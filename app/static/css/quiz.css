@@ -643,6 +643,207 @@
     overflow-wrap: anywhere;
 }
 
+/* Results page buttons and modals */
+.quiz-results-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: none;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quiz-results-btn-edit {
+    background: var(--btn-secondary-bg, #e0e0e0);
+    color: var(--btn-secondary-color, #333);
+    border: 1px solid var(--btn-secondary-border, #d0d0d0);
+}
+
+.quiz-results-btn-edit:hover {
+    background: var(--btn-secondary-hover, #d0d0d0);
+}
+
+.quiz-results-btn-delete {
+    background: var(--btn-danger-bg);
+    color: var(--btn-danger-color);
+    border: 1px solid var(--btn-danger-border);
+}
+
+.quiz-results-btn-delete:hover {
+    background: var(--btn-danger-hover);
+}
+
+/* Edit Quiz Name Modal */
+.quiz-edit-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+
+.quiz-edit-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg, var(--editor-box-bg));
+    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border-radius: 14px;
+    padding: 24px;
+    z-index: 1000;
+    max-width: 500px;
+    width: 90%;
+}
+
+.quiz-edit-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.quiz-edit-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary-color);
+}
+
+.quiz-edit-modal-input {
+    padding: 10px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-primary-color);
+    font-family: var(--font);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.quiz-edit-modal-input:focus {
+    border-color: var(--btn-blue-border);
+}
+
+.quiz-edit-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.quiz-edit-modal-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-family: var(--font);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.quiz-edit-modal-btn-cancel {
+    background: var(--input-bg);
+    color: var(--text-primary-color);
+    border: 1px solid var(--input-border);
+}
+
+.quiz-edit-modal-btn-cancel:hover {
+    background: var(--editor-box-bg);
+}
+
+.quiz-edit-modal-btn-submit {
+    background: var(--btn-blue-bg);
+    color: var(--btn-blue-color);
+    border: 1px solid var(--btn-blue-border);
+}
+
+.quiz-edit-modal-btn-submit:hover {
+    background: var(--btn-blue-hover);
+}
+
+/* Delete Quiz Modal */
+.quiz-delete-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+
+.quiz-delete-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg, var(--editor-box-bg));
+    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border-radius: 14px;
+    padding: 24px;
+    z-index: 1000;
+    max-width: 400px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.quiz-delete-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary-color);
+}
+
+.quiz-delete-modal-message {
+    font-size: 14px;
+    color: var(--text-secondary-color);
+}
+
+.quiz-delete-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.quiz-delete-modal-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-family: var(--font);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.quiz-delete-modal-btn-cancel {
+    background: var(--input-bg);
+    color: var(--text-primary-color);
+    border: 1px solid var(--input-border);
+}
+
+.quiz-delete-modal-btn-cancel:hover {
+    background: var(--editor-box-bg);
+}
+
+.quiz-delete-modal-btn-delete {
+    background: var(--btn-danger-bg);
+    color: var(--btn-danger-color);
+    border: 1px solid var(--btn-danger-border);
+}
+
+.quiz-delete-modal-btn-delete:hover {
+    background: var(--btn-danger-hover);
+}
+
 @media (max-width: 900px) {
     .quiz-header {
         flex-direction: column;

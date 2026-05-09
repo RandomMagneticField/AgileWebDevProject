@@ -561,6 +561,56 @@ def delete_account():
     session.pop('user_id', None)
     return jsonify({'success': True})
 
+@main.route('/api/quiz/<int:quiz_id>/name', methods=['POST'])
+@login_required
+def update_quiz_name(quiz_id):
+    quiz = Quiz.query.get(quiz_id)
+    if quiz is None:
+        return jsonify({'error': 'Quiz not found'}), 404
+    
+    # Check if the quiz's note belongs to the user
+    note = Note.query.get(quiz.note_id)
+    if note is None or note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    
+    data = request.get_json()
+    new_name = data.get('name', '').strip()
+    
+    if not new_name:
+        return jsonify({'error': 'Quiz name cannot be empty'}), 400
+    
+    if len(new_name) > 30:
+        return jsonify({'error': 'Quiz name must be 30 characters or less'}), 400
+    
+    quiz.name = new_name
+    db.session.commit()
+    
+    return jsonify({'success': True, 'name': quiz.name}), 200
+
+@main.route('/api/quiz/<int:quiz_id>', methods=['DELETE'])
+@login_required
+def delete_quiz(quiz_id):
+    quiz = Quiz.query.get(quiz_id)
+    if quiz is None:
+        return jsonify({'error': 'Quiz not found'}), 404
+    
+    # Check if the quiz's note belongs to the user
+    note = Note.query.get(quiz.note_id)
+    if note is None or note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+    
+    note_id = quiz.note_id
+    
+    # Delete all questions in the quiz
+    for question in quiz.questions:
+        db.session.delete(question)
+    
+    # Delete the quiz
+    db.session.delete(quiz)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'note_id': note_id}), 200
+
 @main.route('/info')
 @login_required
 def info():
