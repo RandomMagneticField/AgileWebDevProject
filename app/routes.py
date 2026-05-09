@@ -284,15 +284,27 @@ def save_deck(deck_id):
     deck.is_public = data.get('is_public', deck.is_public)
     
     from app.models import Flashcard, FlashcardResult
-    #delete all flashcards inside the deck
+    #delete reuslts of cards that are removed only
     if 'cards' in data:
+        incoming_ids = set(c['id'] for c in data['cards'] if c.get('id'))
+
         for card in deck.flashcards:
-            FlashcardResult.query.filter_by(flashcard_id=card.flashcard_id).delete()
-            db.session.delete(card)
+            if card.flashcard_id not in incoming_ids:
+                FlashcardResult.query.filter_by(flashcard_id=card.flashcard_id).delete()
+                db.session.delete(card)
         db.session.flush()
         for i, c in enumerate(data['cards']):
-            card = Flashcard(front=c['front'], back=c['back'], deck_id=deck.deck_id, order_index=i)
-            db.session.add(card)
+            if c.get('id'):
+                #update existing card
+                card = Flashcard.query.get(c['id'])
+                if card:
+                    card.front = c['front']
+                    card.back = c['back']
+                    card.order_index = i
+            else:
+                #handles new card
+                card = Flashcard(front=c['front'], back=c['back'], deck_id=deck.deck_id, order_index=i)
+                db.session.add(card)
 
     # handle tags
     if 'tags' in data:

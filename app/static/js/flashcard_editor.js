@@ -51,11 +51,13 @@ function renderCards(){
         textareas[0].addEventListener('input', function(){
             cards[index].front = this.value
             markUnsaved()
+            updateProgress()
         })
         //save changes made for back side of the flashcard
         textareas[1].addEventListener('input', function(){
             cards[index].back = this.value
             markUnsaved()
+            updateProgress()
         })
 
         const handle = row.querySelector('.card-drag-handle')
