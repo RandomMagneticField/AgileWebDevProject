@@ -50,6 +50,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     text-decoration: none;
     cursor: pointer;
     transition: background 0.2s;
@@ -656,16 +657,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
 }
 
 .quiz-results-btn-edit {
-    background: var(--btn-secondary-bg, #e0e0e0);
-    color: var(--btn-secondary-color, #333);
-    border: 1px solid var(--btn-secondary-border, #d0d0d0);
+    background: var(--btn-blue-bg);
+    color: var(--btn-blue-color);
+    border: 1px solid var(--btn-blue-border);
 }
 
 .quiz-results-btn-edit:hover {
-    background: var(--btn-secondary-hover, #d0d0d0);
+    background: var(--btn-blue-hover);
 }
 
 .quiz-results-btn-delete {

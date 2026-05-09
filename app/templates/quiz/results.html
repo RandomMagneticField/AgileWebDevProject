@@ -26,6 +26,7 @@
             class="quiz-results-btn quiz-results-btn-edit"
             id="btn-edit-name"
         >
+            <i class="bi bi-pencil"></i>
             Edit quiz name
         </button>
         <button
@@ -33,6 +34,7 @@
             class="quiz-results-btn quiz-results-btn-delete"
             id="btn-delete"
         >
+            <i class="bi bi-trash"></i>
             Delete quiz
         </button>
     </div>
@@ -67,8 +69,14 @@
                 {% set retake_url = url_for('main.quiz_retake', id=quiz.quiz_id) %}
                 {% set edit_url = url_for('main.note_editor', id=quiz.note_id) %}
                 <div class="quiz-panel-buttons-container">
-                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ retake_url }}'; return false;">Retake Quiz</button>
-                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ edit_url }}'; return false;">Edit Note</button>
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ retake_url }}'; return false;">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Retake Quiz
+                    </button>
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ edit_url }}'; return false;">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Note
+                    </button>
                 </div>
             </div>
 
