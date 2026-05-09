@@ -1,5 +1,6 @@
 from app import create_app, db
 from app.models import User, Note, Tag, Deck, Flashcard, QuizSession, QuizQuestion
+from datetime import datetime, timezone
 
 app = create_app()
 
@@ -37,7 +38,10 @@ with app.app_context():
         description='Introduction to Flask framework',
         content_md='# Flask Basics\n\nFlask is a micro-framework for Python.\n\n## Routes\n\nUse `@app.route()` to define routes.',
         is_public=True,
-        user_id=alice.user_id
+        user_id=alice.user_id,
+        created_at=datetime(2026, 3, 10, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 3, 10, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 10, tzinfo=timezone.utc)
     )
     n1.tags = [t_flask, t_cits]
 
@@ -46,7 +50,10 @@ with app.app_context():
         description='ORM concepts and usage',
         content_md='# SQLAlchemy\n\nSQLAlchemy is an ORM for Python.\n\n## Models\n\nDefine models by subclassing `db.Model`.',
         is_public=False,
-        user_id=alice.user_id
+        user_id=alice.user_id,
+        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 15, tzinfo=timezone.utc)
     )
     n2.tags = [t_db, t_cits]
 
@@ -55,7 +62,10 @@ with app.app_context():
         description='Personal notes',
         content_md='# Private\n\nThis is a private note.',
         is_public=False,
-        user_id=alice.user_id
+        user_id=alice.user_id,
+        created_at=datetime(2026, 3, 20, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 3, 20, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 20, tzinfo=timezone.utc)
     )
 
     n4 = Note(
@@ -63,7 +73,10 @@ with app.app_context():
         description='Useful JS tips and tricks',
         content_md='# JavaScript Tips\n\n## Promises\n\nUse `async/await` for cleaner async code.',
         is_public=True,
-        user_id=bob.user_id
+        user_id=bob.user_id,
+        created_at=datetime(2026, 3, 25, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 3, 25, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 25, tzinfo=timezone.utc)
     )
     n4.tags = [t_js, t_week1]
 
@@ -72,7 +85,10 @@ with app.app_context():
         description='GET, POST, PUT, DELETE explained',
         content_md='# HTTP Methods\n\n- GET: retrieve data\n- POST: send data\n- PUT: update data\n- DELETE: remove data',
         is_public=True,
-        user_id=bob.user_id
+        user_id=bob.user_id,
+        created_at=datetime(2026, 4, 1, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 4, 1, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 4, 1, tzinfo=timezone.utc)
     )
     n5.tags = [t_cits]
 
@@ -81,7 +97,10 @@ with app.app_context():
         description='Just getting started',
         content_md='# Hello\n\nThis is my first note.',
         is_public=False,
-        user_id=charlie.user_id
+        user_id=charlie.user_id,
+        created_at=datetime(2026, 4, 5, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 4, 5, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 4, 5, tzinfo=timezone.utc)
     )
 
     db.session.add_all([n1, n2, n3, n4, n5, n6])
@@ -91,14 +110,18 @@ with app.app_context():
     d1 = Deck(
         title='Web Dev Flashcards',
         is_public=True,
-        user_id=alice.user_id
+        user_id=alice.user_id,
+        created_at=datetime(2026, 3, 12, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 12, tzinfo=timezone.utc)
     )
     d1.tags = [t_flask, t_cits]
 
     d2 = Deck(
         title='Python Basics',
         is_public=True,
-        user_id=bob.user_id
+        user_id=bob.user_id,
+        created_at=datetime(2026, 3, 28, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 3, 28, tzinfo=timezone.utc)
     )
     d2.tags = [t_week1]
 
@@ -116,7 +139,7 @@ with app.app_context():
     db.session.add_all([f1, f2, f3, f4, f5])
     db.session.commit()
 
-    #quiz session
+    # quiz session
     qs1 = QuizSession(
         user_id=alice.user_id,
         note_id=n1.note_id,
@@ -128,7 +151,7 @@ with app.app_context():
     db.session.add(qs1)
     db.session.commit()
 
-    # quiz q
+    # quiz questions
     qq1 = QuizQuestion(
         session_id=qs1.quiz_id,
         question_text='What is Flask?',
