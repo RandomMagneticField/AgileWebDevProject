@@ -118,7 +118,10 @@ document.getElementById('btn-add-card').addEventListener('click', function(){
 
 //delete card
 function deleteCard(index){
-    if(cards.length === 1) return //make sure we have atleast one flashcard
+    if(cards.length === 1) {
+        alert('A deck must have at least one card')
+        return //make sure we have atleast one flashcard
+    }
     else{
         cards.splice(index, 1)
         renderCards()
@@ -192,9 +195,19 @@ function markSaved() {
 }
 
 
+
 function saveDeck() {
     if (!deckId) return;
-    
+
+    const hasEmptyCard = cards.some(card =>
+        card.front.trim() === '' || card.back.trim() === ''
+    );
+
+    if (hasEmptyCard){
+        alert("All flashcards must have both front and back text")
+        return;
+    }
+
     const data = {
         title: document.getElementById('decks-title').innerText.trim(),
         cards: cards,
