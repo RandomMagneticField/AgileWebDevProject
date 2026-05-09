@@ -50,10 +50,12 @@ function renderCards(){
         //save changes made for front side of the flashcard
         textareas[0].addEventListener('input', function(){
             cards[index].front = this.value
+            markUnsaved()
         })
         //save changes made for back side of the flashcard
         textareas[1].addEventListener('input', function(){
             cards[index].back = this.value
+            markUnsaved()
         })
 
         const handle = row.querySelector('.card-drag-handle')
@@ -88,6 +90,7 @@ deckTitle.addEventListener('blur', () => {
 })
 
 deckTitle.addEventListener('input', () => {
+    markUnsaved()
     if (deckTitle.textContent.length > 50) {
         deckTitle.textContent = deckTitle.textContent.substring(0, 50)
         const range = document.createRange()
@@ -104,6 +107,7 @@ deckTitle.addEventListener('input', () => {
 document.getElementById('btn-add-card').addEventListener('click', function(){
     cards.push({front: "", back: ""})
     renderCards()
+    markUnsaved()
     //scroll to the bottom to make it easier for user to see their new card
     const list = document.getElementById('card-list')
     list.lastElementChild.scrollIntoView({behavior: "smooth"})
@@ -116,6 +120,7 @@ function deleteCard(index){
     else{
         cards.splice(index, 1)
         renderCards()
+        markUnsaved()
     }
 }
 
@@ -200,7 +205,6 @@ function saveDeck() {
     .then(data => {
         if (data.success) {
             markSaved();
-            window.location.href = '/dashboard?tab=decks';
         }
     });
 }
@@ -250,6 +254,7 @@ function ondrop(e){
     const moved = cards.splice(dragIndex, 1)[0]
     cards.splice(dropIndex, 0, moved)
     renderCards()
+    markUnsaved()
 }
 
 function ondragend(){
@@ -282,6 +287,10 @@ if (deckId) {
             cards = deck.cards
             setVis(deck.is_public ? 'public' : 'private')
             renderCards()
+            // //marking newly made decks unsaved
+            // if(deck.cards.length === 0){
+            //     markUnsaved()
+            // }
         })
 } else {
     renderCards()

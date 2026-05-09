@@ -95,15 +95,13 @@ function displayResults(){
     //count the percentage of correct ans
     const percent = Math.round(correct_ans / cards.length * 100)
 
-    //swapping the save state to save button
+    //update the saving state
     const indicator = document.getElementById('save-indicator')
-    indicator.className = 'save-indicator'
-    indicator.innerHTML = '<button class="btn-save" onclick="saveAndExit()">Save</button>'
+    indicator.className = 'save-indicator saving'
+    indicator.innerHTML = '<i class="bi bi-arrow-repeat"></i> Saving'
 
     //print out the general info of the results
-    document.getElementById('results-percentage').textContent = `${percent}% correct`
-    document.getElementById('results-correct').textContent = `${correct_ans} correct`
-    document.getElementById('results-wrong').textContent = `${wrong_ans} wrong`
+    document.getElementById('results-percentage').textContent = `Score : ${percent}/100`
 
     const list = document.getElementById('correct-list')
     document.getElementById('wrong-list').style.display = 'none'
@@ -131,6 +129,27 @@ function displayResults(){
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({current_index: 0})
     })
+
+    //automatically save the results
+    const results = answer.map(entry => ({
+        flashcard_id: entry.card.id,
+        is_correct: entry.result === 'correct'
+    }))
+
+    fetch(`/api/decks/${deckId}/results`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({results: results})
+    }).then(res => {
+        if(res.ok){
+            indicator.className = 'save-indicator saved'
+            indicator.innerHTML = '<i class="bi bi-check2"></i> Saved'
+        }
+        else{
+            indicator.className = 'save-indicator failed'
+            indicator.innerHTML = '<i class="bi bi-exclamation-circle"></i> Save failed'
+        }
+    })
 }
 
 //restart deck
@@ -148,20 +167,20 @@ function restartDeck(){
     saveProgress()
 }
 
-//save results and exit
-function saveAndExit(){
-    const results = answer.map(entry => ({
-        flashcard_id: entry.card.id,
-        is_correct: entry.result === 'correct'
-    }))
+//manually save results and exit
+// function saveAndExit(){
+//     const results = answer.map(entry => ({
+//         flashcard_id: entry.card.id,
+//         is_correct: entry.result === 'correct'
+//     }))
 
-    fetch(`/api/decks/${deckId}/results`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({results: results})
-    }).then(() => {
-        window.location.href = '/dashboard?tab=decks'})
-}
+//     fetch(`/api/decks/${deckId}/results`, {
+//         method: 'POST',
+//         headers: {'Content-Type': 'application/json'},
+//         body: JSON.stringify({results: results})
+//     }).then(() => {
+//         window.location.href = '/dashboard?tab=decks'})
+// }
 
 //load deck and resume progress
 if (deckId) {

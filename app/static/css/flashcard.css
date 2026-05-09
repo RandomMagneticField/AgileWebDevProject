@@ -215,8 +215,8 @@
 }
 
 .save-indicator.saving { color: var(--text-muted, #888); }
-.save-indicator.saved  { color: var(--green, #639922); }
-.save-indicator.failed { color: var(--red, #c0392b); }
+.save-indicator.saved  { color: var(--btn-green-color); }
+.save-indicator.failed { color: var(--btn-danger-color); }
 
 /*for mobile view*/
 @media (max-width: 900px) {
