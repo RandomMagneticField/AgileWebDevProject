@@ -293,6 +293,13 @@ if (deckId) {
             document.getElementById('decks-title').textContent = deck.title
             cards = deck.cards
             applyVis(deck.is_public ? 'public' : 'private')
+            deck.tags.forEach(tag => {
+                 const pill = document.createElement('span');
+                pill.className = 'note-tag tag-removable';
+                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+                const input = document.getElementById('tag-input');
+                document.getElementById('tags-wrap').insertBefore(pill, input);
+            });
             renderCards()
             // //marking newly made decks unsaved
             // if(deck.cards.length === 0){
