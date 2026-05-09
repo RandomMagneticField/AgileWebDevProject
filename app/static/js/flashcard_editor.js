@@ -136,9 +136,14 @@ function updateProgress(){
 }
 
 //Visibility toggle
-function setVis(val) {
+function applyVis(val) {
     document.getElementById('vis-private').classList.toggle('active', val === 'private')
     document.getElementById('vis-public').classList.toggle('active', val === 'public')
+}
+
+function setVis(val) {
+    applyVis(val)
+    markUnsaved()
 }
 
 function handleTag(evnt) {
@@ -287,7 +292,7 @@ if (deckId) {
         .then(deck => {
             document.getElementById('decks-title').textContent = deck.title
             cards = deck.cards
-            setVis(deck.is_public ? 'public' : 'private')
+            applyVis(deck.is_public ? 'public' : 'private')
             renderCards()
             // //marking newly made decks unsaved
             // if(deck.cards.length === 0){

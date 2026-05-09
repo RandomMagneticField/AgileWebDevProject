@@ -471,6 +471,107 @@ def save_progress(deck_id):
 def discover():
     return render_template('discover/index.html', active='discover')
 
+@main.route('/api/discover')
+@login_required
+def discover_data():
+    user = User.query.get(session['user_id'])
+    notes = Note.query.filter_by(is_public=True).order_by(Note.created_at.desc()).all()
+    decks = Deck.query.filter_by(is_public=True).order_by(Deck.created_at.desc()).all()
+
+    return jsonify({
+        'notes':[{
+            'id': n.note_id,
+            'title': n.title,
+            'body': n.description or '',
+            'tags': [t.name for t in n.tags],
+            'date': n.created_at.strftime('%d %b %Y'),
+            'likes': len(n.likes),
+            'liked': user in n.likes
+        }for n in notes],
+        'decks': [{
+            'id': d.deck_id,
+            'title': d.title,
+            'count': len(d.flashcards),
+            'tags': [t.name for t in d.tags],
+            'date': d.created_at.strftime('%d %b %Y'),
+            'likes': len(d.likes),
+            'liked': user in d.likes
+        } for d in decks]
+    })
+
+@main.route('/api/notes/<int:note_id>/like', methods=['POST'])
+@login_required
+def toggle_note_like(note_id):
+    note = Note.query.get_or_404(note_id)
+    user = User.query.get(session['user_id'])
+    if user in note.likes:
+        note.likes.remove(user)
+        liked = False
+    else:
+        note.likes.append(user)
+        liked = True
+    db.session.commit()
+    return jsonify({'success': True, 'liked': liked, 'likes': len(note.likes)})
+
+@main.route('/api/decks/<int:deck_id>/like', methods=['POST'])
+@login_required
+def toggle_deck_like(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    user = User.query.get(session['user_id'])
+    if user in deck.likes:
+        deck.likes.remove(user)
+        liked = False
+    else:
+        deck.likes.append(user)
+        liked = True
+    db.session.commit()
+    return jsonify({'success': True, 'liked': liked, 'likes': len(deck.likes)})
+
+@main.route('/api/notes/<int:note_id>/copy', methods=['POST'])
+@login_required
+def copy_note(note_id):
+    original = Note.query.get_or_404(note_id)
+    if not original.is_public:
+        return jsonify({'error': 'Note is not public'}), 403
+    user = User.query.get(session['user_id'])
+    new_note = Note(
+        title = original.title,
+        description = original.description,
+        content_md = original.content_md,
+        user_id = user.user_id,
+        copied_from = original.note_id
+    )
+    db.session.add(new_note)
+    db.session.commit()
+    return jsonify({'success': True, 'id': new_note.note_id})
+
+@main.route('/api/decks/<int:deck_id>/copy', methods=['POST'])
+@login_required
+def copy_deck(deck_id):
+    from app.models import Flashcard
+    original = Deck.query.get_or_404(deck_id)
+    if not original.is_public:
+        return jsonify({'error': 'Deck is not public'}), 403
+    user = User.query.get(session['user_id'])
+    new_deck = Deck(
+        title = original.title,
+        user_id = user.user_id,
+        copied_from = original.deck_id
+    )
+    db.session.add(new_deck)
+    db.session.flush()
+    for card in original.flashcards:
+        new_card = Flashcard(
+            front = card.front,
+            back = card.back,
+            deck_id = new_deck.deck_id,
+            order_index = card.order_index
+        )
+        db.session.add(new_card)
+    db.session.commit()
+    return jsonify({'success': True, 'id': new_deck.deck_id})
+    
+
 @main.route('/quiz/active')
 @login_required
 def quiz_active():
