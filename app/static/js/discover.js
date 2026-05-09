@@ -1,21 +1,32 @@
 // ── Dummy data ──
-const notesData = [
-    { title: 'Agile Development Overview', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', tags: ['CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2'], date: '31 Mar 2007', likes: 12 },
-    { title: 'HTTP & REST APIs', body: 'REST stands for Representational State Transfer. Key HTTP methods include GET, POST, PUT, DELETE.', tags: ['CITS3000', 'exam-prep'], date: '28 Mar 2036', likes: 78 },
-    { title: 'SQLAlchemy Relationships', body: 'One-to-many: use db.relationship() with back_populates. Many-to-many requires an association table.', tags: ['flask', 'database'], date: '25 Mar 2018', likes: 21 },
-    { title: 'CSS Flexbox & Grid', body: 'Flexbox is one-dimensional layout. Grid is two-dimensional. Use flex for nav bars and card rows.', tags: ['css', 'week-3'], date: '20 Mar 2026', likes: 44 },
-    { title: 'Flask Blueprints', body: 'Blueprints allow you to organise Flask routes into modules. Register with app.register_blueprint().', tags: ['flask', 'backend'], date: '18 Mar 2022', likes: 21 },
-    { title: 'JavaScript Promises', body: 'A Promise represents a value that may be available now,A Promise represents a value that may be available now,A Promise represents a value that may be available now, in the future, or never. async/await is syntactic sugar.', tags: ['javascript', 'week-4'], date: '15 Mar 2076', likes: 7 },
-];
+// const notesData = [
+//     { title: 'Agile Development Overview', body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', tags: ['CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2'], date: '31 Mar 2007', likes: 12 },
+//     { title: 'HTTP & REST APIs', body: 'REST stands for Representational State Transfer. Key HTTP methods include GET, POST, PUT, DELETE.', tags: ['CITS3000', 'exam-prep'], date: '28 Mar 2036', likes: 78 },
+//     { title: 'SQLAlchemy Relationships', body: 'One-to-many: use db.relationship() with back_populates. Many-to-many requires an association table.', tags: ['flask', 'database'], date: '25 Mar 2018', likes: 21 },
+//     { title: 'CSS Flexbox & Grid', body: 'Flexbox is one-dimensional layout. Grid is two-dimensional. Use flex for nav bars and card rows.', tags: ['css', 'week-3'], date: '20 Mar 2026', likes: 44 },
+//     { title: 'Flask Blueprints', body: 'Blueprints allow you to organise Flask routes into modules. Register with app.register_blueprint().', tags: ['flask', 'backend'], date: '18 Mar 2022', likes: 21 },
+//     { title: 'JavaScript Promises', body: 'A Promise represents a value that may be available now,A Promise represents a value that may be available now,A Promise represents a value that may be available now, in the future, or never. async/await is syntactic sugar.', tags: ['javascript', 'week-4'], date: '15 Mar 2076', likes: 7 },
+// ];
 
-const decksData = [
-    { title: 'Agile Development Overview', count: 20, lastScore: 16, lastTotal: 20, tags: ['CITS3000', 'week-longlonglonglonglonglonglonglong2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2'], date: '31 Mar 2098', likes: 9 },
-    { title: 'HTTP Status Codes', count: 15, lastScore: 9, lastTotal: 15, tags: ['exam-prep'], date: '28 Mar 2000', likes: 6 },
-    { title: 'Big O Notation', count: 18, lastScore: 16, lastTotal: 18, tags: ['algorithms', 'week-5'], date: '25 Mar 1989', likes: 17 },
-    { title: 'Flask Basics', count: 20, lastScore: 11, lastTotal: 20, tags: ['flask', 'backend'], date: '20 Mar 2010', likes: 53 },
-    { title: 'Git Commands', count: 24, lastScore: 18, lastTotal: 24, tags: ['CITS3000', 'tools'], date: '18 Mar 2005', likes: 10 },
-];
+// const decksData = [
+//     { title: 'Agile Development Overview', count: 20, lastScore: 16, lastTotal: 20, tags: ['CITS3000', 'week-longlonglonglonglonglonglonglong2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2','CITS3000', 'week-2'], date: '31 Mar 2098', likes: 9 },
+//     { title: 'HTTP Status Codes', count: 15, lastScore: 9, lastTotal: 15, tags: ['exam-prep'], date: '28 Mar 2000', likes: 6 },
+//     { title: 'Big O Notation', count: 18, lastScore: 16, lastTotal: 18, tags: ['algorithms', 'week-5'], date: '25 Mar 1989', likes: 17 },
+//     { title: 'Flask Basics', count: 20, lastScore: 11, lastTotal: 20, tags: ['flask', 'backend'], date: '20 Mar 2010', likes: 53 },
+//     { title: 'Git Commands', count: 24, lastScore: 18, lastTotal: 24, tags: ['CITS3000', 'tools'], date: '18 Mar 2005', likes: 10 },
+// ];
 
+let notesData = []
+let decksData = []
+
+//fetch discover data
+fetch('/api/discover')
+    .then(res => res.json())
+    .then(data => {
+        notesData = data.notes
+        decksData = data.decks
+        renderCards()
+    })
 
 function switchTab(tab, el) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -28,6 +39,8 @@ function switchTab(tab, el) {
 // ── Card builders ──
 function NoteCard(note) {
     const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
+    const heartIcon = note.liked ? 'bi-heart-fill' : 'bi-heart'
+    const heartColour = note.liked ? 'color:#e05c5c;' : '' 
     return `
         <div class="note-card">
             <div class="note-card-content">
@@ -36,11 +49,11 @@ function NoteCard(note) {
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
                     <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                        <button class="like-btn" onclick="toggleLike(this)">
-                            <i class="bi bi-heart"></i>
+                        <button class="like-btn" onclick="toggleNoteLike(this, ${note.id})">
+                            <i class="bi ${heartIcon}" style="${heartColour}"></i>
                             <span>${note.likes}</span>
                         </button>
-                        <button class="copy-btn" onclick="copyNote(this)" title="Copy to my library">
+                        <button class="copy-btn" onclick="copyNote(this, ${note.id})" title="Copy to my library">
                             <i class="bi bi-copy"></i>
                         </button>
                     </div>
@@ -52,7 +65,8 @@ function NoteCard(note) {
 
 function DeckCard(deck) {
     const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
-    const pct = Math.round((deck.lastScore / deck.lastTotal) * 100);
+    const heartIcon = deck.liked ? 'bi-heart-fill' : 'bi-heart'
+    const heartColour = deck.liked ? 'color:#e05c5c;' : '' 
     return `
         <div class="deck-card">
             <div class="deck-card-content">
@@ -65,11 +79,11 @@ function DeckCard(deck) {
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
                     <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                        <button class="like-btn" onclick="toggleLike(this)">
-                            <i class="bi bi-heart"></i>
+                        <button class="like-btn" onclick="toggleDeckLike(this, ${deck.id})">
+                            <i class="bi ${heartIcon}" style="${heartColour}"></i>
                             <span>${deck.likes}</span>
                         </button>
-                        <button class="copy-btn" onclick="copyDeck(this)" title="Copy to my library">
+                        <button class="copy-btn" onclick="copyDeck(this, ${deck.id})" title="Copy to my library">
                             <i class="bi bi-copy"></i>
                         </button>
                     </div>
@@ -79,34 +93,91 @@ function DeckCard(deck) {
     `;
 }
 
-function toggleLike(btn){
-    const icon = btn.querySelector("i")
-    const count = btn.querySelector("span")
-    if(icon.classList.contains("bi-heart")){
-        icon.classList.remove("bi-heart")
-        icon.classList.add("bi-heart-fill")
-        icon.style.color = "#e05c5c"
-        count.textContent = parseInt(count.textContent) + 1
-    }
-    else{
-        icon.classList.remove("bi-heart-fill")
-        icon.classList.add("bi-heart")
-        icon.style.color=""
-        count.textContent = parseInt(count.textContent) - 1
-    }
+// function toggleLike(btn){
+//     const icon = btn.querySelector("i")
+//     const count = btn.querySelector("span")
+//     if(icon.classList.contains("bi-heart")){
+//         icon.classList.remove("bi-heart")
+//         icon.classList.add("bi-heart-fill")
+//         icon.style.color = "#e05c5c"
+//         count.textContent = parseInt(count.textContent) + 1
+//     }
+//     else{
+//         icon.classList.remove("bi-heart-fill")
+//         icon.classList.add("bi-heart")
+//         icon.style.color=""
+//         count.textContent = parseInt(count.textContent) - 1
+//     }
+// }
+
+function toggleNoteLike(btn, noteId){
+    fetch(`/api/notes/${noteId}/like`, {method: 'POST'})
+        .then(res => res.json())
+        .then(data => {
+            const icon = btn.querySelector('i')
+            const count = btn.querySelector('span')
+            if (data.liked) {
+                icon.classList.remove('bi-heart')
+                icon.classList.add('bi-heart-fill')
+                icon.style.color = '#e05c5c'
+            }
+            else{
+                icon.classList.remove('bi-heart-fill')
+                icon.classList.add('bi-heart')
+                icon.style.color = ''
+            }
+            count.textContent = data.likes
+        })
 }
 
-function copyNote(btn){
-    btn.innerHTML = '<i class="bi bi-check"></i>'
-    btn.style.color = "var(--text-primary)"
-    setTimeout(() => {
-        btn.innerHTML = '<i class="bi bi-copy"></i>'
-        btn.style.color = ""
-    }, 1500)
+function toggleDeckLike(btn, deckId){
+    fetch(`/api/decks/${deckId}/like`, {method: 'POST'})
+        .then(res => res.json())
+        .then(data => {
+            const icon = btn.querySelector('i')
+            const count = btn.querySelector('span')
+            if (data.liked) {
+                icon.classList.remove('bi-heart')
+                icon.classList.add('bi-heart-fill')
+                icon.style.color = '#e05c5c'
+            }
+            else{
+                icon.classList.remove('bi-heart-fill')
+                icon.classList.add('bi-heart')
+                icon.style.color = ''
+            }
+            count.textContent = data.likes
+        })
 }
 
-function copyDeck(btn){
-    copyNote(btn)
+function copyNote(btn, noteId){
+    fetch(`/api/notes/${noteId}/copy`, {method: 'POST'})
+        .then(res => res.json())
+        .then(data => {
+            if (data.success){
+                btn.innerHTML = '<i class="bi bi-check"></i>'
+                btn.style.color = "var(--text-primary)"
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="bi bi-copy"></i>'
+                    btn.style.color = ""
+                }, 1500)
+            }
+        })
+}
+
+function copyDeck(btn, deckId){
+    fetch(`/api/decks/${deckId}/copy`, {method: 'POST'})
+        .then(res => res.json())
+        .then(data => {
+            if (data.success){
+                btn.innerHTML = '<i class="bi bi-check"></i>'
+                btn.style.color = "var(--text-primary)"
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="bi bi-copy"></i>'
+                    btn.style.color = ""
+                }, 1500)
+            }
+        })
 }
 
  //search..
@@ -173,5 +244,3 @@ function renderCards() {
     document.getElementById('notes-grid').innerHTML = sortdata(notesData).map(NoteCard).join('');
     document.getElementById('decks-grid').innerHTML = sortdata(decksData).map(DeckCard).join('');
 }
-
-renderCards();
