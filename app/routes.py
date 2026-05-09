@@ -318,15 +318,22 @@ def save_deck(deck_id):
             tags.append(tag)
         deck.tags = tags
 
-        #reset progress when the deck is updated and saved
-        from app.models import DeckProgress
-        progress = DeckProgress.query.filter_by(
-            deck_id = deck_id,
-            user_id = session['user_id']
-        ).first()
-        if progress:
-            progress.current_index = 0
-            progress.updated_at = datetime.now(timezone.utc)
+    #reset progress when the deck is updated and saved
+    from app.models import DeckProgress
+    progress = DeckProgress.query.filter_by(
+        deck_id = deck_id,
+        user_id = session['user_id']
+    ).first()
+    if progress:
+        progress.current_index = 0
+        progress.updated_at = datetime.now(timezone.utc)
+
+    #delete the previous flashcard play session
+    from app.models import SessionAnswer
+    SessionAnswer.query.filter_by(
+        deck_id = deck_id,
+        user_id = session['user_id']
+    ).delete()
     db.session.commit()
     return jsonify({'success': True})
 
@@ -341,6 +348,45 @@ def delete_deck(deck_id):
         db.session.delete(card)
 
     db.session.delete(deck)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@main.route('/api/decks/<int:deck_id>/session_answers', methods = ['POST'])
+@login_required
+def save_session_answer(deck_id):
+    from app.models import SessionAnswer
+    data = request.get_json()
+    answer = SessionAnswer(
+        user_id = session['user_id'],
+        deck_id = deck_id,
+        flashcard_id = data['flashcard_id'],
+        is_correct = data['is_correct']
+    )
+    db.session.add(answer)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@main.route('/api/decks/<int:deck_id>/session_answers', methods = ['GET'])
+@login_required
+def get_session_answers(deck_id):
+    from app.models import SessionAnswer
+    answers = SessionAnswer.query.filter_by(
+        deck_id = deck_id,
+        user_id = session['user_id']
+    ).order_by(SessionAnswer.answered_at).all()
+    return jsonify({'answers': [{
+        'flashcard_id': a.flashcard_id,
+        'is_correct': a.is_correct
+    }for a in answers]})
+
+@main.route('/api/decks/<int:deck_id>/session_answers', methods=['DELETE'])
+@login_required
+def clear_session_answers(deck_id):
+    from app.models import SessionAnswer
+    SessionAnswer.query.filter_by(
+        deck_id = deck_id,
+        user_id= session['user_id']
+    ).delete()
     db.session.commit()
     return jsonify({'success': True})
 

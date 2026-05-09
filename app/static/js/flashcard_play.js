@@ -26,11 +26,23 @@ function updateProgress(){
     document.getElementById('progress-label').textContent = `${currentIndex} / ${total}`
 }
 
+//save each answer to backend as it's answered
+function saveSessionAnswer(card, result){
+    fetch(`/api/decks/${deckId}/session_answers`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            flashcard_id: card.id,
+            is_correct: result === 'correct'
+        })
+    })
+}
 
 //go to the next card after right answer
 document.getElementById('btn-correct').addEventListener('click', function(){
     correct_ans++
     answer.push({ card: cards[currentIndex], result: 'correct' })
+    saveSessionAnswer(cards[currentIndex], 'correct')
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
@@ -44,6 +56,7 @@ document.getElementById('btn-correct').addEventListener('click', function(){
 document.getElementById('btn-wrong').addEventListener('click', function(){
     wrong_ans++
     answer.push({ card: cards[currentIndex], result: 'wrong' })
+    saveSessionAnswer(cards[currentIndex], 'wrong')
     if(currentIndex < cards.length - 1){
         currentIndex++
         renderCard()
@@ -150,6 +163,11 @@ function displayResults(){
             indicator.innerHTML = '<i class="bi bi-exclamation-circle"></i> Save failed'
         }
     })
+
+    //clear session
+    fetch(`/api/decks/${deckId}/session_answers`,{
+        method: 'DELETE'
+    })
 }
 
 //restart deck
@@ -163,6 +181,10 @@ function restartDeck(){
     indicator.innerHTML = '<i class="bi bi-check2"></i> Saved'
     document.getElementById('card-viewer').style.display = 'flex'
     document.getElementById('result-page').style.display = 'none'
+    //clear session
+    fetch(`/api/decks/${deckId}/session_answers`,{
+        method: 'DELETE'
+    })
     renderCard()
     saveProgress()
 }
@@ -194,6 +216,19 @@ if (deckId) {
         .then(res => res.json())
         .then(data => {
             currentIndex = data.current_index
+            return fetch(`/api/decks/${deckId}/session_answers`)
+        })
+        .then(res => res.json())
+        .then(data => {
+            //rebuild answer array from previous session
+            data.answers.forEach(a => {
+                const card = cards.find(c => c.id === a.flashcard_id)
+                if (card) {
+                    answer.push({card: card, result: a.is_correct ? 'correct' : 'wrong'})
+                    if (a.is_correct) correct_ans++
+                    else wrong_ans++
+                }
+            })
             renderCard()
         })
 }
