@@ -10,35 +10,38 @@
 {% block page_content %}
 
 <!-- Header -->
-<div class="quiz-header">
-    <div class="quiz-header-left">
-        <div class="dash-greeting">
-            <a href="{{ url_for('main.note_editor', id=quiz.note_id) }}" class="quiz-back-btn">
-                <i class="bi bi-arrow-left"></i>
-                Note Editor
-            </a>
+<form id="quiz-form" class="quiz-form" method="POST" action="{{ url_for('main.quiz_active', id=quiz.quiz_id) }}">
+    {{ form.hidden_tag() }}
+
+    <div class="quiz-header">
+        <div class="quiz-header-left">
+            <div class="dash-greeting">
+                <a href="{{ url_for('main.note_editor', id=quiz.note_id) }}" class="quiz-back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Note Editor
+                </a>
+            </div>
+            <div class="dash-title quiz-title">{{ quiz.name }}</div>
         </div>
-        <div class="dash-title quiz-title">{{ quiz.name }}</div>
+        <div class="quiz-header-right">
+            <button
+                class="quiz-submit-btn quiz-submit-btn-unsaved"
+                id="btn-submit"
+                type="submit"
+            >
+                Submit
+            </button>
+        </div>
     </div>
-    <div class="quiz-header-right">
-        <a
-            class="quiz-submit-btn quiz-submit-btn-unsaved"
-            id="btn-submit"
-            href="{{ url_for('main.dashboard') }}"
-        >
-            Submit
-        </a>
-    </div>
-</div>
 
-<div class="dash-divider"></div>
+    <div class="dash-divider"></div>
 
-<!-- MCQ Questions -->
-<div class="quiz-active-layout">
-    <div class="quiz-active-placeholder">
-        <div id="quiz-mcq-container">
+    <!-- MCQ Questions -->
+    <div class="quiz-active-layout">
+        <div class="quiz-active-placeholder">
+            <div id="quiz-mcq-container">
             {% for question in quiz.questions|sort(attribute='order_index') %}
-            <div class="quiz-mcq-panel" id="question-{{ loop.index }}" data-question-number="{{ loop.index }}" data-question-id="question-{{ loop.index }}">
+            <div class="quiz-mcq-panel" id="question-{{ loop.index }}" data-question-number="{{ loop.index }}" data-question-id="question-{{ loop.index }}" data-question-db-id="{{ question.question_id }}">
                 <div class="quiz-question-title">Question {{ loop.index }}</div>
                 <div class="quiz-question-prompt">{{ question.question_text }}</div>
                 <div class="quiz-mcq-stack">
@@ -59,24 +62,35 @@
                         <div class="note-card-body quiz-option-text">{{ question.option_d }}</div>
                     </div>
                 </div>
+                <input type="hidden" name="answer-{{ question.question_id }}" value="">
             </div>
             {% endfor %}
-        </div>
-    </div>
-
-    <!-- Questions list -->
-    <div class="quiz-active-side">
-        <div class="quiz-side-card quiz-question-list-card">
-            <div class="quiz-side-label">Questions</div>
-            <div class="quiz-question-list" id="quiz-question-list">
-                {% for question in quiz.questions|sort(attribute='order_index') %}
-                <a class="quiz-question-item" href="#question-{{ loop.index }}" data-question-number="{{ loop.index }}">
-                    <span class="quiz-question-item-full">Question {{ loop.index }}</span>
-                    <span class="quiz-question-item-short">{{ loop.index }}</span>
-                </a>
-                {% endfor %}
             </div>
         </div>
+
+        <!-- Questions list -->
+        <div class="quiz-active-side">
+            <div class="quiz-side-card quiz-question-list-card">
+                <div class="quiz-side-label">Questions</div>
+                <div class="quiz-question-list" id="quiz-question-list">
+                    {% for question in quiz.questions|sort(attribute='order_index') %}
+                    <a class="quiz-question-item" href="#question-{{ loop.index }}" data-question-number="{{ loop.index }}">
+                        <span class="quiz-question-item-full">Question {{ loop.index }}</span>
+                        <span class="quiz-question-item-short">{{ loop.index }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="quiz-submit-modal-backdrop" id="quiz-submit-modal-backdrop" hidden></div>
+<div class="quiz-submit-modal" id="quiz-submit-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-submit-modal-title" hidden>
+    <div class="quiz-submit-modal-title" id="quiz-submit-modal-title">You have unanswered questions. Are you sure you want to submit?</div>
+    <div class="quiz-submit-modal-actions">
+        <button type="button" class="quiz-submit-modal-btn quiz-submit-modal-btn-cancel" id="quiz-submit-modal-cancel">Cancel</button>
+        <button type="button" class="quiz-submit-modal-btn quiz-submit-modal-btn-submit" id="quiz-submit-modal-submit">Submit</button>
     </div>
 </div>
 

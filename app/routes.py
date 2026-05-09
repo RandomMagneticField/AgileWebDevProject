@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session, jsonify, request
 from app import db
 from app.models import User
-from app.forms import RegisterForm, LoginForm
+from app.forms import RegisterForm, LoginForm, QuizSubmissionForm
 from functools import wraps
 from app.models import User, Note, Deck, Tag, Quiz, QuizQuestion
 from datetime import datetime, timezone
+import random
 
 
 def login_required(f):
@@ -232,7 +233,112 @@ def flashcard():
 def discover():
     return render_template('discover/index.html', active='discover')
 
-@main.route('/quiz/active')
+@main.route('/api/quizzes/generate', methods=['POST'])
+@login_required
+def generate_quiz():
+    data = request.get_json()
+    note_id = data.get('note_id') if data else None
+    
+    if note_id is None:
+        return jsonify({'error': 'note_id is required'}), 400
+    
+    note = Note.query.get(note_id)
+    if note is None:
+        return jsonify({'error': 'Note not found'}), 404
+    
+    if note.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
+
+    # Determine the next quiz name number for this user's quizzes using this note title prefix.
+    quiz_name_prefix = f"{note.title} Quiz "
+    existing_quizzes = (
+        Quiz.query
+        .join(Note, Quiz.note_id == Note.note_id)
+        .filter(Note.user_id == session['user_id'])
+        .filter(Quiz.name.like(f"{quiz_name_prefix}%"))
+        .all()
+    )
+
+    max_suffix = 0
+    for existing_quiz in existing_quizzes:
+        suffix = existing_quiz.name.replace(quiz_name_prefix, "", 1).strip()
+        if suffix.isdigit():
+            max_suffix = max(max_suffix, int(suffix))
+
+    quiz_name = f"{quiz_name_prefix}{max_suffix + 1}"
+
+    # Generate quiz (dummy for now)
+
+    question_count = random.randint(3, 6)
+    generated_questions = []
+    option_letters = ['a', 'b', 'c', 'd']
+
+    for _ in range(question_count):
+        left_operand = random.randint(0, 20)
+        right_operand = random.randint(0, 20)
+        correct_value = left_operand + right_operand
+
+        incorrect_values = set()
+        while len(incorrect_values) < 3:
+            delta = random.randint(1, 5)
+            candidate = correct_value + random.choice([-delta, delta])
+            if candidate < 0 or candidate == correct_value:
+                continue
+            incorrect_values.add(candidate)
+
+        option_values = [correct_value] + list(incorrect_values)
+        random.shuffle(option_values)
+
+        correct_index = option_values.index(correct_value)
+        correct_letter = option_letters[correct_index]
+
+        generated_questions.append({
+            'question_text': f"What is {left_operand} + {right_operand}?",
+            'option_A': str(option_values[0]),
+            'option_B': str(option_values[1]),
+            'option_C': str(option_values[2]),
+            'option_D': str(option_values[3]),
+            'correct_answer': correct_letter,
+        })
+
+    generated_quiz_data = {
+        'name': quiz_name,
+        'questions': generated_questions,
+    }
+
+    # Save into database
+
+    quiz = Quiz(
+        note_id=note.note_id,
+        name=generated_quiz_data['name'],
+        total_questions=len(generated_quiz_data['questions']),
+        total_correct=0,
+    )
+    db.session.add(quiz)
+    db.session.flush()
+
+    quiz_questions = []
+    for index, question in enumerate(generated_quiz_data['questions']):
+        quiz_questions.append(
+            QuizQuestion(
+                quiz_id=quiz.quiz_id,
+                question_text=question['question_text'],
+                option_a=question['option_A'],
+                option_b=question['option_B'],
+                option_c=question['option_C'],
+                option_d=question['option_D'],
+                correct_answer=question['correct_answer'],
+                user_answer=None,
+                order_index=index,
+            )
+        )
+
+    db.session.add_all(quiz_questions)
+    db.session.commit()
+
+    return jsonify({'quiz_id': quiz.quiz_id}), 201
+
+@main.route('/quiz/active', methods=['GET', 'POST'])
 @login_required
 def quiz_active():
     quiz_id = request.args.get('id', type=int)
@@ -247,8 +353,26 @@ def quiz_active():
     note = Note.query.get(quiz.note_id)
     if note is None or note.user_id != session['user_id']:
         return redirect(url_for('main.dashboard'))
-    
-    return render_template('quiz/active.html', active='dashboard', quiz=quiz)
+
+    form = QuizSubmissionForm()
+    if form.validate_on_submit():
+        question_map = {question.question_id: question for question in quiz.questions}
+        total_correct = 0
+
+        for question in quiz.questions:
+            answer = request.form.get(f'answer-{question.question_id}', '').strip().lower() or None
+            question.user_answer = answer
+            if answer and answer == question.correct_answer:
+                total_correct += 1
+
+        quiz.total_questions = len(quiz.questions)
+        quiz.total_correct = total_correct
+        quiz.last_accessed = datetime.now(timezone.utc)
+        db.session.commit()
+
+        return redirect(url_for('main.quiz_results', id=quiz.quiz_id))
+
+    return render_template('quiz/active.html', active='dashboard', quiz=quiz, form=form)
 
 @main.route('/quiz/history')
 @login_required

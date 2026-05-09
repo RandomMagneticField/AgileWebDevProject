@@ -649,3 +649,28 @@ function deleteNote() {
         }
     });
 }
+
+function goToQuiz() {
+    if (!NOTE_ID) {
+        alert('Please save this note before generating a quiz.');
+        return;
+    }
+
+    fetch('/api/quizzes/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note_id: Number(NOTE_ID) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.quiz_id) {
+            window.location.href = `/quiz/active?id=${data.quiz_id}`;
+            return;
+        }
+
+        alert(data.error || 'Failed to generate quiz.');
+    })
+    .catch(() => {
+        alert('Failed to generate quiz.');
+    });
+}
