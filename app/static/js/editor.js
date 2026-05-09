@@ -635,6 +635,100 @@ if (NOTE_ID) {
         });
 }
 
+let pendingDeleteQuizId = null;
+
+function openQuizDeleteModal(quizId, quizName) {
+    pendingDeleteQuizId = quizId;
+
+    const modal = document.getElementById('quiz-delete-modal');
+    const backdrop = document.getElementById('quiz-delete-modal-backdrop');
+    const message = document.getElementById('quiz-delete-modal-message');
+
+    if (!modal || !backdrop) return;
+
+    if (message && quizName) {
+        message.textContent = `Are you sure you want to permanently delete "${quizName}"? This action cannot be undone.`;
+    }
+
+    modal.hidden = false;
+    backdrop.hidden = false;
+}
+
+function closeQuizDeleteModal() {
+    const modal = document.getElementById('quiz-delete-modal');
+    const backdrop = document.getElementById('quiz-delete-modal-backdrop');
+
+    if (modal) modal.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+
+    pendingDeleteQuizId = null;
+}
+
+function confirmQuizDelete() {
+    if (!pendingDeleteQuizId) return;
+
+    fetch(`/api/quiz/${pendingDeleteQuizId}`, {
+        method: 'DELETE'
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                alert(data.error || 'Failed to delete quiz.');
+                closeQuizDeleteModal();
+                return;
+            }
+
+            window.location.href = `/dashboard/note_editor?id=${data.note_id}`;
+        })
+        .catch(() => {
+            alert('Failed to delete quiz.');
+            closeQuizDeleteModal();
+        });
+}
+
+function initQuizHistoryActions() {
+    const quizItems = document.querySelectorAll('.quiz-history-item');
+    const deleteButtons = document.querySelectorAll('.quiz-history-delete-btn');
+    const modalCancel = document.getElementById('quiz-delete-modal-cancel');
+    const modalConfirm = document.getElementById('quiz-delete-modal-confirm');
+    const modalBackdrop = document.getElementById('quiz-delete-modal-backdrop');
+
+    quizItems.forEach((item) => {
+        item.addEventListener('click', () => {
+            const targetUrl = item.dataset.quizTarget;
+            if (!targetUrl) return;
+            window.location.href = targetUrl;
+        });
+    });
+
+    deleteButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const quizId = button.dataset.quizId;
+            const quizName = button.dataset.quizName;
+            openQuizDeleteModal(quizId, quizName);
+        });
+    });
+
+    if (modalCancel) {
+        modalCancel.addEventListener('click', closeQuizDeleteModal);
+    }
+
+    if (modalConfirm) {
+        modalConfirm.addEventListener('click', confirmQuizDelete);
+    }
+
+    if (modalBackdrop) {
+        modalBackdrop.addEventListener('click', closeQuizDeleteModal);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initQuizHistoryActions);
+} else {
+    initQuizHistoryActions();
+}
+
 function deleteNote() {
     if (!NOTE_ID) return;
     if (!confirm('Are you sure you want to delete this note?')) return;
