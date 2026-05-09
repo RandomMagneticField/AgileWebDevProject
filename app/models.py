@@ -142,6 +142,7 @@ class Quiz(db.Model):
     total_correct = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     last_accessed = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    is_completed = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     note = db.relationship('Note', back_populates='quizzes')

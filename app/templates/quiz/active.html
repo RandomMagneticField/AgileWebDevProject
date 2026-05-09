@@ -45,24 +45,24 @@
                 <div class="quiz-question-title">Question {{ loop.index }}</div>
                 <div class="quiz-question-prompt">{{ question.question_text }}</div>
                 <div class="quiz-mcq-stack">
-                    <div class="quiz-mcq-box" data-option="A">
+                    <div class="quiz-mcq-box{% if question.user_answer == 'a' %} quiz-option-selected{% endif %}" data-option="A">
                         <div class="quiz-option-letter">A</div>
                         <div class="note-card-body quiz-option-text">{{ question.option_a }}</div>
                     </div>
-                    <div class="quiz-mcq-box" data-option="B">
+                    <div class="quiz-mcq-box{% if question.user_answer == 'b' %} quiz-option-selected{% endif %}" data-option="B">
                         <div class="quiz-option-letter">B</div>
                         <div class="note-card-body quiz-option-text">{{ question.option_b }}</div>
                     </div>
-                    <div class="quiz-mcq-box" data-option="C">
+                    <div class="quiz-mcq-box{% if question.user_answer == 'c' %} quiz-option-selected{% endif %}" data-option="C">
                         <div class="quiz-option-letter">C</div>
                         <div class="note-card-body quiz-option-text">{{ question.option_c }}</div>
                     </div>
-                    <div class="quiz-mcq-box" data-option="D">
+                    <div class="quiz-mcq-box{% if question.user_answer == 'd' %} quiz-option-selected{% endif %}" data-option="D">
                         <div class="quiz-option-letter">D</div>
                         <div class="note-card-body quiz-option-text">{{ question.option_d }}</div>
                     </div>
                 </div>
-                <input type="hidden" name="answer-{{ question.question_id }}" value="">
+                <input type="hidden" name="answer-{{ question.question_id }}" value="{{ question.user_answer or '' }}">
             </div>
             {% endfor %}
             </div>

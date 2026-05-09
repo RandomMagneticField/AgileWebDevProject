@@ -379,11 +379,36 @@ def quiz_active():
         quiz.total_questions = len(quiz.questions)
         quiz.total_correct = total_correct
         quiz.last_accessed = datetime.now(timezone.utc)
+        quiz.is_completed = True
         db.session.commit()
 
         return redirect(url_for('main.quiz_results', id=quiz.quiz_id))
 
     return render_template('quiz/active.html', active='dashboard', quiz=quiz, form=form)
+
+@main.route('/quiz/retake')
+@login_required
+def quiz_retake():
+    quiz_id = request.args.get('id', type=int)
+    if quiz_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    quiz = Quiz.query.get(quiz_id)
+    if quiz is None or quiz.note_id is None:
+        return redirect(url_for('main.dashboard'))
+    
+    # Check if the quiz's note belongs to the user
+    note = Note.query.get(quiz.note_id)
+    if note is None or note.user_id != session['user_id']:
+        return redirect(url_for('main.dashboard'))
+    
+    # Reset quiz for retake
+    quiz.is_completed = False
+    for question in quiz.questions:
+        question.user_answer = None
+    db.session.commit()
+    
+    return redirect(url_for('main.quiz_active', id=quiz_id))
 
 @main.route('/quiz/history')
 @login_required

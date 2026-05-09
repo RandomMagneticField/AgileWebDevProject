@@ -121,7 +121,8 @@ with app.app_context():
         note_id=n1.note_id,
         name='Flask Basics Quiz',
         total_questions=2,
-        total_correct=1
+        total_correct=1,
+        is_completed=True
     )
     db.session.add(q1)
     db.session.commit()
@@ -157,9 +158,10 @@ with app.app_context():
 
     q2 = Quiz(
         note_id=n4.note_id,
-        name='Untitled Quiz',
+        name='Just a bit of everything',
         total_questions=8,
-        total_correct=5
+        total_correct=5,
+        is_completed=True
     )
     db.session.add(q2)
     db.session.commit()

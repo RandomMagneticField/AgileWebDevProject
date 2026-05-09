@@ -57,6 +57,12 @@
                         <i class="bi bi-circle quiz-results-stat-icon"></i>
                     </div>
                 </div>
+                {% set retake_url = url_for('main.quiz_retake', id=quiz.quiz_id) %}
+                {% set edit_url = url_for('main.note_editor', id=quiz.note_id) %}
+                <div class="quiz-panel-buttons-container">
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ retake_url }}'; return false;">Retake Quiz</button>
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ edit_url }}'; return false;">Edit Note</button>
+                </div>
             </div>
 
             <!-- Question Results -->

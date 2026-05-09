@@ -108,6 +108,17 @@ function initializeOptions() {
 	});
 }
 
+function initializePreselectedAnswers() {
+	// Mark question list items as completed for any pre-selected answers
+	document.querySelectorAll(PANEL_SELECTOR).forEach((panel) => {
+		const questionId = panel.id || panel.dataset.questionId;
+		const hasSelected = panel.querySelector(`${OPTION_SELECTOR}.${SELECTED_CLASS}`);
+		if (hasSelected) {
+			setQuestionListItemCompleted(questionId, true);
+		}
+	});
+}
+
 // Event handlers: handle clicks and keyboard activation for existing DOM elements
 document.addEventListener("click", (event) => {
 	const option = event.target.closest(OPTION_SELECTOR);
@@ -126,6 +137,7 @@ document.addEventListener("keydown", (event) => {
 // Initialize state on load
 document.addEventListener("DOMContentLoaded", () => {
 	initializeOptions();
+	initializePreselectedAnswers();
 	updateSubmitState();
 
 	const form = document.getElementById(QUIZ_FORM_ID);
