@@ -318,6 +318,15 @@ def save_deck(deck_id):
             tags.append(tag)
         deck.tags = tags
 
+        #reset progress when the deck is updated and saved
+        from app.models import DeckProgress
+        progress = DeckProgress.query.filter_by(
+            deck_id = deck_id,
+            user_id = session['user_id']
+        ).first()
+        if progress:
+            progress.current_index = 0
+            progress.updated_at = datetime.now(timezone.utc)
     db.session.commit()
     return jsonify({'success': True})
 
