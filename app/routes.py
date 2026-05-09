@@ -356,9 +356,20 @@ def quiz_active():
 
     form = QuizSubmissionForm()
     if form.validate_on_submit():
-        question_map = {question.question_id: question for question in quiz.questions}
-        total_correct = 0
+        # Validate MCQ answers are either 'a','b','c','d' or unanswered (None)
+        allowed_letters = {'a', 'b', 'c', 'd'}
 
+        for question in quiz.questions:
+            if question.question_type == 'mcq':
+                raw = request.form.get(f'answer-{question.question_id}', '')
+                submitted = raw.strip().lower() if raw is not None else ''
+                submitted_val = submitted or None
+                if submitted_val is not None and submitted_val not in allowed_letters:
+                    # flash('Malformed submission: invalid answer provided for a multiple-choice question.')
+                    return redirect(url_for('main.quiz_active', id=quiz.quiz_id))
+
+        # All answers validated — persist them and compute score
+        total_correct = 0
         for question in quiz.questions:
             answer = request.form.get(f'answer-{question.question_id}', '').strip().lower() or None
             question.user_answer = answer
