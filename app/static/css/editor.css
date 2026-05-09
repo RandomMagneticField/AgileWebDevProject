@@ -508,6 +508,7 @@ body.mode-preview .md-preview {
     .editor-layout {
         flex-direction: column;
         overflow: visible;
+        /* max-height: 900px; */
     }
 
     .editor-side {
@@ -568,6 +569,9 @@ body.mode-preview .md-preview {
     }
     .editor-header-left {
         width: 100%;
+    }
+    .editor-box{
+        max-height: 900px;
     }
 
 }
