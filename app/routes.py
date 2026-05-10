@@ -360,6 +360,7 @@ def delete_deck(deck_id):
         FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
         db.session.delete(card)
 
+    deck.likes.clear()
     db.session.delete(deck)
     db.session.commit()
     return jsonify({'success': True})
