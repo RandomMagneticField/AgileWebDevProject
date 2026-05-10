@@ -202,6 +202,21 @@
     background: var(--btn-danger-bg);
 }
 
+.save-indicator {
+    font-size: 13px;
+    font-weight: 400;
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.save-indicator.saving { color: var(--text-muted, #888); }
+.save-indicator.saved  { color: var(--btn-green-color); }
+.save-indicator.failed { color: var(--btn-danger-color); }
 
 /*for mobile view*/
 @media (max-width: 900px) {
@@ -211,12 +226,15 @@
         gap: 8px;
     }
 
+    .editor-header{
+        align-items: flex-start !important;
+    }
     .fc-header .editor-header-left {
         display: none;  /* hide title on mobile, saves space */
     }
 
     .fc-header .editor-header-right {
-        display: none;  /* hide save button during play */
+        display: none;
     }
 
     .fc-header .editor-header-center {

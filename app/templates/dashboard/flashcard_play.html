@@ -20,9 +20,7 @@
                     Flashcard
                 </a>
             </div>
-            <div class="dash-title editor-title" id="decks-title">
-                Deck title
-            </div>
+            <div class="dash-title editor-title" id="decks-title"></div>
         </div>
 
         <!--Progress-->
@@ -30,11 +28,13 @@
             <div class="progress-bar-wrap">
                 <div class="progress-bar-fill" id="progress-bar"></div>
             </div>
-            <span class="progress-label" id="progress-label">0/0</span>
+            <span class="progress-label" id="progress-label"></span>
+            <div class="save-indicator" id="save-indicator">
+                <i class="bi bi-check2"></i> Saved
+            </div>
         </div>
 
         <div class="editor-header-right">
-            <button class="btn-save" id="btn-save" onclick="saveDeck()">Save</button>
         </div>
     </div>
 
@@ -49,12 +49,12 @@
                         
                         <div class="fc-front">
                             <p class="fc-label">FRONT</p>
-                            <div class="fc-text" id="front-text">Pallor Mortis</div>
+                            <div class="fc-text" id="front-text"></div>
                         </div>
 
                         <div class="fc-back">
                             <p class="fc-label">BACK</p>
-                            <div class="fc-text" id="back-text">Paleness of death</div>
+                            <div class="fc-text" id="back-text"></div>
                         </div>
 
                     </div>
@@ -67,7 +67,6 @@
                     <button class="flip-btn" id="btn-correct" style="width:auto; padding:8px 20px;">
                         <i class="bi bi-check-circle-fill"></i> Correct
                     </button>
-
                     <button class="btn-danger" id="btn-wrong" style="width:auto; padding:8px 20px;">
                         <i class="bi bi-x-circle-fill"></i> Wrong
                     </button>
@@ -94,10 +93,12 @@
         <!--Buttons-->
         <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
             <button class="btn-retry" onclick="restartDeck()">Try Again</button>
-            <button class="btn-retry" onclick="window.location.href='{{ url_for('main.flashcard_editor') }}'">Edit Deck</button>
+            <button class="btn-retry" onclick="window.location.href='{{ url_for('main.flashcard_editor') }}?id={{ deck.deck_id if deck else '' }}'">Edit Deck</button>
         </div>
 
     </div>
+
+    <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/flashcard_play.js') }}"></script>

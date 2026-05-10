@@ -54,10 +54,10 @@ function createDeckCard(deck) {
     const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
     const pct = Math.round((deck.lastScore / deck.lastTotal) * 100);
     return `
-        <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor">
+        <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor + '?id=${deck.id}'">
             <div class="deck-card-content">
                 <div class="deck-card-header">
-                    <a href="${ROUTES.flashcard_play}" class="deck-play-btn" >
+                    <a href="${ROUTES.flashcard_play}?id=${deck.id}" class="deck-play-btn" >
                         <i class="bi bi-play-fill"></i>
                     </a>
                     <div class="deck-card-info">
@@ -136,6 +136,16 @@ function renderCards() {
 function openCreateModal() {
     document.getElementById('create-note-backdrop').style.display = 'block';
     document.getElementById('create-note-modal').style.display = 'block';
+
+    const isDecks = document.getElementById('panel-decks').style.display !== "none"
+    if(isDecks === true){
+        document.getElementById('modal-title').innerHTML="New Deck"
+        document.getElementById('new-title').placeholder="Deck title..."
+    }
+    else{
+        document.getElementById('modal-title').innerHTML="New Note"
+        document.getElementById('new-title').placeholder="Note title..."
+    }
 }
 
 function closeCreateModal() {
@@ -143,8 +153,19 @@ function closeCreateModal() {
     document.getElementById('create-note-modal').style.display = 'none';
 }
 
+function NoteorDeck(){
+    const isDecks = document.getElementById('panel-decks').style.display !== "none"
+    if(isDecks === true) {
+        submitCreateDeck()
+    }
+    else{
+        submitCreateNote()
+    }
+}
+
+
 function submitCreateNote() {
-    const title = document.getElementById('new-note-title').value.trim() || 'Untitled';
+    const title = document.getElementById('new-title').value.trim() || 'Untitled';
     fetch('/api/notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -153,6 +174,19 @@ function submitCreateNote() {
     .then(res => res.json())
     .then(data => {
         window.location.href = ROUTES.note_editor + '?id=' + data.id;
+    });
+}
+
+function submitCreateDeck() {
+    const title = document.getElementById('new-title').value.trim() || 'Untitled';
+    fetch('/api/decks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+    })
+    .then(res => res.json())
+    .then(data => {
+        window.location.href = ROUTES.flashcard_editor + '?id=' + data.id;
     });
 }
 

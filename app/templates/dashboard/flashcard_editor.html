@@ -44,7 +44,7 @@
         <div class="editor-side">
             <div class="editor-side-card">
                 <div class="editor-side-label">Play Flashcard:</div>
-                <button class="btn-quiz" onclick="window.location='{{ url_for('main.flashcard')}}?from=flashcard_editor'">
+                <button class="btn-quiz" onclick="playDeck()">
                     <i class="bi bi-lightning-charge"></i> Play
                 </button>
                 <div class="quiz-disclaimer">Practice your cards in flip mode</div>
@@ -58,10 +58,6 @@
                 </div>
             </div>
             <div class="editor-side-card">
-                <div class="editor-side-label">Description:</div>
-                <textarea class="side-textarea" placeholder="Add a short description..." id="note-description"></textarea>
-            </div>
-            <div class="editor-side-card">
                 <div class="editor-side-label">Tags:</div>
                 <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tag-input').focus()">
                     <input class="tag-input" id="tag-input" placeholder="Add tag..." onkeydown="handleTag(event)" maxlength="20"/>
@@ -69,12 +65,14 @@
             </div>
             <div class="editor-side-card">
                 <div class="editor-side-label">Danger Zone:</div>
-                <button class="btn-danger">
+                <button class="btn-danger" onclick="deleteDeck()">
                     <i class="bi bi-trash"></i> Delete Deck
                 </button>
             </div>
         </div>
     </div>
+
+    <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/flashcard_editor.js') }}"></script>
