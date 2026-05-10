@@ -3,31 +3,100 @@
 {% block title %}Notella — Information{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/info.css') }}"/>
 {% endblock %}
 
 {% block page_content %}
-            <div style="display: flex; justify-content: center; margin-bottom: 16px;">
-                <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
+
+<div class="info-container">
+    
+    <div class="info-header">
+        <div class="info-label">About</div>
+        <h2 class="info-heading">What is Notella?</h2>
+        <p class="info-desc">Notella is a student-focused study platform, combining note-taking with markdown toolbar, flashcard decks, and AI generated quizzes into a single workspace. Built to help students study easier.</p>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <div class="info-section">
+        <div class="info-label">How To</div>
+        <h2 class="info-heading">Using Notella</h2>
+        <div class="settings-group">
+            <div class="settings-group-label">Notes</div>
+            <div class="how-row">
+                <span class="how-title">Creating a note</span>
+                <span class="how-desc">Click the <strong>+</strong> button on the dashboard, enter a title, and you'll be taken to the note editor.</span>
             </div>
-
-            <hr>
-
-            <!--About-->
-            <div class="info-section">
-                <p class="label">ABOUT</p>
-                <h2 class="heading">What is Notella?</h2>
-                <p class="desc">Notella is a student-focused study platform, combining note-taking with markdown toolbar, flashcard decks, and AI generated quizzes into a single workspace. Built to help students study easier.</p>
+            <div class="how-row">
+                <span class="how-title">Markdown formatting</span>
+                <span class="how-desc">Use the toolbar at the top of the editor or type Markdown directly. Supports headings, bold, italic, lists, code blocks, and tables.</span>
             </div>
+            <div class="how-row">
+                <span class="how-title">Keyboard shortcuts</span>
+                <span class="how-desc"><kbd>Cmd+B</kbd> bold, <kbd>Cmd+I</kbd> italic. Press <kbd>Enter</kbd> on a list item to continue the list, <kbd>Tab</kbd> to indent.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Tags</span>
+                <span class="how-desc">Type a tag in the tags field and press <kbd>Enter</kbd> or comma to add it. Tags are shared across all users.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Visibility</span>
+                <span class="how-desc">Notes are private by default. Toggle to Public to share them in the discovery page.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Saving</span>
+                <span class="how-desc">Click Save or use the save button. The button turns red when there are unsaved changes.</span>
+            </div>
+        </div>
 
-            <hr>
+        <div class="settings-group">
+            <div class="settings-group-label">Flashcards</div>
+            <div class="how-row">
+                <span class="how-title">Creating a deck</span>
+                <span class="how-desc">Click <strong>+</strong> on the dashboard under the Flashcard Decks tab, enter a title, and add cards with a front and back.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Studying</span>
+                <span class="how-desc">Click the play button on a deck to start a session. Flip cards and mark each one right or wrong to get a results summary.</span>
+            </div>
+        </div>
 
-            <!--FAQ-->
-            <div class="info-section">
-                <p class="label">FAQs</p>
-                <h2 class="heading">Frequently asked questions</h2>
+        <div class="settings-group">
+            <div class="settings-group-label">AI Quiz</div>
+            <div class="how-row">
+                <span class="how-title">Generating a quiz</span>
+                <span class="how-desc">Open a note and click <strong>Generate Quiz</strong> in the sidebar. The AI will read your note and generate multiple choice questions.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Saving results</span>
+                <span class="how-desc">After completing a quiz you can save or discard the results. Saved results appear in your profile stats.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Accuracy</span>
+                <span class="how-desc">AI-generated questions may not always be accurate. Always verify answers with your course material.</span>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <div class="settings-group-label">Discover</div>
+            <div class="how-row">
+                <span class="how-title">Browsing</span>
+                <span class="how-desc">Visit the Discover page to browse public notes and flashcard decks from other students. Filter by tag to narrow results.</span>
+            </div>
+            <div class="how-row">
+                <span class="how-title">Copying</span>
+                <span class="how-desc">Click Copy on any public note or deck to add it to your own library. You can then edit it freely.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-divider"></div>
+
+        <!--FAQ-->
+        <div class="info-section">
+            <div class="info-label">FAQs</div>
+            <h2 class="info-heading">Frequently asked questions</h2>
+            <div class="settings-group">
                 <div class="faq-q">
                     <details>
                         <summary class="question">Is my data private?</summary>
@@ -52,10 +121,15 @@
                         <p class="ans">Yes, AI quiz results can be saved or discarded. However, the flashcard session results are not saved. They are just for self checking.</p>
                     </details>
                 </div>
+                <div class="faq-q" style="border-bottom: none;">
+                    <details>
+                        <summary class="question">Can I delete my account?</summary>
+                        <p class="ans">Yes, go to your profile page and click Delete Account. This will permanently delete all your notes, decks, and quiz history.</p>
+                    </details>
+                </div>
             </div>
+        </div>
 
-            <!--Credits-->
-            <div class="info-section">
-                <p class="desc">Built for CITS3403, The University of Western Australia, 2026</p>
-            </div>
+
+</div>
 {% endblock %}

@@ -124,13 +124,18 @@ def get_note(note_id):
     note = Note.query.get_or_404(note_id)
     if note.user_id != session['user_id']:
         return jsonify({'error': 'Unauthorised'}), 403
+    note.accessed_at = datetime.now(timezone.utc)
+    db.session.commit()
     return jsonify({
         'id': note.note_id,
         'title': note.title,
         'content': note.content_md or '',
         'description': note.description or '',
         'is_public': note.is_public,
-        'tags': [t.name for t in note.tags]
+        'tags': [t.name for t in note.tags],
+        'created_at': note.created_at.strftime('%d %b %Y'),
+        'updated_at': note.updated_at.strftime('%d %b %Y'),
+        'accessed_at': note.accessed_at.strftime('%d %b %Y'),
     })
 
 # Save/update a note
@@ -146,6 +151,7 @@ def save_note(note_id):
     note.description = data.get('description', note.description)
     note.is_public = data.get('is_public', note.is_public)
     note.updated_at = datetime.now(timezone.utc)
+    note.accessed_at = datetime.now(timezone.utc)
 
     # handle tags
     if 'tags' in data:
@@ -340,11 +346,18 @@ def save_deck(deck_id):
 @main.route('/api/decks/<int:deck_id>', methods=['DELETE'])
 @login_required
 def delete_deck(deck_id):
+    from app.models import DeckProgress, SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != session['user_id']:
         return jsonify({'error': 'Unauthorised'}), 403
     
+    #delete progress and session answers
+    DeckProgress.query.filter_by(deck_id = deck_id).delete()
+    SessionAnswer.query.filter_by(deck_id = deck_id).delete()
+
+    #delete flashcard results and flashcards
     for card in deck.flashcards:
+        FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
         db.session.delete(card)
 
     db.session.delete(deck)
@@ -355,6 +368,9 @@ def delete_deck(deck_id):
 @login_required
 def save_session_answer(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     answer = SessionAnswer(
         user_id = session['user_id'],
@@ -370,6 +386,9 @@ def save_session_answer(deck_id):
 @login_required
 def get_session_answers(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     answers = SessionAnswer.query.filter_by(
         deck_id = deck_id,
         user_id = session['user_id']
@@ -383,6 +402,9 @@ def get_session_answers(deck_id):
 @login_required
 def clear_session_answers(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     SessionAnswer.query.filter_by(
         deck_id = deck_id,
         user_id= session['user_id']
@@ -406,6 +428,9 @@ def flashcard():
 @login_required
 def save_flashcard_result(deck_id):
     from app.models import FlashcardResult
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json() or {}
     results = data.get('results', [])
     correct_ans = 0
@@ -438,6 +463,9 @@ def save_flashcard_result(deck_id):
 @login_required
 def get_progress(deck_id):
     from app.models import DeckProgress
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
         user_id = session['user_id']
@@ -448,6 +476,9 @@ def get_progress(deck_id):
 @login_required
 def save_progress(deck_id):
     from app.models import DeckProgress
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,

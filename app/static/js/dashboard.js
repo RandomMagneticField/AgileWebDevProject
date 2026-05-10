@@ -223,3 +223,14 @@ searchInput.addEventListener('input', function() {
             });
     }, 300);
 });
+
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+}
+
+const greetingEl = document.getElementById('dash-greeting');
+greetingEl.textContent = `${getGreeting()}, ${greetingEl.dataset.username}`;

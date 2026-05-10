@@ -66,7 +66,7 @@ class Note(db.Model):
     content_md = db.Column(db.Text, nullable=True)
     is_public = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     accessed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # relationships
