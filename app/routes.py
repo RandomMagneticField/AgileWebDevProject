@@ -182,6 +182,7 @@ def delete_note(note_id):
             db.session.delete(question)
         db.session.delete(quiz)
     
+    note.likes.clear()
     db.session.delete(note)
     db.session.commit()
     return jsonify({'success': True})
@@ -573,6 +574,7 @@ def copy_note(note_id):
         user_id = user.user_id,
         copied_from = original.note_id
     )
+    new_note.tags = original.tags
     db.session.add(new_note)
     db.session.commit()
     return jsonify({'success': True, 'id': new_note.note_id})
@@ -600,6 +602,7 @@ def copy_deck(deck_id):
             order_index = card.order_index
         )
         db.session.add(new_card)
+    new_deck.tags = original.tags
     db.session.commit()
     return jsonify({'success': True, 'id': new_deck.deck_id})
     
