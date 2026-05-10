@@ -74,7 +74,9 @@ def dashboard_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.created_at.strftime('%d %b')
+            'date': n.created_at.strftime('%d %b'),
+            'updated': n.updated_at.strftime('%d %b %Y'),
+            'accessed': n.accessed_at.strftime('%d %b %Y'),
         } for n in notes],
         'decks': [{
             'id': d.deck_id,
