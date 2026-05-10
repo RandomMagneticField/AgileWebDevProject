@@ -164,6 +164,7 @@ def delete_note(note_id):
             db.session.delete(question)
         db.session.delete(quiz)
     
+    note.likes.clear()
     db.session.delete(note)
     db.session.commit()
     return jsonify({'success': True})
@@ -253,7 +254,8 @@ def get_deck(deck_id):
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
-        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} for c in deck.flashcards],
+        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
+                 for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'is_public': deck.is_public,
         'tags': [t.name for t in deck.tags]
     })
@@ -339,6 +341,7 @@ def delete_deck(deck_id):
         FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
         db.session.delete(card)
 
+    deck.likes.clear()
     db.session.delete(deck)
     db.session.commit()
     return jsonify({'success': True})
@@ -493,7 +496,7 @@ def discover_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.created_at.strftime('%d %b %Y'),
+            'date': n.created_at.strftime('%d %b'),
             'likes': len(n.likes),
             'liked': current_user in n.likes
         }for n in notes],
@@ -502,7 +505,7 @@ def discover_data():
             'title': d.title,
             'count': len(d.flashcards),
             'tags': [t.name for t in d.tags],
-            'date': d.created_at.strftime('%d %b %Y'),
+            'date': d.created_at.strftime('%d %b'),
             'likes': len(d.likes),
             'liked': current_user in d.likes
         } for d in decks]
@@ -547,6 +550,7 @@ def copy_note(note_id):
         user_id = current_user.user_id,
         copied_from = original.note_id
     )
+    new_note.tags = original.tags
     db.session.add(new_note)
     db.session.commit()
     return jsonify({'success': True, 'id': new_note.note_id})
@@ -573,6 +577,7 @@ def copy_deck(deck_id):
             order_index = card.order_index
         )
         db.session.add(new_card)
+    new_deck.tags = original.tags
     db.session.commit()
     return jsonify({'success': True, 'id': new_deck.deck_id})
     
