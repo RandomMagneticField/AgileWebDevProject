@@ -69,9 +69,6 @@
     /*padding: 20px 0;*/
 }
 
-.card-row.dragging * {
-    pointer-events: none;
-}
 
 .card-num {
     font-size: 16px;
@@ -207,15 +204,6 @@
     color: var(--text-primary);
 }
 
-/* Drag and drop */
-.card-row.dragging {
-    opacity: 0.4;
-}
-
-.card-row.drag-over {
-    width : 10px;
-    /*background: #303B6A;*/
-}
 
 /* Progress bar — mobile fixes */
 @media (max-width: 900px) {
