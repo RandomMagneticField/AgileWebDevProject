@@ -114,19 +114,25 @@ function toggleNoteLike(btn, noteId){
     fetch(`/api/notes/${noteId}/like`, {method: 'POST'})
         .then(res => res.json())
         .then(data => {
-            const icon = btn.querySelector('i')
-            const count = btn.querySelector('span')
-            if (data.liked) {
-                icon.classList.remove('bi-heart')
-                icon.classList.add('bi-heart-fill')
-                icon.style.color = '#e05c5c'
+            const note = notesData.find(n => n.id === noteId)
+            if (note) {
+                note.liked = data.liked
+                note.likes = data.likes
             }
-            else{
-                icon.classList.remove('bi-heart-fill')
-                icon.classList.add('bi-heart')
-                icon.style.color = ''
-            }
-            count.textContent = data.likes
+            // const icon = btn.querySelector('i')
+            // const count = btn.querySelector('span')
+            // if (data.liked) {
+            //     icon.classList.remove('bi-heart')
+            //     icon.classList.add('bi-heart-fill')
+            //     icon.style.color = '#e05c5c'
+            // }
+            // else{
+            //     icon.classList.remove('bi-heart-fill')
+            //     icon.classList.add('bi-heart')
+            //     icon.style.color = ''
+            // }
+            // count.textContent = data.likes
+            renderCards()
         })
 }
 
@@ -134,20 +140,27 @@ function toggleDeckLike(btn, deckId){
     fetch(`/api/decks/${deckId}/like`, {method: 'POST'})
         .then(res => res.json())
         .then(data => {
-            const icon = btn.querySelector('i')
-            const count = btn.querySelector('span')
-            if (data.liked) {
-                icon.classList.remove('bi-heart')
-                icon.classList.add('bi-heart-fill')
-                icon.style.color = '#e05c5c'
+            const deck = decksData.find(d => d.id === deckId)
+            if (deck) {
+                deck.liked = data.liked
+                deck.likes = data.likes
             }
-            else{
-                icon.classList.remove('bi-heart-fill')
-                icon.classList.add('bi-heart')
-                icon.style.color = ''
-            }
-            count.textContent = data.likes
+            // const icon = btn.querySelector('i')
+            // const count = btn.querySelector('span')
+            // if (data.liked) {
+            //     icon.classList.remove('bi-heart')
+            //     icon.classList.add('bi-heart-fill')
+            //     icon.style.color = '#e05c5c'
+            // }
+            // else{
+            //     icon.classList.remove('bi-heart-fill')
+            //     icon.classList.add('bi-heart')
+            //     icon.style.color = ''
+            // }
+            // count.textContent = data.likes
+            renderCards()
         })
+    sortdata()
 }
 
 function copyNote(btn, noteId){

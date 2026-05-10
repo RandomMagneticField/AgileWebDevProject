@@ -517,7 +517,7 @@ def discover_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.created_at.strftime('%d %b %Y'),
+            'date': n.created_at.strftime('%d %b'),
             'likes': len(n.likes),
             'liked': user in n.likes
         }for n in notes],
@@ -526,7 +526,7 @@ def discover_data():
             'title': d.title,
             'count': len(d.flashcards),
             'tags': [t.name for t in d.tags],
-            'date': d.created_at.strftime('%d %b %Y'),
+            'date': d.created_at.strftime('%d %b'),
             'likes': len(d.likes),
             'liked': user in d.likes
         } for d in decks]
