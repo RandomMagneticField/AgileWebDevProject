@@ -561,6 +561,9 @@ function saveNote() {
     .then(data => {
         if (data.success) {
             markSaved();
+            const now = new Date();
+            const formatted = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('detail-updated').textContent = formatted;
         }
     });
 }
@@ -622,6 +625,9 @@ if (NOTE_ID) {
             document.getElementById('note-title').innerText = note.title;
             document.getElementById('md-input').value = note.content;
             document.getElementById('note-description').value = note.description;
+            document.getElementById('detail-created').textContent = note.created_at;
+            document.getElementById('detail-updated').textContent = note.updated_at;
+            document.getElementById('detail-accessed').textContent = note.accessed_at;
             setVis(note.is_public ? 'public' : 'private');
             note.tags.forEach(tag => {
                 const pill = document.createElement('span');
