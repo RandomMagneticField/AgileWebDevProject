@@ -73,8 +73,8 @@ def dashboard_data():
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
             'date': n.created_at.strftime('%d %b'),
-            'updated': n.updated_at.strftime('%d %b %Y'),
-            'accessed': n.accessed_at.strftime('%d %b %Y'),
+            'updated': n.updated_at.isoformat(),          
+            'accessed': n.accessed_at.isoformat(), 
         } for n in notes],
         'decks': [{
             'id': d.deck_id,
@@ -83,7 +83,9 @@ def dashboard_data():
             'lastScore': get_last_score(d, current_user.user_id)[0],
             'lastTotal': get_last_score(d, current_user.user_id)[1],
             'tags': [t.name for t in d.tags],
-            'date': d.created_at.strftime('%d %b')
+            'date': d.created_at.strftime('%d %b'),
+            'updated': d.updated_at.isoformat(),        
+            'accessed': d.accessed_at.isoformat(), 
         } for d in decks]
     })
 
@@ -250,6 +252,8 @@ def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
+    deck.accessed_at = datetime.now(timezone.utc)
+    db.session.commit()
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
@@ -268,6 +272,7 @@ def save_deck(deck_id):
     data = request.get_json()
     deck.title = data.get('title', deck.title)
     deck.is_public = data.get('is_public', deck.is_public)
+    deck.updated_at = datetime.now(timezone.utc)
     
     #delete results of cards that are removed only
     if 'cards' in data:
