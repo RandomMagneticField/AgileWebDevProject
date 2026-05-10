@@ -9,7 +9,7 @@
 
 {% block page_content %}
         <!-- Header -->
-            <div class="dash-greeting">Good morning, {{ user.username }}</div>
+            <div class="dash-greeting" id="dash-greeting" data-username="{{ user.username }}"></div>
             <div class="dash-title">Your Dashboard</div>
 
             <!-- Controls -->
@@ -63,16 +63,16 @@
 {% block modals %}
 <div id="create-note-backdrop" onclick="closeCreateModal()"></div>
 <div id="create-note-modal">
-  <div class="table-modal-title">New Note</div>
+  <div class="table-modal-title" id="modal-title">New Note</div>
   <div class="table-modal-inputs">
     <div class="table-modal-input-group">
       <div class="table-modal-input-label">Title</div>
-      <input id="new-note-title" type="text" placeholder="Note title..." maxlength="50"/>
+      <input id="new-title" type="text" placeholder="Note title..." maxlength="50"/>
     </div>
   </div>
   <div class="table-modal-actions">
     <button onclick="closeCreateModal()" class="table-modal-btn-cancel">Cancel</button>
-    <button onclick="submitCreateNote()" class="table-modal-btn-insert">Create</button>
+    <button onclick="NoteorDeck()" class="table-modal-btn-insert">Create</button>
   </div>
 </div>
 {% endblock %}

@@ -1,6 +1,12 @@
-from app import db
+from app import db , login_manager
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # ── Junction tables (many-to-many) ──
 
@@ -27,7 +33,7 @@ deck_likes = db.Table('deck_likes',
 
 # ── Models ──
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
@@ -47,6 +53,9 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
     
+    def get_id(self):
+        return str(self.user_id)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -65,7 +74,7 @@ class Note(db.Model):
     content_md = db.Column(db.Text, nullable=True)
     is_public = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     accessed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # relationships
@@ -205,3 +214,34 @@ class PasswordReset(db.Model):
 
     def __repr__(self):
         return f'<PasswordReset {self.pw_reset_id}>'
+    
+
+
+class DeckProgress(db.Model):
+    __tablename__ = 'deck_progress'
+    
+    progress_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    deck_id = db.Column(db.Integer, db.ForeignKey('decks.deck_id'), nullable=False)
+    current_index = db.Column(db.Integer, nullable=False, default=0)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = db.relationship('User', backref='deck_progress')
+    deck = db.relationship('Deck', backref='progress')
+
+    def __repr__(self):
+        return f'<DeckProgress {self.progress_id}>'
+    
+class SessionAnswer(db.Model):
+    __tablename__ = 'session_answers'
+
+    answer_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    deck_id = db.Column(db.Integer, db.ForeignKey('decks.deck_id'), nullable=False)
+    flashcard_id = db.Column(db.Integer, db.ForeignKey('flashcards.flashcard_id'), nullable=False)
+    is_correct = db.Column(db.Boolean, nullable=False)
+    answered_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = db.relationship('User', backref='session_answers')
+    deck = db.relationship('Deck', backref='session_answers')
+    flashcard = db.relationship('Flashcard', backref='session_answers')

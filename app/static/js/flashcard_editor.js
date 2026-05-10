@@ -1,14 +1,19 @@
 //dummy data
-let cards = [
-    { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
-    { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
-    { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
-    { front: 'Algor Mortis', back: 'Cooling of the body after death' },
-    { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
-    { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
-    { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
-    { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
-]
+// let cards = [
+//     { front: 'Pallor Mortis', back: 'Paleness that occurs after death' },
+//     { front: 'Rigor Mortis', back: 'Stiffening of muscles after death' },
+//     { front: 'Livor Mortis', back: 'Purplish discoloration of skin after death' },
+//     { front: 'Algor Mortis', back: 'Cooling of the body after death' },
+//     { front: 'Putrefaction', back: 'Decomposition of body tissues after death' },
+//     { front: 'Forensic Entomology', back: 'Study of insects to determine time of death' },
+//     { front: 'Post-mortem Interval', back: 'Time elapsed since death occurred' },
+//     { front: 'Adipocere', back: 'Waxy substance formed from body fat after death' },
+// ]
+
+
+let cards = []
+const deckId = document.getElementById('deck-data').dataset.deckId
+console.log('deck id:', deckId)
 
 //render all cards as list
 function renderCards(){
@@ -45,10 +50,14 @@ function renderCards(){
         //save changes made for front side of the flashcard
         textareas[0].addEventListener('input', function(){
             cards[index].front = this.value
+            markUnsaved()
+            updateProgress()
         })
         //save changes made for back side of the flashcard
         textareas[1].addEventListener('input', function(){
             cards[index].back = this.value
+            markUnsaved()
+            updateProgress()
         })
 
         const handle = row.querySelector('.card-drag-handle')
@@ -83,6 +92,7 @@ deckTitle.addEventListener('blur', () => {
 })
 
 deckTitle.addEventListener('input', () => {
+    markUnsaved()
     if (deckTitle.textContent.length > 50) {
         deckTitle.textContent = deckTitle.textContent.substring(0, 50)
         const range = document.createRange()
@@ -99,6 +109,7 @@ deckTitle.addEventListener('input', () => {
 document.getElementById('btn-add-card').addEventListener('click', function(){
     cards.push({front: "", back: ""})
     renderCards()
+    markUnsaved()
     //scroll to the bottom to make it easier for user to see their new card
     const list = document.getElementById('card-list')
     list.lastElementChild.scrollIntoView({behavior: "smooth"})
@@ -107,10 +118,14 @@ document.getElementById('btn-add-card').addEventListener('click', function(){
 
 //delete card
 function deleteCard(index){
-    if(cards.length === 1) return //make sure we have atleast one flashcard
+    if(cards.length === 1) {
+        alert('A deck must have at least one card')
+        return //make sure we have atleast one flashcard
+    }
     else{
         cards.splice(index, 1)
         renderCards()
+        markUnsaved()
     }
 }
 
@@ -124,9 +139,14 @@ function updateProgress(){
 }
 
 //Visibility toggle
-function setVis(val) {
+function applyVis(val) {
     document.getElementById('vis-private').classList.toggle('active', val === 'private')
     document.getElementById('vis-public').classList.toggle('active', val === 'public')
+}
+
+function setVis(val) {
+    applyVis(val)
+    markUnsaved()
 }
 
 function handleTag(evnt) {
@@ -175,8 +195,57 @@ function markSaved() {
 }
 
 
-function saveNote() {
-    markSaved();
+
+function saveDeck() {
+    if (!deckId) return;
+
+    const hasEmptyCard = cards.some(card =>
+        card.front.trim() === '' || card.back.trim() === ''
+    );
+
+    if (hasEmptyCard){
+        alert("All flashcards must have both front and back text")
+        return;
+    }
+
+    const data = {
+        title: document.getElementById('decks-title').innerText.trim(),
+        cards: cards,
+        is_public: document.getElementById('vis-public').classList.contains('active'),
+        tags: Array.from(document.querySelectorAll('#tags-wrap .tag-removable'))
+                .map(pill => pill.textContent.replace('×', '').trim())
+    };
+
+    fetch(`/api/decks/${deckId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            markSaved();
+        }
+    });
+}
+
+function deleteDeck() {
+    if (!deckId) return;
+    if (!confirm('Are you sure you want to delete this deck?')) return;
+    
+    fetch(`/api/decks/${deckId}`, {
+        method: 'DELETE',
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/dashboard?tab=decks';
+        }
+    });
+}
+
+function playDeck(){
+    window.location = '/dashboard/flashcard?id=' + deckId + '&from=flashcard_editor'
 }
 
 //Drag and Drop
@@ -205,6 +274,7 @@ function ondrop(e){
     const moved = cards.splice(dragIndex, 1)[0]
     cards.splice(dropIndex, 0, moved)
     renderCards()
+    markUnsaved()
 }
 
 function ondragend(){
@@ -229,4 +299,26 @@ document.addEventListener('dragover', function(e){
     }
 })
 
-renderCards() //initializer
+if (deckId) {
+    fetch(`/api/decks/${deckId}`)
+        .then(res => res.json())
+        .then(deck => {
+            document.getElementById('decks-title').textContent = deck.title
+            cards = deck.cards
+            applyVis(deck.is_public ? 'public' : 'private')
+            deck.tags.forEach(tag => {
+                 const pill = document.createElement('span');
+                pill.className = 'note-tag tag-removable';
+                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+                const input = document.getElementById('tag-input');
+                document.getElementById('tags-wrap').insertBefore(pill, input);
+            });
+            renderCards()
+            // //marking newly made decks unsaved
+            // if(deck.cards.length === 0){
+            //     markUnsaved()
+            // }
+        })
+} else {
+    renderCards()
+}

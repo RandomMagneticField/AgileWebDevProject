@@ -8,80 +8,66 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
 
-  <div class="container">
-
-    <!--Header-->
+    <!-- Header -->
     <section class="header">
-      <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
-      <h1 class="title">Everything you need to study</h1>
-      <p class="subtitle">Create notes in Markdown, build flashcard decks, and generate quizzes with AI assistance. All in one place.</p>
-      <div class="header-button">
-        <button class="btn-create" onclick="goToSignup()">Get started</button>
-        <button class="btn-create" onclick="goToLogin()">Sign in</button>
-      </div>
+        <img class="logo-img" src="{{ url_for('static', filename='images/svg/notella_logo_plain.svg') }}" alt="Notella logo"/>
+        <h1 class="title">Everything you need to study</h1>
+        <p class="subtitle">Create notes in Markdown, build flashcard decks, and generate quizzes with AI assistance. All in one place.</p>
+        <div class="header-button">
+            <button class="btn-login" onclick="goToSignup()">Get started</button>
+            <button class="btn-create" onclick="goToLogin()">Sign in</button>
+        </div>
     </section>
 
-    <hr style="border-color: var(--divider-line)">
+    <div class="section-divider">
+        <span class="section-divider-label">Features</span>
+    </div>
 
-    <p style="text-align:center; color:var(--text-muted); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px;">FEATURES</p>
-
-
-    <!--information about the features-->
+    <!-- Features -->
     <section class="features">
-      <!--markdown notes-->
-      <div class="feature-row">
-        <div class="feature-text">
-          <p class="feature-label">NOTES</p>
-          <h2 class="feature-heading">Write notes easily</h2>
-          <p class="feature-desc">Effortlessly format your notes using our built-in Markdown. Complete with live preview and a formatting toolbar for easier syntax access. Easily tag, organise, and share your notes with other students.</p>
+        <div class="feature-row">
+            <div class="feature-text">
+                <p class="feature-label">Notes</p>
+                <h2 class="feature-heading">Write notes easily</h2>
+                <p class="feature-desc">Effortlessly format your notes using our built-in Markdown. Complete with live preview and a formatting toolbar for easier syntax access. Easily tag, organise, and share your notes with other students.</p>
+            </div>
+            <div class="image"></div>
         </div>
-        <div class="image"></div>
-      </div>
 
-      <!--Flashcard decks-->
-      <div class="feature-row reverse">
-        <div class="feature-text">
-          <p class="feature-label">FLASHCARDS</p>
-          <h2 class="feature-heading">Study with flashcards decks</h2>
-          <p class="feature-desc">Build flashcard decks and study at your own pace. Flip through cards, mark each one right or wrong, and get results summary at the end of every session so you know exactly where to focus next.</p>
+        <div class="feature-row reverse">
+            <div class="feature-text">
+                <p class="feature-label">Flashcards</p>
+                <h2 class="feature-heading">Study with flashcard decks</h2>
+                <p class="feature-desc">Build flashcard decks and study at your own pace. Flip through cards, mark each one right or wrong, and get a results summary at the end of every session so you know exactly where to focus next.</p>
+            </div>
+            <div class="image"></div>
         </div>
-        <div class="image"></div>
-      </div>
-      
-      <!--Quizzes-->
-      <div class="feature-row">
-        <div class="feature-text">
-          <p class="feature-label">AI QUIZZES</p>
-          <h2 class="feature-heading">Generate quizzes instantly with AI</h2>
-          <p class="feature-desc">Let AI do the hard work. Generate multiple choice quizzes directly from your notes in seconds. Save your favourite quizzes, retake them anytime, or generate new questions anytime.</p>
-        </div>
-        <div class="image"></div>
-      </div>
 
-      <!--Discover-->
-      <div class="feature-row reverse">
-        <div class="feature-text">
-          <p class="feature-label">PUBLIC LIBRARY</p>
-          <h2 class="feature-heading">Explore notes and flashcards from other students</h2>
-          <p class="feature-desc">Browse public notes and flashcard decks created by fellow students. Filter by tag, preview content before copying, and build your own personalised library. Share your notes and decks with the community too.</p>
+        <div class="feature-row">
+            <div class="feature-text">
+                <p class="feature-label">AI Quizzes</p>
+                <h2 class="feature-heading">Generate quizzes instantly with AI</h2>
+                <p class="feature-desc">Let AI do the hard work. Generate multiple choice quizzes directly from your notes in seconds. Save your favourite quizzes, retake them anytime, or generate new questions whenever you need them.</p>
+            </div>
+            <div class="image"></div>
         </div>
-        <div class="image"></div>
-      </div>
+
+        <div class="feature-row reverse">
+            <div class="feature-text">
+                <p class="feature-label">Public Library</p>
+                <h2 class="feature-heading">Explore notes and flashcards from other students</h2>
+                <p class="feature-desc">Browse public notes and flashcard decks created by fellow students. Filter by tag, preview content before copying, and build your own personalised library.</p>
+            </div>
+            <div class="image"></div>
+        </div>
     </section>
 
-    <!--Footer-->
-    <section class="footer">
-      <p>© 2026 Notella</p>
-      <div class="links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Use</a>
-      </div>
-    </section>
+</div>
 
-    <script>
-      function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
-      function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
-    </script>
-  </div>
+<script>
+    function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
+    function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
+</script>
 {% endblock %}

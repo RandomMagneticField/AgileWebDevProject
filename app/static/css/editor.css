@@ -508,6 +508,7 @@ body.mode-preview .md-preview {
     .editor-layout {
         flex-direction: column;
         overflow: visible;
+        /* max-height: 900px; */
     }
 
     .editor-side {
@@ -568,6 +569,9 @@ body.mode-preview .md-preview {
     }
     .editor-header-left {
         width: 100%;
+    }
+    .editor-box{
+        max-height: 900px;
     }
 
 }
@@ -1181,4 +1185,23 @@ body.mode-preview .md-preview {
     height: 7px;
     border-radius: 50%;
     background: var(--text-muted);
+}
+
+.note-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.note-detail-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 100;
+}
+
+.note-detail-value {
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 300;
 }
