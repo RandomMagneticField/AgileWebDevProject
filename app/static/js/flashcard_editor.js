@@ -28,8 +28,10 @@ function renderCards(){
         //display all card 
         row.innerHTML = `
             <span class="card-num">${index + 1}.</span>
-                <i class="bi bi-grip-vertical card-drag-handle"></i>
             <div class="card-body">
+                <div class="card-drag-handle-wrap">
+                    <i class="bi bi-grip-vertical card-drag-handle"></i>
+                </div>
                 <div class="card-side">
                     <div class="card-side-label">FRONT</div>
                     <textarea class="card-side-text" placeholder="Front side..." rows="2">${card.front}</textarea>
@@ -263,14 +265,16 @@ function ondragstart(e){
 function ondragover(e){
     e.preventDefault()
     document.querySelectorAll('.card-row').forEach(r => r.classList.remove('drag-over'))
-    this.classList.add('drag-over')
+    const row = e.target.closest('.card-row')
+    if (row) row.classList.add('drag-over')
 }
 
 function ondrop(e){
     e.preventDefault()
-    const dropIndex = parseInt(this.dataset.index)
+    const dropRow = e.target.closest('.card-row')
+    if (!dropRow) return
+    const dropIndex = parseInt(dropRow.dataset.index)
     if(dragIndex === null || dragIndex === dropIndex) return 
-    //reoder the cards array
     const moved = cards.splice(dragIndex, 1)[0]
     cards.splice(dropIndex, 0, moved)
     renderCards()
