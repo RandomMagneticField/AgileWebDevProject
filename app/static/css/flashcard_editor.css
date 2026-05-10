@@ -251,3 +251,7 @@
         text-overflow: unset !important;
     }
 }
+
+.sortable-ghost {
+    opacity: 0;
+}
