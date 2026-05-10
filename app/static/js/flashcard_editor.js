@@ -209,6 +209,9 @@ function saveDeck() {
     .then(data => {
         if (data.success) {
             markSaved()
+            const now = new Date()
+            const formatted = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            document.getElementById('detail-updated').textContent = formatted
         }
     })
 }
@@ -246,8 +249,11 @@ if (deckId) {
                 const input = document.getElementById('tag-input')
                 document.getElementById('tags-wrap').insertBefore(pill, input)
             })
+            document.getElementById('detail-created').textContent = deck.created_at
+            document.getElementById('detail-updated').textContent = deck.updated_at
+            document.getElementById('detail-accessed').textContent = deck.accessed_at
             renderCards()
         })
-} else {
+}else {
     renderCards()
 }

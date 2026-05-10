@@ -260,7 +260,10 @@ def get_deck(deck_id):
         'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
                  for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'is_public': deck.is_public,
-        'tags': [t.name for t in deck.tags]
+        'tags': [t.name for t in deck.tags],
+        'created_at': deck.created_at.strftime('%d %b %Y'),
+        'updated_at': deck.updated_at.strftime('%d %b %Y') if deck.updated_at else deck.created_at.strftime('%d %b %Y'),
+        'accessed_at': deck.accessed_at.strftime('%d %b %Y'),
     })
 
 @main.route('/api/decks/<int:deck_id>', methods=['POST'])
