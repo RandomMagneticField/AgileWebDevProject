@@ -27,7 +27,7 @@ Text
 
 3. Install dependencies
     ```bash
-    pip install flask flask-sqlalchemy flask-migrate flask-wtf email-validator python-dotenv
+    pip install flask flask-sqlalchemy flask-migrate flask-wtf email-validator python-dotenv flask-login
     ```
 
 4. Set up environment variables
