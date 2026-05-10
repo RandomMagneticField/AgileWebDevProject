@@ -362,6 +362,9 @@ def delete_deck(deck_id):
 @login_required
 def save_session_answer(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     answer = SessionAnswer(
         user_id = session['user_id'],
@@ -377,6 +380,9 @@ def save_session_answer(deck_id):
 @login_required
 def get_session_answers(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     answers = SessionAnswer.query.filter_by(
         deck_id = deck_id,
         user_id = session['user_id']
@@ -390,6 +396,9 @@ def get_session_answers(deck_id):
 @login_required
 def clear_session_answers(deck_id):
     from app.models import SessionAnswer
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     SessionAnswer.query.filter_by(
         deck_id = deck_id,
         user_id= session['user_id']
@@ -413,6 +422,9 @@ def flashcard():
 @login_required
 def save_flashcard_result(deck_id):
     from app.models import FlashcardResult
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json() or {}
     results = data.get('results', [])
     correct_ans = 0
@@ -445,6 +457,9 @@ def save_flashcard_result(deck_id):
 @login_required
 def get_progress(deck_id):
     from app.models import DeckProgress
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
         user_id = session['user_id']
@@ -455,6 +470,9 @@ def get_progress(deck_id):
 @login_required
 def save_progress(deck_id):
     from app.models import DeckProgress
+    deck = Deck.query.get_or_404(deck_id)
+    if deck.user_id != session['user_id']:
+        return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
