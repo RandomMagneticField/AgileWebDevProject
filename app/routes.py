@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
-from app import db
-from app.models import User
-from app.forms import RegisterForm, LoginForm
-from app.models import User, Note, Deck, Tag, QuizSession
-from datetime import datetime, timezone
 from flask_login import login_user, logout_user, login_required, current_user
+from app import db
+from app.models import User, Note, Deck, Tag, QuizSession, QuizQuestion, Flashcard, FlashcardResult, DeckProgress, SessionAnswer
+from app.forms import RegisterForm, LoginForm
+from datetime import datetime, timezone
 
 
 main = Blueprint('main', __name__)
@@ -46,7 +45,6 @@ def logout():
 def dashboard():
     return render_template('dashboard/index.html', active='dashboard', user=current_user)
 
-from app.models import FlashcardResult
 def get_last_score(deck, user_id):
     correct = 0
     total = 0
@@ -74,7 +72,9 @@ def dashboard_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.created_at.strftime('%d %b')
+            'date': n.created_at.strftime('%d %b'),
+            'updated': n.updated_at.isoformat(),          
+            'accessed': n.accessed_at.isoformat(), 
         } for n in notes],
         'decks': [{
             'id': d.deck_id,
@@ -83,7 +83,9 @@ def dashboard_data():
             'lastScore': get_last_score(d, current_user.user_id)[0],
             'lastTotal': get_last_score(d, current_user.user_id)[1],
             'tags': [t.name for t in d.tags],
-            'date': d.created_at.strftime('%d %b')
+            'date': d.created_at.strftime('%d %b'),
+            'updated': d.updated_at.isoformat(),        
+            'accessed': d.accessed_at.isoformat(), 
         } for d in decks]
     })
 
@@ -153,7 +155,6 @@ def save_note(note_id):
 @main.route('/api/notes/<int:note_id>', methods=['DELETE'])
 @login_required
 def delete_note(note_id):
-    from app.models import QuizSession, QuizQuestion
     note = Note.query.get_or_404(note_id)
     if note.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -251,13 +252,18 @@ def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
+    deck.accessed_at = datetime.now(timezone.utc)
+    db.session.commit()
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
         'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
                  for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'is_public': deck.is_public,
-        'tags': [t.name for t in deck.tags]
+        'tags': [t.name for t in deck.tags],
+        'created_at': deck.created_at.strftime('%d %b %Y'),
+        'updated_at': deck.updated_at.strftime('%d %b %Y') if deck.updated_at else deck.created_at.strftime('%d %b %Y'),
+        'accessed_at': deck.accessed_at.strftime('%d %b %Y'),
     })
 
 @main.route('/api/decks/<int:deck_id>', methods=['POST'])
@@ -269,8 +275,8 @@ def save_deck(deck_id):
     data = request.get_json()
     deck.title = data.get('title', deck.title)
     deck.is_public = data.get('is_public', deck.is_public)
+    deck.updated_at = datetime.now(timezone.utc)
     
-    from app.models import Flashcard, FlashcardResult
     #delete results of cards that are removed only
     if 'cards' in data:
         incoming_ids = set(c['id'] for c in data['cards'] if c.get('id'))
@@ -306,7 +312,6 @@ def save_deck(deck_id):
         deck.tags = tags
 
     #reset progress when the deck is updated and saved
-    from app.models import DeckProgress
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
         user_id=current_user.user_id
@@ -316,7 +321,6 @@ def save_deck(deck_id):
         progress.updated_at = datetime.now(timezone.utc)
 
     # delete the previous flashcard play session
-    from app.models import SessionAnswer
     SessionAnswer.query.filter_by(
         deck_id = deck_id,
         user_id=current_user.user_id
@@ -327,7 +331,6 @@ def save_deck(deck_id):
 @main.route('/api/decks/<int:deck_id>', methods=['DELETE'])
 @login_required
 def delete_deck(deck_id):
-    from app.models import DeckProgress, SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -349,7 +352,6 @@ def delete_deck(deck_id):
 @main.route('/api/decks/<int:deck_id>/session_answers', methods = ['POST'])
 @login_required
 def save_session_answer(deck_id):
-    from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -367,7 +369,6 @@ def save_session_answer(deck_id):
 @main.route('/api/decks/<int:deck_id>/session_answers', methods = ['GET'])
 @login_required
 def get_session_answers(deck_id):
-    from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -383,7 +384,6 @@ def get_session_answers(deck_id):
 @main.route('/api/decks/<int:deck_id>/session_answers', methods=['DELETE'])
 @login_required
 def clear_session_answers(deck_id):
-    from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -409,7 +409,6 @@ def flashcard():
 @main.route('/api/decks/<int:deck_id>/results', methods=["POST"])
 @login_required
 def save_flashcard_result(deck_id):
-    from app.models import FlashcardResult
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -444,7 +443,6 @@ def save_flashcard_result(deck_id):
 @main.route('/api/decks/<int:deck_id>/progress', methods=['GET'])
 @login_required
 def get_progress(deck_id):
-    from app.models import DeckProgress
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -457,7 +455,6 @@ def get_progress(deck_id):
 @main.route('/api/decks/<int:deck_id>/progress', methods=['POST'])
 @login_required
 def save_progress(deck_id):
-    from app.models import DeckProgress
     deck = Deck.query.get_or_404(deck_id)
     if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
@@ -558,7 +555,6 @@ def copy_note(note_id):
 @main.route('/api/decks/<int:deck_id>/copy', methods=['POST'])
 @login_required
 def copy_deck(deck_id):
-    from app.models import Flashcard
     original = Deck.query.get_or_404(deck_id)
     if not original.is_public:
         return jsonify({'error': 'Deck is not public'}), 403

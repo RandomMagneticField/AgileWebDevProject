@@ -5,7 +5,7 @@
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/> -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
 {% endblock %}
 
@@ -64,6 +64,21 @@
                 </div>
             </div>
             <div class="editor-side-card">
+                <div class="editor-side-label">Details:</div>
+                <div class="note-detail-row">
+                    <span class="note-detail-label">Created</span>
+                    <span class="note-detail-value" id="detail-created">—</span>
+                </div>
+                <div class="note-detail-row">
+                    <span class="note-detail-label">Updated</span>
+                    <span class="note-detail-value" id="detail-updated">—</span>
+                </div>
+                <div class="note-detail-row">
+                    <span class="note-detail-label">Accessed</span>
+                    <span class="note-detail-value" id="detail-accessed">—</span>
+                </div>
+            </div>
+            <div class="editor-side-card">
                 <div class="editor-side-label">Danger Zone:</div>
                 <button class="btn-danger" onclick="deleteDeck()">
                     <i class="bi bi-trash"></i> Delete Deck
@@ -74,6 +89,7 @@
 
     <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/flashcard_editor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/flashcard_editor.js') }}"></script>
 {% endblock %}
