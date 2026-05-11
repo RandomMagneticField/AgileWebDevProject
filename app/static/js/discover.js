@@ -44,7 +44,7 @@ function NoteCard(note) {
     return `
         <div class="note-card">
             <div class="note-card-content">
-                <div class="note-card-title">${note.title}</div>
+                <a href="/discover/note/${note.id}" class="note-card-title">${note.title}</a>
                 <div class="note-card-body">${note.body}</div>
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
@@ -72,7 +72,7 @@ function DeckCard(deck) {
             <div class="deck-card-content">
                 <div class="deck-card-header">
                     <div class="deck-card-info">
-                        <div class="deck-card-title">${deck.title}</div>
+                        <a href="/discover/deck/${deck.id}" class="note-card-title">${deck.title}</a>
                         <div class="deck-card-count">${deck.count} Cards</div>
                     </div>
                 </div>
@@ -160,7 +160,6 @@ function toggleDeckLike(btn, deckId){
             // count.textContent = data.likes
             renderCards()
         })
-    sortdata()
 }
 
 function copyNote(btn, noteId){

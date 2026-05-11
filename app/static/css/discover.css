@@ -15,6 +15,15 @@
     color: var(--text-primary);
 }
 
+.note-card-title, .deck-card-title{
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.note-card-title:hover, .deck-card-title:hover{
+    text-decoration: underline;
+}
 
 .select {
     position: relative;

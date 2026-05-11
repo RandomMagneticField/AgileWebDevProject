@@ -114,6 +114,7 @@ def get_note(note_id):
         'content': note.content_md or '',
         'description': note.description or '',
         'is_public': note.is_public,
+        'creator': note.user.username,
         'tags': [t.name for t in note.tags],
         'created_at': note.created_at.strftime('%d %b %Y'),
         'updated_at': note.updated_at.strftime('%d %b %Y'),
@@ -254,10 +255,11 @@ def get_deck(deck_id):
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
+        'creator' : deck.user.username,
         'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
                  for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'is_public': deck.is_public,
-        'tags': [t.name for t in deck.tags]
+        'tags': [t.name for t in deck.tags],
     })
 
 @main.route('/api/decks/<int:deck_id>', methods=['POST'])
@@ -496,7 +498,8 @@ def discover_data():
             'title': n.title,
             'body': n.description or '',
             'tags': [t.name for t in n.tags],
-            'date': n.created_at.strftime('%d %b'),
+            'date': n.created_at.strftime('%d %b %Y'),
+            'date_sort': n.created_at.strftime('%Y-%m-%d'),
             'likes': len(n.likes),
             'liked': current_user in n.likes
         }for n in notes],
@@ -505,7 +508,8 @@ def discover_data():
             'title': d.title,
             'count': len(d.flashcards),
             'tags': [t.name for t in d.tags],
-            'date': d.created_at.strftime('%d %b'),
+            'date': d.created_at.strftime('%d %b %Y'),
+            'date_sort': d.created_at.strftime('%Y-%m-%d'),
             'likes': len(d.likes),
             'liked': current_user in d.likes
         } for d in decks]
@@ -581,6 +585,57 @@ def copy_deck(deck_id):
     db.session.commit()
     return jsonify({'success': True, 'id': new_deck.deck_id})
     
+#Note preview
+@main.route('/discover/note/<int:note_id>')
+@login_required
+def note_preview(note_id):
+    note = Note.query.get_or_404(note_id)
+    if not note.is_public:
+        return redirect(url_for('main.discover'))
+    return render_template('discover/note_preview.html', active='discover', note=note)
+
+@main.route('/api/discover/notes/<int:note_id>/preview', methods=['GET'])
+@login_required
+def get_note_preview(note_id):
+    note = Note.query.get_or_404(note_id)
+    if not note.is_public:
+        return jsonify({'error': 'Unauthorised'}), 403
+    return jsonify({
+        'id': note.note_id,
+        'title': note.title,
+        'content': note.content_md or '',
+        'description': note.description or '',
+        'creator': note.user.username,
+        'tags': [t.name for t in note.tags],
+        'created_at': note.created_at.strftime('%d %b %Y'),
+        'updated_at': note.updated_at.strftime('%d %b %Y'),
+    })
+
+#Deck preview
+@main.route('/discover/deck/<int:deck_id>')
+@login_required
+def deck_preview(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    if not deck.is_public:
+        return redirect(url_for('main.discover'))
+    return render_template('discover/deck_preview.html', active='discover', deck=deck)
+
+@main.route('/api/discover/decks/<int:deck_id>/preview', methods=['GET'])
+@login_required
+def get_deck_preview(deck_id):
+    deck = Deck.query.get_or_404(deck_id)
+    if not deck.is_public:
+        return jsonify({'error': 'Unauthorised'}), 403
+    return jsonify({
+        'id': deck.deck_id,
+        'title': deck.title,
+        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
+                 for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
+        'creator': deck.user.username,
+        'tags': [t.name for t in deck.tags],
+        'created_at': deck.created_at.strftime('%d %b %Y'),
+        'count': len(deck.flashcards),
+    })
 
 @main.route('/quiz/active')
 @login_required
