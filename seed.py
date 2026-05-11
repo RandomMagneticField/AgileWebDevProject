@@ -469,6 +469,31 @@ User.query.filter_by(username=username).first()
     )
     n3.tags = [t_security, t_cits, t_week5]
 
+    nmath = Note(
+        title='Differentiation',
+        description='Some math, amiright guys?',
+        content_md='''A derivative of a function describes its rate of change.
+
+There are a few notable rules for differentiation:
+- Power rule for polynomials
+- Product rule
+- Quotient rule
+- Chain rule
+- Derivatives of trigonometric functions
+- Derivatives of logarithmic functions
+
+Example:
+If f(x) = 6x^3 + 5cos(x)
+Then d/dx f(x) = f'(x) = 18x^2 - 5sin(x)
+''',
+        is_public=True,
+        user_id=alice.user_id,
+        created_at=datetime(2026, 5, 11, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 5, 12, tzinfo=timezone.utc),
+        accessed_at=datetime(2026, 5, 12, tzinfo=timezone.utc)
+    )
+    nmath.tags = []
+
     # ── Bob's Notes ──
     n4 = Note(
         title='JavaScript ES6+ Features',
@@ -1210,7 +1235,7 @@ colours.discard('purple') # no error if not found
     )
     n8.tags = [t_python, t_week4]
 
-    db.session.add_all([n1, n2, n3, n4, n5, n6, n7, n8])
+    db.session.add_all([n1, n2, n3, n4, n5, n6, n7, n8, nmath])
     db.session.commit()
 
     # ── Decks ──
