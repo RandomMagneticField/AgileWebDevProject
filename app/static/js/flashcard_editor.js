@@ -13,23 +13,25 @@
 
 let cards = []
 const deckId = document.getElementById('deck-data').dataset.deckId
-console.log('deck id:', deckId)
+// console.log('deck id:', deckId)
 
 //render all cards as list
 function renderCards(){
     const list = document.getElementById('card-list')
-    list.innerHTML = "" //clear everything inside card-list to avoid duplicating card everytime we re-render
+    list.innerHTML = ""
 
     cards.forEach(function(card, index){
-        const row = document.createElement('div') //create a new <div> for each flashcard (one row)
+        const row = document.createElement('div')
         row.className = 'card-row'
-        row.dataset.index = index //track which card is being dragged
+        row.dataset.index = index
 
         //display all card 
         row.innerHTML = `
             <span class="card-num">${index + 1}.</span>
-                <i class="bi bi-grip-vertical card-drag-handle"></i>
             <div class="card-body">
+                <div class="card-drag-handle-wrap">
+                    <i class="bi bi-grip-vertical card-drag-handle"></i>
+                </div>
                 <div class="card-side">
                     <div class="card-side-label">FRONT</div>
                     <textarea class="card-side-text" placeholder="Front side..." rows="2">${card.front}</textarea>
@@ -39,7 +41,7 @@ function renderCards(){
                     <div class="card-side-label">BACK</div>
                     <textarea class="card-side-text" placeholder="Back side..." rows="2">${card.back}</textarea>
                 </div>
-                <button class="card-delete" onclick="deleteCard(${index})" style="margin-right: 10px">
+                <button class="card-delete" onclick="deleteCard(${index})">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
@@ -60,26 +62,23 @@ function renderCards(){
             updateProgress()
         })
 
-        const handle = row.querySelector('.card-drag-handle')
-
-        handle.addEventListener('mousedown', function(){
-            row.draggable = true
-        })
-        handle.addEventListener('mouseup', function(){
-            row.draggable = false
-        })
-
-        //drag (to move the card order)
-        row.addEventListener('dragstart', ondragstart)
-        row.addEventListener('dragover', ondragover)
-        row.addEventListener('drop', ondrop)
-        row.addEventListener('dragend', ondragend)
-
-
-        list.appendChild(row)//update the list
+        list.appendChild(row)
     })
     
-    updateProgress()//update the progress bar
+    updateProgress()
+
+    // initialise sortable after rendering
+    Sortable.create(list, {
+        handle: '.card-drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: function(evt) {
+            const moved = cards.splice(evt.oldIndex, 1)[0]
+            cards.splice(evt.newIndex, 0, moved)
+            renderCards()
+            markUnsaved()
+        }
+    })
 }
 
 const deckTitle = document.getElementById('decks-title')
@@ -120,7 +119,7 @@ document.getElementById('btn-add-card').addEventListener('click', function(){
 function deleteCard(index){
     if(cards.length === 1) {
         alert('A deck must have at least one card')
-        return //make sure we have atleast one flashcard
+        return
     }
     else{
         cards.splice(index, 1)
@@ -133,7 +132,7 @@ function deleteCard(index){
 function updateProgress(){
     const filled = cards.filter(c => c.front.trim() && c.back.trim()).length
     const total = cards.length
-    const percentage = total === 0 ? 0 : (filled/total) * 100 //if total=0; we use 0/0. Otherwise, we compute it by filled/total * 100 to get the percentage
+    const percentage = total === 0 ? 0 : (filled/total) * 100
     document.getElementById('progress-bar').style.width = percentage + "%"
     document.getElementById('progress-label').textContent = `${filled} / ${total}`
 }
@@ -152,60 +151,45 @@ function setVis(val) {
 function handleTag(evnt) {
 
     if (evnt.key === 'Enter' || evnt.key === ',') {
-        const val = evnt.target.value.trim().replace(/,/g, '').substring(0, 20);
-
-        if (!val) {
-            return;
-        }
-
-        const pill = document.createElement('span');
-        pill.className = 'note-tag tag-removable';
-        pill.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
-        document.getElementById('tags-wrap').insertBefore(pill, evnt.target);
-
-        // clear input
-        evnt.target.value = '';
-         markUnsaved();
+        const val = evnt.target.value.trim().replace(/,/g, '').substring(0, 20)
+        if (!val) return
+        const pill = document.createElement('span')
+        pill.className = 'note-tag tag-removable'
+        pill.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(this)">×</button>`
+        document.getElementById('tags-wrap').insertBefore(pill, evnt.target)
+        evnt.target.value = ''
+        markUnsaved()
     }
 }
 
 
 function removeTag(btn) { 
-    btn.closest('.tag-removable').remove(); 
-     markUnsaved();
+    btn.closest('.tag-removable').remove()
+    markUnsaved()
 }
 
-function handleResponsiveMode() {
-    const isMobile = window.innerWidth <= 900;
-    if (isMobile) {
-        const previewBtn = document.querySelector('.view-btn[onclick*="preview"]');
-        setMode('preview', previewBtn);
-    }
-}
-
-// Track unsaved changes
-const saveBtn = document.getElementById('btn-save');
+const saveBtn = document.getElementById('btn-save')
 
 function markUnsaved() {
-    saveBtn.classList.add('unsaved');
+    saveBtn.classList.add('unsaved')
 }
 
 function markSaved() {
-    saveBtn.classList.remove('unsaved');
+    saveBtn.classList.remove('unsaved')
 }
 
 
 
 function saveDeck() {
-    if (!deckId) return;
+    if (!deckId) return
 
     const hasEmptyCard = cards.some(card =>
         card.front.trim() === '' || card.back.trim() === ''
-    );
+    )
 
     if (hasEmptyCard){
         alert("All flashcards must have both front and back text")
-        return;
+        return
     }
 
     const data = {
@@ -214,7 +198,7 @@ function saveDeck() {
         is_public: document.getElementById('vis-public').classList.contains('active'),
         tags: Array.from(document.querySelectorAll('#tags-wrap .tag-removable'))
                 .map(pill => pill.textContent.replace('×', '').trim())
-    };
+    }
 
     fetch(`/api/decks/${deckId}`, {
         method: 'POST',
@@ -224,14 +208,17 @@ function saveDeck() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            markSaved();
+            markSaved()
+            const now = new Date()
+            const formatted = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            document.getElementById('detail-updated').textContent = formatted
         }
-    });
+    })
 }
 
 function deleteDeck() {
-    if (!deckId) return;
-    if (!confirm('Are you sure you want to delete this deck?')) return;
+    if (!deckId) return
+    if (!confirm('Are you sure you want to delete this deck?')) return
     
     fetch(`/api/decks/${deckId}`, {
         method: 'DELETE',
@@ -239,65 +226,14 @@ function deleteDeck() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            window.location.href = '/dashboard?tab=decks';
+            window.location.href = '/dashboard?tab=decks'
         }
-    });
+    })
 }
 
 function playDeck(){
     window.location = '/dashboard/flashcard?id=' + deckId + '&from=flashcard_editor'
 }
-
-//Drag and Drop
-let dragIndex = null
-
-function ondragstart(e){
-    if (e.target.tagName === 'TEXTAREA'){
-        e.preventDefault()
-        return
-    }
-    dragIndex = parseInt(this.dataset.index)
-    this.classList.add('dragging')
-}
-
-function ondragover(e){
-    e.preventDefault()
-    document.querySelectorAll('.card-row').forEach(r => r.classList.remove('drag-over'))
-    this.classList.add('drag-over')
-}
-
-function ondrop(e){
-    e.preventDefault()
-    const dropIndex = parseInt(this.dataset.index)
-    if(dragIndex === null || dragIndex === dropIndex) return 
-    //reoder the cards array
-    const moved = cards.splice(dragIndex, 1)[0]
-    cards.splice(dropIndex, 0, moved)
-    renderCards()
-    markUnsaved()
-}
-
-function ondragend(){
-    document.querySelectorAll('.card-row').forEach(r => {
-        r.classList.remove('dragging')
-        r.classList.remove('drag-over')
-        r.draggable = false
-    })
-    dragIndex = null
-}
-
-// Auto scroll when dragging near edges
-document.addEventListener('dragover', function(e){
-    const scrollable = document.querySelector('.card-list-wrap')
-    const rect = scrollable.getBoundingClientRect()
-    const threshold = 60  // pixels from edge to start scrolling
-
-    if(e.clientY < rect.top + threshold){
-        scrollable.scrollTop -= 8  // scroll up
-    } else if(e.clientY > rect.bottom - threshold){
-        scrollable.scrollTop += 8  // scroll down
-    }
-})
 
 if (deckId) {
     fetch(`/api/decks/${deckId}`)
@@ -307,18 +243,17 @@ if (deckId) {
             cards = deck.cards
             applyVis(deck.is_public ? 'public' : 'private')
             deck.tags.forEach(tag => {
-                 const pill = document.createElement('span');
-                pill.className = 'note-tag tag-removable';
-                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
-                const input = document.getElementById('tag-input');
-                document.getElementById('tags-wrap').insertBefore(pill, input);
-            });
+                const pill = document.createElement('span')
+                pill.className = 'note-tag tag-removable'
+                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`
+                const input = document.getElementById('tag-input')
+                document.getElementById('tags-wrap').insertBefore(pill, input)
+            })
+            document.getElementById('detail-created').textContent = deck.created_at
+            document.getElementById('detail-updated').textContent = deck.updated_at
+            document.getElementById('detail-accessed').textContent = deck.accessed_at
             renderCards()
-            // //marking newly made decks unsaved
-            // if(deck.cards.length === 0){
-            //     markUnsaved()
-            // }
         })
-} else {
+}else {
     renderCards()
 }

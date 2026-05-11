@@ -129,6 +129,41 @@
           </div>
 
           <div class="editor-side-card">
+            <div class="editor-side-label">Quiz History</div>
+            <div id="quiz-history-list">
+              {% if note and note.quizzes %}
+                {% for quiz in note.quizzes|sort(attribute='created_at', reverse=true) %}
+                  {% set score_percentage = ((quiz.total_correct / quiz.total_questions) * 100)|round|int if quiz.total_questions else 0 %}
+                  {% set quiz_target = url_for('main.quiz_results', id=quiz.quiz_id) if quiz.is_completed else url_for('main.quiz_active', id=quiz.quiz_id) %}
+                  <div class="quiz-history-item" data-quiz-id="{{ quiz.quiz_id }}" data-quiz-target="{{ quiz_target }}">
+                    <span class="quiz-history-name" title="{{ quiz.name }}">{{ quiz.name }}</span>
+                    <span class="quiz-history-score{% if quiz.is_completed %} is-completed{% endif %}">
+                      {% if quiz.is_completed %}
+                        {{ score_percentage }}%
+                      {% else %}
+                        &mdash;
+                      {% endif %}
+                    </span>
+                    <button
+                      type="button"
+                      class="quiz-history-delete-btn"
+                      data-quiz-id="{{ quiz.quiz_id }}"
+                      data-quiz-name="{{ quiz.name }}"
+                      aria-label="Delete {{ quiz.name }}"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                {% endfor %}
+              {% elif note %}
+                <div class="quiz-history-empty">No quizzes generated yet.</div>
+              {% else %}
+                <div class="quiz-history-empty">Save this note to start quiz history.</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="editor-side-card">
               <div class="editor-side-label">Details:</div>
               <div class="note-detail-row">
                   <span class="note-detail-label">Created</span>
@@ -161,11 +196,6 @@
   
 
   <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
-  <script>
-    function goToQuiz() {
-        window.location.href = "{{ url_for('main.quiz_active') }}";
-    }
-  </script>
 {% endblock %}
 
 
@@ -197,6 +227,16 @@
   <div class="table-modal-actions">
     <button onclick="closeTableModal()" class="table-modal-btn-cancel">Cancel</button>
     <button onclick="insertTable()" class="table-modal-btn-insert">Insert Table</button>
+  </div>
+</div>
+
+<div class="quiz-delete-modal-backdrop" id="quiz-delete-modal-backdrop" hidden></div>
+<div class="quiz-delete-modal" id="quiz-delete-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-delete-modal-title" hidden>
+  <div class="quiz-delete-modal-title" id="quiz-delete-modal-title">Delete Quiz</div>
+  <div class="quiz-delete-modal-message" id="quiz-delete-modal-message">Are you sure you want to permanently delete this quiz? This action cannot be undone.</div>
+  <div class="quiz-delete-modal-actions">
+    <button type="button" class="quiz-delete-modal-btn quiz-delete-modal-btn-cancel" id="quiz-delete-modal-cancel">Cancel</button>
+    <button type="button" class="quiz-delete-modal-btn quiz-delete-modal-btn-delete" id="quiz-delete-modal-confirm">Delete</button>
   </div>
 </div>
 

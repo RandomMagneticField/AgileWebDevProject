@@ -87,7 +87,7 @@ function createDeckCard(deck) {
 //sort the notes and decks 
 const sortBtn = document.getElementById('sort-btn')
 const sortDropdown = document.getElementById('sort-dropdown')
-let currentSort = 'date'
+let currentSort = 'created'
 
 sortBtn.addEventListener('click', function(){
     sortDropdown.style.display = 
@@ -115,8 +115,12 @@ function sortdata(data){
     const sorted = [...data]
     if(currentSort === 'alpha'){
         sorted.sort((a,b) => a.title.localeCompare(b.title))
-    } else if(currentSort === 'date'){
+    } else if(currentSort === 'created'){
         sorted.sort((a,b) => new Date(b.date) - new Date(a.date))
+    } else if(currentSort === 'updated'){
+        sorted.sort((a,b) => new Date(b.updated) - new Date(a.updated))
+    } else if(currentSort === 'accessed'){
+        sorted.sort((a,b) => new Date(b.accessed) - new Date(a.accessed))
     }
     return sorted
 }
