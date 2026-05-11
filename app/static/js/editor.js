@@ -764,27 +764,111 @@ function deleteNote() {
     });
 }
 
-function goToQuiz() {
-    if (!NOTE_ID) {
-        alert('Please save this note before generating a quiz.');
+const quizBtn = document.querySelector('.btn-quiz');
+
+function setQuizButtonLoading(isLoading) {
+    if (!quizBtn) return;
+
+    quizBtn.disabled = isLoading;
+    quizBtn.innerHTML = isLoading
+        ? '<i class="bi bi-lightning-charge"></i> Generating...'
+        : '<i class="bi bi-lightning-charge"></i> Generate Quiz';
+}
+
+async function goToQuiz() {
+    if (quizBtn && quizBtn.disabled) {
         return;
     }
 
-    fetch('/api/quizzes/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note_id: Number(NOTE_ID) })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.quiz_id) {
-            window.location.href = `/quiz/active?id=${data.quiz_id}`;
+    setQuizButtonLoading(true);
+
+    const resetQuizButton = () => setQuizButtonLoading(false);
+
+    // Require a saved note id first
+    if (!NOTE_ID) {
+        alert('Please save this note before generating a quiz.');
+        resetQuizButton();
+        return;
+    }
+
+    // If there are unsaved changes, block generation
+    if (saveBtn.classList.contains('unsaved')) {
+        alert('Please save this note before generating a quiz.');
+        resetQuizButton();
+        return;
+    }
+
+    // Fetch note data from DB
+    let note;
+    try {
+        const noteRes = await fetch(`/api/notes/${Number(NOTE_ID)}`);
+        if (!noteRes.ok) {
+            alert('Could not load note from server.');
+            resetQuizButton();
+            return;
+        }
+        note = await noteRes.json();
+    } catch (e) {
+        alert('Could not load note from server.');
+        resetQuizButton();
+        return;
+    }
+
+    const noteTitle = (note.title || '').trim();
+    const noteContent = (note.content || '').trim();
+
+    if (!noteTitle) {
+        alert('Please add a note title before generating a quiz.');
+        resetQuizButton();
+        return;
+    }
+
+    if (!noteContent) {
+        alert('Please add note content before generating a quiz.');
+        resetQuizButton();
+        return;
+    }
+
+    try {
+        const generateResponse = await fetch(`/api/quizzes/generate/${Number(NOTE_ID)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const generatedQuiz = await generateResponse.json();
+
+        if (!generateResponse.ok) {
+            if (generatedQuiz.error === 'insufficient information') {
+                alert('There is not enough information in this note to generate a quiz.');
+                resetQuizButton();
+                return;
+            }
+
+            alert('Could not generate quiz');
+            resetQuizButton();
             return;
         }
 
-        alert(data.error || 'Failed to generate quiz.');
-    })
-    .catch(() => {
-        alert('Failed to generate quiz.');
-    });
+        const saveResponse = await fetch(`/api/quizzes/save/${Number(NOTE_ID)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(generatedQuiz)
+        });
+
+        const savedQuiz = await saveResponse.json();
+
+        if (!saveResponse.ok || !savedQuiz.quiz_id) {
+            alert('Could not generate quiz');
+            resetQuizButton();
+            return;
+        }
+
+        window.location.href = `/quiz/active?id=${savedQuiz.quiz_id}`;
+    } catch (error) {
+        alert('Could not generate quiz');
+        resetQuizButton();
+        return;
+    } finally {
+        resetQuizButton();
+    }
 }

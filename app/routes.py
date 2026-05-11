@@ -1,11 +1,18 @@
+import json
+import os
+
 from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
 from flask_login import login_user, logout_user, login_required, current_user
+from openai import APIConnectionError, APITimeoutError, OpenAI, RateLimitError
+
 from app import db
+from app.controllers import validate_quiz, build_quiz_content, extract_quiz_question_options, extract_correct_answer
 from app.models import User, Note, Deck, Tag, Quiz, QuizQuestion, Flashcard, FlashcardResult, DeckProgress, SessionAnswer
 from app.forms import RegisterForm, LoginForm, QuizSubmissionForm
 from datetime import datetime, timezone
-from flask_login import login_user, logout_user, login_required, current_user
-import random
+
+openai_api_key = os.getenv('OPENAI_API_KEY')
+openai_client = OpenAI(api_key=openai_api_key, timeout=25.0) if openai_api_key else None
 
 main = Blueprint('main', __name__)
 
@@ -577,23 +584,163 @@ def copy_deck(deck_id):
     new_deck.tags = original.tags
     db.session.commit()
     return jsonify({'success': True, 'id': new_deck.deck_id})
-    
 
-@main.route('/api/quizzes/generate', methods=['POST'])
+
+@main.route('/api/quizzes/generate/<int:note_id>', methods=['POST'])
 @login_required
-def generate_quiz():
-    data = request.get_json()
-    note_id = data.get('note_id') if data else None
-    
-    if note_id is None:
-        return jsonify({'error': 'note_id is required'}), 400
-    
+def generate_quiz(note_id):
     note = Note.query.get(note_id)
     if note is None:
         return jsonify({'error': 'Note not found'}), 404
-    
+
     if note.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
+
+    if openai_client is None:
+        return jsonify({'error': 'Could not generate quiz'}), 500
+
+    content = build_quiz_content(note)
+    if not content.strip():
+        return jsonify({'error': 'insufficient information'}), 400
+
+    # Check token budget (estimate: ~4 chars per token)
+    estimated_tokens = len(content) / 4
+    MAX_INPUT_TOKENS = 2000
+    if estimated_tokens > MAX_INPUT_TOKENS:
+        return jsonify({'error': 'Note content too large for quiz generation; please split into smaller notes'}), 400
+
+    system_content = """
+You are a quiz generation engine.
+
+You MUST:
+- Return ONLY valid JSON
+- Do not include any text before or after the JSON
+- Follow all rules exactly
+
+Basline Rules:
+- Generate between 5 and 15 questions
+- Each question MUST have exactly 4 options
+- Question max length: 300 characters
+- Option max length: 120 characters
+- All options must be distinct
+- Exactly one correct answer per question
+- Do not use backticks, markdown, or LaTeX. If the question involves math expressions or code, leave them in plaintext.
+- Avoid ambiguous distractors
+- "All of the above" and "none of the above" are allowed only sparingly
+- At most 20 percent of the questions in a quiz may use either of those options
+- If you use "all of the above" or "none of the above", it MUST be the 4th option
+- Prefer normal distractors whenever possible
+- If a candidate question would violate any rule, replace it with a different valid question
+
+Question content rules:
+- You may generate questions that test understanding of the concepts in the note.
+- Questions may be:
+  - Direct (definition or recall)
+  - Applied (using the concept in a simple scenario)
+  - Analytical (interpreting or comparing concepts from the note)
+- Questions must be fully grounded in the concepts in the note.
+- You may create new simple examples, expressions, or scenarios to test those concepts, as long as they do not introduce new topics or rules beyond those in the note.
+- Try not to make answers too obvious.
+You must NOT:
+  - Assume missing information
+  - Introduce new concepts, topics, or factual information not present in the note.
+  - Use real-world references unless explicitly included in the note
+  - Make any two questions the same in regards to a specific topic
+
+If there is insufficient information in the given note,
+OR
+The note clearly is not of educational value (e.g. someone's diary or random ramblings)
+Then return:
+{ "error": "insufficient_information" }
+"""
+
+    user_content = f"""
+Generate a quiz from the following note:
+
+{content}
+
+Return in this exact JSON format:
+{{
+    "questions": [
+        {{
+            "question": string,
+            "options": [string, string, string, string],
+            "correct_index": integer (0-3)
+        }}
+    ]
+}}
+
+Example:
+{{
+    "questions": [
+        {{
+            "question": "What is the capital of France?",
+            "options": ["Paris", "London", "Rome", "Berlin"],
+            "correct_index": 0
+        }}
+    ]
+}}
+
+If you choose to use "all of the above" or "none of the above", make it the final option in the list and keep the total number of such questions to at most 20% of the quiz.
+"""
+
+    try:
+        completion = openai_client.chat.completions.create(
+            model='gpt-4o-mini',
+            temperature=0.3,
+            response_format={'type': 'json_object'},
+            messages=[
+                {
+                    'role': 'system',
+                    'content': system_content,
+                },
+                {
+                    'role': 'user',
+                    'content': user_content,
+                },
+            ],
+        )
+        # Get just first response
+        response_text = completion.choices[0].message.content or '{}'
+        quiz_data = json.loads(response_text)
+
+        # Account for multiple ways the response can give error
+        error_val = str(quiz_data.get('error', '')).strip().lower()
+        if 'insufficient' in error_val or error_val == 'insufficient_information':
+            return jsonify({'error': 'insufficient information'}), 400
+
+        validation_result = validate_quiz(quiz_data)
+        if validation_result[1] != 200:
+            return validation_result
+
+        return jsonify(quiz_data), 200
+    except json.JSONDecodeError:
+        return jsonify({'error': 'Could not generate quiz'}), 500
+    except APITimeoutError:
+        return jsonify({'error': 'Quiz generation timed out'}), 504
+    except (APIConnectionError, RateLimitError):
+        return jsonify({'error': 'Quiz generation temporarily unavailable'}), 503
+    except Exception:
+        return jsonify({'error': 'Could not generate quiz'}), 500
+
+
+@main.route('/api/quizzes/save/<int:note_id>', methods=['POST'])
+@login_required
+def save_quiz(note_id):
+    note = Note.query.get(note_id)
+    if note is None:
+        return jsonify({'error': 'Note not found'}), 404
+
+    if note.user_id != current_user.user_id:
+        return jsonify({'error': 'Unauthorised'}), 403
+
+    quiz_data = request.get_json() or {}
+
+    validation_result = validate_quiz(quiz_data)
+    if validation_result[1] != 200:
+        return validation_result
+
+    questions = quiz_data.get('questions', [])
 
     # Determine the next quiz name number for this user's quizzes using this note title prefix.
     quiz_name_prefix = f"{note.title} Quiz "
@@ -613,67 +760,41 @@ def generate_quiz():
 
     quiz_name = f"{quiz_name_prefix}{max_suffix + 1}"
 
-    # Generate quiz (dummy for now)
-
-    question_count = random.randint(3, 6)
-    generated_questions = []
-    option_letters = ['a', 'b', 'c', 'd']
-
-    for _ in range(question_count):
-        left_operand = random.randint(0, 20)
-        right_operand = random.randint(0, 20)
-        correct_value = left_operand + right_operand
-
-        incorrect_values = set()
-        while len(incorrect_values) < 3:
-            delta = random.randint(1, 5)
-            candidate = correct_value + random.choice([-delta, delta])
-            if candidate < 0 or candidate == correct_value:
-                continue
-            incorrect_values.add(candidate)
-
-        option_values = [correct_value] + list(incorrect_values)
-        random.shuffle(option_values)
-
-        correct_index = option_values.index(correct_value)
-        correct_letter = option_letters[correct_index]
-
-        generated_questions.append({
-            'question_text': f"What is {left_operand} + {right_operand}?",
-            'option_A': str(option_values[0]),
-            'option_B': str(option_values[1]),
-            'option_C': str(option_values[2]),
-            'option_D': str(option_values[3]),
-            'correct_answer': correct_letter,
-        })
-
-    generated_quiz_data = {
-        'name': quiz_name,
-        'questions': generated_questions,
-    }
-
-    # Save into database
-
     quiz = Quiz(
         note_id=note.note_id,
-        name=generated_quiz_data['name'],
-        total_questions=len(generated_quiz_data['questions']),
+        name=quiz_name,
+        total_questions=len(questions),
         total_correct=0,
     )
     db.session.add(quiz)
     db.session.flush()
 
     quiz_questions = []
-    for index, question in enumerate(generated_quiz_data['questions']):
+    for index, question in enumerate(questions):
+        options = extract_quiz_question_options(question)
+        if options is None:
+            db.session.rollback()
+            return jsonify({'error': 'Quiz question options are invalid; expected `options` array of length 4'}), 400
+
+        correct_answer = extract_correct_answer(question, options)
+        if correct_answer is None:
+            db.session.rollback()
+            return jsonify({'error': 'Quiz question correct answer is invalid; expected a/b/c/d or 1-4'}), 400
+
+        question_text = question.get('question_text') or question.get('question')
+        if not question_text:
+            db.session.rollback()
+            return jsonify({'error': 'Quiz question text is required'}), 400
+
         quiz_questions.append(
             QuizQuestion(
                 quiz_id=quiz.quiz_id,
-                question_text=question['question_text'],
-                option_a=question['option_A'],
-                option_b=question['option_B'],
-                option_c=question['option_C'],
-                option_d=question['option_D'],
-                correct_answer=question['correct_answer'],
+                question_text=question_text,
+                option_a=options[0],
+                option_b=options[1],
+                option_c=options[2],
+                option_d=options[3],
+                correct_answer=correct_answer,
                 user_answer=None,
                 order_index=index,
             )
