@@ -112,6 +112,7 @@ class Deck(db.Model):
     is_public = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     accessed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # relationships
     user = db.relationship('User', back_populates='decks', foreign_keys=[user_id])

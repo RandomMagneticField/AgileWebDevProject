@@ -245,12 +245,30 @@
     font-weight: 300;
     line-height: 1.6;
     min-height: 60px;
+    max-height: 200px;
+    overflow-y: auto;
+    field-sizing: content;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-divider) transparent;
 }
 
 .side-textarea::placeholder { 
     color: var(--text-muted); 
 }
 
+.side-textarea::-webkit-scrollbar {
+    width: 3px;
+}
+.side-textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+.side-textarea::-webkit-scrollbar-thumb {
+    background: var(--sidebar-divider);
+    border-radius: 2px;
+}
+.side-textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--editor-box-border);
+}
 
 .tags-wrap {
     display: flex;
