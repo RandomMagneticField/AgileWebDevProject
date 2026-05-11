@@ -486,8 +486,8 @@ def discover():
 @main.route('/api/discover')
 @login_required
 def discover_data():
-    notes = Note.query.filter_by(is_public=True).order_by(Note.created_at.desc()).all()
-    decks = Deck.query.filter_by(is_public=True).order_by(Deck.created_at.desc()).all()
+    notes = Note.query.filter(Note.is_public==True, Note.user_id != current_user.user_id).order_by(Note.created_at.desc()).all()
+    decks = Deck.query.filter(Deck.is_public==True, Deck.user_id != current_user.user_id).order_by(Deck.created_at.desc()).all()
 
     return jsonify({
         'notes':[{
