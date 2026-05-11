@@ -1,6 +1,12 @@
-from app import db
+from app import db , login_manager
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 # ── Junction tables (many-to-many) ──
 
@@ -27,7 +33,7 @@ deck_likes = db.Table('deck_likes',
 
 # ── Models ──
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
@@ -47,6 +53,9 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    def get_id(self):
+        return str(self.user_id)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

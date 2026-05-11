@@ -1,33 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, jsonify, request
+from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
 from app import db
 from app.models import User
 from app.forms import RegisterForm, LoginForm
-from functools import wraps
 from app.models import User, Note, Deck, Tag, QuizSession
 from datetime import datetime, timezone
+from flask_login import login_user, logout_user, login_required, current_user
 
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('main.login'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
     return render_template('intro.html')
-
-# @main.route('/login')
-# def login():
-#     return render_template('auth/login.html')
-
-# @main.route('/signup')
-# def signup():
-#     return render_template('auth/signuppage.html')
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -37,7 +21,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        session['user_id'] = user.user_id
+        login_user(user)
         return redirect(url_for('main.dashboard'))
     return render_template('auth/signuppage.html', form=form)
 
@@ -47,21 +31,20 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            session['user_id'] = user.user_id
+            login_user(user)
             return redirect(url_for('main.dashboard'))
         flash('Invalid username or password')
     return render_template('auth/login.html', form=form)
 
 @main.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    logout_user()
     return redirect(url_for('main.login'))
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    user = User.query.get(session['user_id'])
-    return render_template('dashboard/index.html', active='dashboard', user=user)
+    return render_template('dashboard/index.html', active='dashboard', user=current_user)
 
 from app.models import FlashcardResult
 def get_last_score(deck, user_id):
@@ -82,9 +65,8 @@ def get_last_score(deck, user_id):
 @main.route('/api/dashboard')
 @login_required
 def dashboard_data():
-    user = User.query.get(session['user_id'])
-    notes = Note.query.filter_by(user_id=user.user_id).order_by(Note.created_at.desc()).all()
-    decks = Deck.query.filter_by(user_id=user.user_id).order_by(Deck.created_at.desc()).all()
+    notes = Note.query.filter_by(user_id=current_user.user_id).order_by(Note.created_at.desc()).all()
+    decks = Deck.query.filter_by(user_id=current_user.user_id).order_by(Deck.created_at.desc()).all()
     
     return jsonify({
         'notes': [{
@@ -98,8 +80,8 @@ def dashboard_data():
             'id': d.deck_id,
             'title': d.title,
             'count': len(d.flashcards),
-            'lastScore': get_last_score(d, user.user_id)[0],
-            'lastTotal': get_last_score(d, user.user_id)[1],
+            'lastScore': get_last_score(d, current_user.user_id)[0],
+            'lastTotal': get_last_score(d, current_user.user_id)[1],
             'tags': [t.name for t in d.tags],
             'date': d.created_at.strftime('%d %b')
         } for d in decks]
@@ -111,7 +93,7 @@ def note_editor():
     note_id = request.args.get('id', type=int)
     if note_id:
         note = Note.query.get(note_id)
-        if note is None or note.user_id != session['user_id']:
+        if note is None or note.user_id != current_user.user_id:
             return redirect(url_for('main.dashboard'))
     else:
         note = None
@@ -122,7 +104,7 @@ def note_editor():
 @login_required
 def get_note(note_id):
     note = Note.query.get_or_404(note_id)
-    if note.user_id != session['user_id']:
+    if note.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     note.accessed_at = datetime.now(timezone.utc)
     db.session.commit()
@@ -143,7 +125,7 @@ def get_note(note_id):
 @login_required
 def save_note(note_id):
     note = Note.query.get_or_404(note_id)
-    if note.user_id != session['user_id']:
+    if note.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     note.title = data.get('title', note.title)
@@ -173,7 +155,7 @@ def save_note(note_id):
 def delete_note(note_id):
     from app.models import QuizSession, QuizQuestion
     note = Note.query.get_or_404(note_id)
-    if note.user_id != session['user_id']:
+    if note.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     
     # delete related quiz sessions and questions first
@@ -191,11 +173,10 @@ def delete_note(note_id):
 @login_required
 def create_note():
     data = request.get_json()
-    user = User.query.get(session['user_id'])
     note = Note(
         title=data.get('title', 'Untitled'),
         content_md='',
-        user_id=user.user_id
+        user_id=current_user.user_id
     )
     db.session.add(note)
     db.session.commit()
@@ -206,19 +187,18 @@ def create_note():
 def search():
     # q is URL param, and returns '' if not present
     query = request.args.get('q', '').strip()
-    user = User.query.get(session['user_id'])
     
     if not query:
         return jsonify({'notes': [], 'decks': []})
     
     notes = Note.query.filter(
-        Note.user_id == user.user_id,
+        Note.user_id == current_user.user_id,
         # ilike is case insensitive version of SQLs LIKE operator
         Note.title.ilike(f'%{query}%')
     ).order_by(Note.created_at.desc()).all()
     
     decks = Deck.query.filter(
-        Deck.user_id == user.user_id,
+        Deck.user_id == current_user.user_id,
         Deck.title.ilike(f'%{query}%')
     ).order_by(Deck.created_at.desc()).all()
     
@@ -234,8 +214,8 @@ def search():
             'id': d.deck_id,
             'title': d.title,
             'count': len(d.flashcards),
-            'lastScore': get_last_score(d, user.user_id)[0],
-            'lastTotal': get_last_score(d, user.user_id)[1],
+            'lastScore': get_last_score(d, current_user.user_id)[0],
+            'lastTotal': get_last_score(d, current_user.user_id)[1],
             'tags': [t.name for t in d.tags],
             'date': d.created_at.strftime('%d %b')
         } for d in decks]
@@ -247,7 +227,7 @@ def flashcard_editor():
     deck_id = request.args.get('id', type= int)
     if deck_id:
         deck = Deck.query.get(deck_id)
-        if deck is None or deck.user_id != session['user_id']:
+        if deck is None or deck.user_id != current_user.user_id:
             return redirect(url_for('main.dashboard'))
     else:
         deck = None
@@ -257,10 +237,9 @@ def flashcard_editor():
 @login_required
 def create_deck():
     data = request.get_json()
-    user = User.query.get(session['user_id'])
     deck = Deck(
         title = data.get('title', 'Untitle'),
-        user_id = user.user_id
+        user_id=current_user.user_id
     )
     db.session.add(deck)
     db.session.commit()
@@ -270,12 +249,13 @@ def create_deck():
 @login_required
 def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     return jsonify({
         'id': deck.deck_id,
         'title': deck.title,
-        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} for c in deck.flashcards],
+        'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
+                 for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'is_public': deck.is_public,
         'tags': [t.name for t in deck.tags]
     })
@@ -284,14 +264,14 @@ def get_deck(deck_id):
 @login_required
 def save_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     deck.title = data.get('title', deck.title)
     deck.is_public = data.get('is_public', deck.is_public)
     
     from app.models import Flashcard, FlashcardResult
-    #delete reuslts of cards that are removed only
+    #delete results of cards that are removed only
     if 'cards' in data:
         incoming_ids = set(c['id'] for c in data['cards'] if c.get('id'))
 
@@ -329,17 +309,17 @@ def save_deck(deck_id):
     from app.models import DeckProgress
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
-        user_id = session['user_id']
+        user_id=current_user.user_id
     ).first()
     if progress:
         progress.current_index = 0
         progress.updated_at = datetime.now(timezone.utc)
 
-    #delete the previous flashcard play session
+    # delete the previous flashcard play session
     from app.models import SessionAnswer
     SessionAnswer.query.filter_by(
         deck_id = deck_id,
-        user_id = session['user_id']
+        user_id=current_user.user_id
     ).delete()
     db.session.commit()
     return jsonify({'success': True})
@@ -349,14 +329,14 @@ def save_deck(deck_id):
 def delete_deck(deck_id):
     from app.models import DeckProgress, SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     
     #delete progress and session answers
     DeckProgress.query.filter_by(deck_id = deck_id).delete()
     SessionAnswer.query.filter_by(deck_id = deck_id).delete()
 
-    #delete flashcard results and flashcards
+    # delete flashcard results and flashcards
     for card in deck.flashcards:
         FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
         db.session.delete(card)
@@ -371,11 +351,11 @@ def delete_deck(deck_id):
 def save_session_answer(deck_id):
     from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     answer = SessionAnswer(
-        user_id = session['user_id'],
+        user_id = current_user.user_id,
         deck_id = deck_id,
         flashcard_id = data['flashcard_id'],
         is_correct = data['is_correct']
@@ -389,11 +369,11 @@ def save_session_answer(deck_id):
 def get_session_answers(deck_id):
     from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     answers = SessionAnswer.query.filter_by(
         deck_id = deck_id,
-        user_id = session['user_id']
+        user_id=current_user.user_id
     ).order_by(SessionAnswer.answered_at).all()
     return jsonify({'answers': [{
         'flashcard_id': a.flashcard_id,
@@ -405,11 +385,11 @@ def get_session_answers(deck_id):
 def clear_session_answers(deck_id):
     from app.models import SessionAnswer
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     SessionAnswer.query.filter_by(
         deck_id = deck_id,
-        user_id= session['user_id']
+        user_id=current_user.user_id
     ).delete()
     db.session.commit()
     return jsonify({'success': True})
@@ -417,10 +397,10 @@ def clear_session_answers(deck_id):
 @main.route('/dashboard/flashcard')
 @login_required
 def flashcard():
-    deck_id = request.args.get('id', type = int)
+    deck_id = request.args.get('id', type=int)
     if deck_id:
         deck = Deck.query.get(deck_id)
-        if deck is None or deck.user_id != session['user_id']:
+        if deck is None or deck.user_id != current_user.user_id:
             return redirect(url_for('main.dashboard'))
     else:
         deck = None
@@ -431,7 +411,7 @@ def flashcard():
 def save_flashcard_result(deck_id):
     from app.models import FlashcardResult
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json() or {}
     results = data.get('results', [])
@@ -445,7 +425,7 @@ def save_flashcard_result(deck_id):
         else:
             wrong_ans += 1
         result = FlashcardResult(
-            user_id=session['user_id'],
+            user_id=current_user.user_id,
             flashcard_id=flashcard_id,
             is_correct=correct
         )
@@ -466,11 +446,11 @@ def save_flashcard_result(deck_id):
 def get_progress(deck_id):
     from app.models import DeckProgress
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
-        user_id = session['user_id']
+        user_id = current_user.user_id
     ).first()
     return jsonify({'current_index': progress.current_index if progress else 0})
 
@@ -479,19 +459,19 @@ def get_progress(deck_id):
 def save_progress(deck_id):
     from app.models import DeckProgress
     deck = Deck.query.get_or_404(deck_id)
-    if deck.user_id != session['user_id']:
+    if deck.user_id != current_user.user_id:
         return jsonify({'error': 'Unauthorised'}), 403
     data = request.get_json()
     progress = DeckProgress.query.filter_by(
         deck_id = deck_id,
-        user_id = session['user_id']
+        user_id = current_user.user_id
     ).first()
     if progress:
         progress.current_index = data['current_index']
         progress.updated_at = datetime.now(timezone.utc)
     else:
         progress = DeckProgress(
-            user_id = session['user_id'],
+            user_id = current_user.user_id,
             deck_id = deck_id,
             current_index = data['current_index']
         )
@@ -507,7 +487,6 @@ def discover():
 @main.route('/api/discover')
 @login_required
 def discover_data():
-    user = User.query.get(session['user_id'])
     notes = Note.query.filter_by(is_public=True).order_by(Note.created_at.desc()).all()
     decks = Deck.query.filter_by(is_public=True).order_by(Deck.created_at.desc()).all()
 
@@ -519,7 +498,7 @@ def discover_data():
             'tags': [t.name for t in n.tags],
             'date': n.created_at.strftime('%d %b'),
             'likes': len(n.likes),
-            'liked': user in n.likes
+            'liked': current_user in n.likes
         }for n in notes],
         'decks': [{
             'id': d.deck_id,
@@ -528,7 +507,7 @@ def discover_data():
             'tags': [t.name for t in d.tags],
             'date': d.created_at.strftime('%d %b'),
             'likes': len(d.likes),
-            'liked': user in d.likes
+            'liked': current_user in d.likes
         } for d in decks]
     })
 
@@ -536,12 +515,11 @@ def discover_data():
 @login_required
 def toggle_note_like(note_id):
     note = Note.query.get_or_404(note_id)
-    user = User.query.get(session['user_id'])
-    if user in note.likes:
-        note.likes.remove(user)
+    if current_user in note.likes:
+        note.likes.remove(current_user)
         liked = False
     else:
-        note.likes.append(user)
+        note.likes.append(current_user)
         liked = True
     db.session.commit()
     return jsonify({'success': True, 'liked': liked, 'likes': len(note.likes)})
@@ -550,12 +528,11 @@ def toggle_note_like(note_id):
 @login_required
 def toggle_deck_like(deck_id):
     deck = Deck.query.get_or_404(deck_id)
-    user = User.query.get(session['user_id'])
-    if user in deck.likes:
-        deck.likes.remove(user)
+    if current_user in deck.likes:
+        deck.likes.remove(current_user)
         liked = False
     else:
-        deck.likes.append(user)
+        deck.likes.append(current_user)
         liked = True
     db.session.commit()
     return jsonify({'success': True, 'liked': liked, 'likes': len(deck.likes)})
@@ -566,12 +543,11 @@ def copy_note(note_id):
     original = Note.query.get_or_404(note_id)
     if not original.is_public:
         return jsonify({'error': 'Note is not public'}), 403
-    user = User.query.get(session['user_id'])
     new_note = Note(
         title = original.title,
         description = original.description,
         content_md = original.content_md,
-        user_id = user.user_id,
+        user_id = current_user.user_id,
         copied_from = original.note_id
     )
     new_note.tags = original.tags
@@ -586,10 +562,9 @@ def copy_deck(deck_id):
     original = Deck.query.get_or_404(deck_id)
     if not original.is_public:
         return jsonify({'error': 'Deck is not public'}), 403
-    user = User.query.get(session['user_id'])
     new_deck = Deck(
         title = original.title,
-        user_id = user.user_id,
+        user_id = current_user.user_id,
         copied_from = original.deck_id
     )
     db.session.add(new_deck)
@@ -625,22 +600,21 @@ def quiz_results():
 @main.route('/profile')
 @login_required
 def profile():
-    user = User.query.get(session['user_id'])
-    note_count = Note.query.filter_by(user_id=user.user_id).count()
-    public_note_count = Note.query.filter_by(user_id=user.user_id, is_public=True).count()
-    deck_count = Deck.query.filter_by(user_id=user.user_id).count()
-    public_deck_count = Deck.query.filter_by(user_id=user.user_id, is_public=True).count()
+    note_count = Note.query.filter_by(user_id=current_user.user_id).count()
+    public_note_count = Note.query.filter_by(user_id=current_user.user_id, is_public=True).count()
+    deck_count = Deck.query.filter_by(user_id=current_user.user_id).count()
+    public_deck_count = Deck.query.filter_by(user_id=current_user.user_id, is_public=True).count()
 
-    quiz_count = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).count()
+    quiz_count = QuizSession.query.filter_by(user_id=current_user.user_id, is_saved=True).count()
     
     # avg quiz score
-    quizzes = QuizSession.query.filter_by(user_id=user.user_id, is_saved=True).all()
+    quizzes = QuizSession.query.filter_by(user_id=current_user.user_id, is_saved=True).all()
     if quizzes:
         avg_score = str(round(sum(q.score / q.total * 100 for q in quizzes if q.total > 0) / len(quizzes))) + '%'
     else:
         avg_score = 'N/A'
 
-    return render_template('profile.html', active='profile', user=user,
+    return render_template('profile.html', active='profile', user=current_user,
         note_count=note_count, public_note_count=public_note_count,
         deck_count=deck_count, public_deck_count=public_deck_count,
         quiz_count=quiz_count, avg_score=avg_score)
@@ -650,7 +624,6 @@ def profile():
 @login_required
 def update_profile():
     data = request.get_json()
-    user = User.query.get(session['user_id'])
     
     new_username = data.get('username', '').strip()
     new_email = data.get('email', '').strip()
@@ -658,14 +631,14 @@ def update_profile():
     if not new_username or not new_email:
         return jsonify({'error': 'Username and email cannot be empty'}), 400
     
-    if new_username != user.username and User.query.filter_by(username=new_username).first():
+    if new_username != current_user.username and User.query.filter_by(username=new_username).first():
         return jsonify({'error': 'Username already taken'}), 400
     
-    if new_email != user.email and User.query.filter_by(email=new_email).first():
+    if new_email != current_user.email and User.query.filter_by(email=new_email).first():
         return jsonify({'error': 'Email already in use'}), 400
     
-    user.username = new_username
-    user.email = new_email
+    current_user.username = new_username
+    current_user.email = new_email
     db.session.commit()
     
     return jsonify({'success': True})
@@ -673,30 +646,28 @@ def update_profile():
 @main.route('/change_password')
 @login_required
 def change_password():
-    user = User.query.get(session['user_id'])
-    return render_template('change_password.html' , active='profile', user=user)
+    return render_template('change_password.html' , active='profile', user=current_user)
 
 @main.route('/api/change_password', methods=['POST'])
 @login_required
 def change_password_api():
     data = request.get_json()
-    user = User.query.get(session['user_id'])
     
-    if not user.check_password(data.get('current_password', '')):
+    if not current_user.check_password(data.get('current_password', '')):
         return jsonify({'error': 'Current password is incorrect'}), 400
     
     new_password = data.get('new_password', '')
     if len(new_password) < 6:
         return jsonify({'error': 'New password must be at least 6 characters'}), 400
     
-    user.set_password(new_password)
+    current_user.set_password(new_password)
     db.session.commit()
     return jsonify({'success': True})
 
 @main.route('/api/delete_account', methods=['DELETE'])
 @login_required
 def delete_account():
-    user = User.query.get(session['user_id'])
+    user = current_user._get_current_object()
     
     # delete quiz questions and sessions
     for quiz in user.quiz_sessions:
@@ -725,7 +696,7 @@ def delete_account():
     db.session.delete(user)
     db.session.commit()
     
-    session.pop('user_id', None)
+    logout_user()
     return jsonify({'success': True})
 
 @main.route('/info')
