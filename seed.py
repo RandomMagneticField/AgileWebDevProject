@@ -1324,64 +1324,346 @@ colours.discard('purple') # no error if not found
 
     # ── Quiz Sessions ──
     # Alice - Flask quiz
-    qs1 = QuizSession(user_id=alice.user_id, note_id=n1.note_id, score=4, total=5, is_saved=True, is_retake=False, taken_at=datetime(2026, 3, 15, tzinfo=timezone.utc))
-    # Alice - SQLAlchemy quiz
-    qs2 = QuizSession(user_id=alice.user_id, note_id=n2.note_id, score=3, total=5, is_saved=True, is_retake=False, taken_at=datetime(2026, 3, 22, tzinfo=timezone.utc))
-    # Alice - retake Flask quiz
-    qs3 = QuizSession(user_id=alice.user_id, note_id=n1.note_id, score=5, total=5, is_saved=True, is_retake=True, taken_at=datetime(2026, 3, 20, tzinfo=timezone.utc))
-    # Bob - JS quiz
-    qs4 = QuizSession(user_id=bob.user_id, note_id=n4.note_id, score=3, total=5, is_saved=True, is_retake=False, taken_at=datetime(2026, 3, 18, tzinfo=timezone.utc))
-    # Bob - Agile quiz
-    qs5 = QuizSession(user_id=bob.user_id, note_id=n6.note_id, score=4, total=5, is_saved=True, is_retake=False, taken_at=datetime(2026, 4, 5, tzinfo=timezone.utc))
-    # Charlie - HTML quiz
-    qs6 = QuizSession(user_id=charlie.user_id, note_id=n7.note_id, score=2, total=5, is_saved=True, is_retake=False, taken_at=datetime(2026, 3, 15, tzinfo=timezone.utc))
+    q1 = Quiz(
+        note_id=n1.note_id,
+        name='Flask Quiz',
+        total_questions=5,
+        total_correct=4,
+        is_completed=True,
+        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc)
+    )
 
-    db.session.add_all([qs1, qs2, qs3, qs4, qs5, qs6])
+    # Alice - SQLAlchemy quiz
+    q2 = Quiz(
+        note_id=n2.note_id,
+        name='SQLAlchemy Quiz',
+        total_questions=5,
+        total_correct=3,
+        is_completed=True,
+        created_at=datetime(2026, 3, 22, tzinfo=timezone.utc)
+    )
+
+    # Bob - JS quiz
+    q4 = Quiz(
+        note_id=n4.note_id,
+        name='JavaScript Quiz',
+        total_questions=5,
+        total_correct=3,
+        is_completed=True,
+        created_at=datetime(2026, 3, 18, tzinfo=timezone.utc)
+    )
+
+    # Bob - Agile quiz
+    q5 = Quiz(
+        note_id=n6.note_id,
+        name='Agile Quiz',
+        total_questions=5,
+        total_correct=4,
+        is_completed=True,
+        created_at=datetime(2026, 4, 5, tzinfo=timezone.utc)
+    )
+
+    # Charlie - HTML quiz
+    q6 = Quiz(
+        note_id=n7.note_id,
+        name='HTML Quiz',
+        total_questions=5,
+        total_correct=2,
+        is_completed=True,
+        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc)
+    )
+
+    db.session.add_all([q1, q2, q4, q5, q6])
     db.session.commit()
 
     # ── Quiz Questions ──
-    # qs1 - Flask quiz
+    # ── Quiz Questions (converted to new standard) ──
+
     questions = [
-        QuizQuestion(session_id=qs1.quiz_id, question_text='What type of framework is Flask?', option_a='Full-stack framework', option_b='Micro-framework', option_c='Frontend framework', option_d='Testing framework', correct_option='b', user_answer='b', is_correct=True, order_index=0),
-        QuizQuestion(session_id=qs1.quiz_id, question_text='Which decorator is used to define a route in Flask?', option_a='@flask.route()', option_b='@main.url()', option_c='@app.route()', option_d='@route.map()', correct_option='c', user_answer='c', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs1.quiz_id, question_text='What templating engine does Flask use?', option_a='Handlebars', option_b='Mustache', option_c='Jinja2', option_d='Pug', correct_option='c', user_answer='c', is_correct=True, order_index=2),
-        QuizQuestion(session_id=qs1.quiz_id, question_text='What does url_for() do in Flask?', option_a='Fetches a URL from the internet', option_b='Generates a URL for a given endpoint', option_c='Validates a URL format', option_d='Redirects to a URL', correct_option='b', user_answer='a', is_correct=False, order_index=3),
-        QuizQuestion(session_id=qs1.quiz_id, question_text='What is a Blueprint in Flask?', option_a='A database schema diagram', option_b='A way to organise routes into modules', option_c='A type of HTML template', option_d='A configuration file format', correct_option='b', user_answer='b', is_correct=True, order_index=4),
+    # q1 - Flask quiz
+        QuizQuestion(
+            quiz_id=q1.quiz_id,
+            question_text='What type of framework is Flask?',
+            option_a='Full-stack framework',
+            option_b='Micro-framework',
+            option_c='Frontend framework',
+            option_d='Testing framework',
+            correct_answer='b',
+            user_answer='b',
+            order_index=0
+        ),
+        QuizQuestion(
+            quiz_id=q1.quiz_id,
+            question_text='Which decorator is used to define a route in Flask?',
+            option_a='@flask.route()',
+            option_b='@main.url()',
+            option_c='@app.route()',
+            option_d='@route.map()',
+            correct_answer='c',
+            user_answer='c',
+            order_index=1
+        ),
+        QuizQuestion(
+            quiz_id=q1.quiz_id,
+            question_text='What templating engine does Flask use?',
+            option_a='Handlebars',
+            option_b='Mustache',
+            option_c='Jinja2',
+            option_d='Pug',
+            correct_answer='c',
+            user_answer='c',
+            order_index=2
+        ),
+        QuizQuestion(
+            quiz_id=q1.quiz_id,
+            question_text='What does url_for() do in Flask?',
+            option_a='Fetches a URL from the internet',
+            option_b='Generates a URL for a given endpoint',
+            option_c='Validates a URL format',
+            option_d='Redirects to a URL',
+            correct_answer='b',
+            user_answer='a',
+            order_index=3
+        ),
+        QuizQuestion(
+            quiz_id=q1.quiz_id,
+            question_text='What is a Blueprint in Flask?',
+            option_a='A database schema diagram',
+            option_b='A way to organise routes into modules',
+            option_c='A type of HTML template',
+            option_d='A configuration file format',
+            correct_answer='b',
+            user_answer='b',
+            order_index=4
+        ),
 
-        # qs2 - SQLAlchemy quiz
-        QuizQuestion(session_id=qs2.quiz_id, question_text='What does ORM stand for?', option_a='Object Request Manager', option_b='Online Resource Mapper', option_c='Object Relational Mapper', option_d='Organised Relational Model', correct_option='c', user_answer='c', is_correct=True, order_index=0),
-        QuizQuestion(session_id=qs2.quiz_id, question_text='How do you retrieve all records from a model?', option_a='Model.query.get()', option_b='Model.query.all()', option_c='Model.fetch.all()', option_d='Model.select()', correct_option='b', user_answer='b', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs2.quiz_id, question_text='What does db.session.commit() do?', option_a='Creates a new database', option_b='Rolls back all changes', option_c='Saves pending changes to the database', option_d='Closes the database connection', correct_option='c', user_answer='a', is_correct=False, order_index=2),
-        QuizQuestion(session_id=qs2.quiz_id, question_text='Which method performs a case-insensitive search?', option_a='like()', option_b='ilike()', option_c='search()', option_d='contains()', correct_option='b', user_answer='b', is_correct=True, order_index=3),
-        QuizQuestion(session_id=qs2.quiz_id, question_text='What is a ForeignKey used for?', option_a='Encrypting data', option_b='Creating indexes', option_c='Linking records between tables', option_d='Generating primary keys', correct_option='c', user_answer='a', is_correct=False, order_index=4),
+        # q2 - SQLAlchemy quiz
+        QuizQuestion(
+            quiz_id=q2.quiz_id,
+            question_text='What does ORM stand for?',
+            option_a='Object Request Manager',
+            option_b='Online Resource Mapper',
+            option_c='Object Relational Mapper',
+            option_d='Organised Relational Model',
+            correct_answer='c',
+            user_answer='c',
+            order_index=0
+        ),
+        QuizQuestion(
+            quiz_id=q2.quiz_id,
+            question_text='How do you retrieve all records from a model?',
+            option_a='Model.query.get()',
+            option_b='Model.query.all()',
+            option_c='Model.fetch.all()',
+            option_d='Model.select()',
+            correct_answer='b',
+            user_answer='b',
+            order_index=1
+        ),
+        QuizQuestion(
+            quiz_id=q2.quiz_id,
+            question_text='What does db.session.commit() do?',
+            option_a='Creates a new database',
+            option_b='Rolls back all changes',
+            option_c='Saves pending changes to the database',
+            option_d='Closes the database connection',
+            correct_answer='c',
+            user_answer='a',
+            order_index=2
+        ),
+        QuizQuestion(
+            quiz_id=q2.quiz_id,
+            question_text='Which method performs a case-insensitive search?',
+            option_a='like()',
+            option_b='ilike()',
+            option_c='search()',
+            option_d='contains()',
+            correct_answer='b',
+            user_answer='b',
+            order_index=3
+        ),
+        QuizQuestion(
+            quiz_id=q2.quiz_id,
+            question_text='What is a ForeignKey used for?',
+            option_a='Encrypting data',
+            option_b='Creating indexes',
+            option_c='Linking records between tables',
+            option_d='Generating primary keys',
+            correct_answer='c',
+            user_answer='a',
+            order_index=4
+        ),
 
-        # qs3 - Flask retake
-        QuizQuestion(session_id=qs3.quiz_id, question_text='What type of framework is Flask?', option_a='Full-stack framework', option_b='Micro-framework', option_c='Frontend framework', option_d='Testing framework', correct_option='b', user_answer='b', is_correct=True, order_index=0),
-        QuizQuestion(session_id=qs3.quiz_id, question_text='Which decorator is used to define a route in Flask?', option_a='@flask.route()', option_b='@main.url()', option_c='@app.route()', option_d='@route.map()', correct_option='c', user_answer='c', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs3.quiz_id, question_text='What templating engine does Flask use?', option_a='Handlebars', option_b='Mustache', option_c='Jinja2', option_d='Pug', correct_option='c', user_answer='c', is_correct=True, order_index=2),
-        QuizQuestion(session_id=qs3.quiz_id, question_text='What does url_for() do in Flask?', option_a='Fetches a URL from the internet', option_b='Generates a URL for a given endpoint', option_c='Validates a URL format', option_d='Redirects to a URL', correct_option='b', user_answer='b', is_correct=True, order_index=3),
-        QuizQuestion(session_id=qs3.quiz_id, question_text='What is a Blueprint in Flask?', option_a='A database schema diagram', option_b='A way to organise routes into modules', option_c='A type of HTML template', option_d='A configuration file format', correct_option='b', user_answer='b', is_correct=True, order_index=4),
+        # q4 - JS quiz
+        QuizQuestion(
+            quiz_id=q4.quiz_id,
+            question_text='What does async/await do in JavaScript?',
+            option_a='Runs code in parallel threads',
+            option_b='Makes asynchronous code look synchronous',
+            option_c='Prevents code from running',
+            option_d='Caches function results',
+            correct_answer='b',
+            user_answer='b',
+            order_index=0
+        ),
+        QuizQuestion(
+            quiz_id=q4.quiz_id,
+            question_text='What does the spread operator (...) do?',
+            option_a='Creates a new thread',
+            option_b='Deletes array elements',
+            option_c='Expands an iterable into individual elements',
+            option_d='Compresses data',
+            correct_answer='c',
+            user_answer='c',
+            order_index=1
+        ),
+        QuizQuestion(
+            quiz_id=q4.quiz_id,
+            question_text='What is a Promise?',
+            option_a='A function that always returns true',
+            option_b='An object representing eventual completion of async operation',
+            option_c='A type of loop',
+            option_d='A way to store data',
+            correct_answer='b',
+            user_answer='a',
+            order_index=2
+        ),
+        QuizQuestion(
+            quiz_id=q4.quiz_id,
+            question_text='What does fetch() return?',
+            option_a='The response data directly',
+            option_b='A Promise',
+            option_c='An HTML element',
+            option_d='A JSON object',
+            correct_answer='b',
+            user_answer='b',
+            order_index=3
+        ),
+        QuizQuestion(
+            quiz_id=q4.quiz_id,
+            question_text='What is the difference between == and ===?',
+            option_a='No difference',
+            option_b='=== is slower',
+            option_c='=== checks value and type, == only checks value',
+            option_d='== checks value and type, === only checks value',
+            correct_answer='c',
+            user_answer='d',
+            order_index=4
+        ),
 
-        # qs4 - JS quiz
-        QuizQuestion(session_id=qs4.quiz_id, question_text='What does async/await do in JavaScript?', option_a='Runs code in parallel threads', option_b='Makes asynchronous code look synchronous', option_c='Prevents code from running', option_d='Caches function results', correct_option='b', user_answer='b', is_correct=True, order_index=0),
-        QuizQuestion(session_id=qs4.quiz_id, question_text='What does the spread operator (...) do?', option_a='Creates a new thread', option_b='Deletes array elements', option_c='Expands an iterable into individual elements', option_d='Compresses data', correct_option='c', user_answer='c', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs4.quiz_id, question_text='What is a Promise?', option_a='A function that always returns true', option_b='An object representing eventual completion of async operation', option_c='A type of loop', option_d='A way to store data', correct_option='b', user_answer='a', is_correct=False, order_index=2),
-        QuizQuestion(session_id=qs4.quiz_id, question_text='What does fetch() return?', option_a='The response data directly', option_b='A Promise', option_c='An HTML element', option_d='A JSON object', correct_option='b', user_answer='b', is_correct=True, order_index=3),
-        QuizQuestion(session_id=qs4.quiz_id, question_text='What is the difference between == and ===?', option_a='No difference', option_b='=== is slower', option_c='=== checks value and type, == only checks value', option_d='== checks value and type, === only checks value', correct_option='c', user_answer='d', is_correct=False, order_index=4),
+        # q5 - Agile quiz
+        QuizQuestion(
+            quiz_id=q5.quiz_id,
+            question_text='What does the Agile Manifesto value over processes and tools?',
+            option_a='Documentation',
+            option_b='Individuals and interactions',
+            option_c='Contract negotiation',
+            option_d='Following a plan',
+            correct_answer='b',
+            user_answer='b',
+            order_index=0
+        ),
+        QuizQuestion(
+            quiz_id=q5.quiz_id,
+            question_text='What is the role of the Product Owner in Scrum?',
+            option_a='Writing code',
+            option_b='Facilitating the process',
+            option_c='Defining and prioritising the product backlog',
+            option_d='Testing the product',
+            correct_answer='c',
+            user_answer='c',
+            order_index=1
+        ),
+        QuizQuestion(
+            quiz_id=q5.quiz_id,
+            question_text='How long is a Daily Standup?',
+            option_a='1 hour',
+            option_b='30 minutes',
+            option_c='15 minutes',
+            option_d='5 minutes',
+            correct_answer='c',
+            user_answer='c',
+            order_index=2
+        ),
+        QuizQuestion(
+            quiz_id=q5.quiz_id,
+            question_text='What is a Sprint Retrospective?',
+            option_a='A demo of working software',
+            option_b='A meeting to reflect on the process and improve',
+            option_c='Planning the next sprint',
+            option_d='A daily check-in',
+            correct_answer='b',
+            user_answer='a',
+            order_index=3
+        ),
+        QuizQuestion(
+            quiz_id=q5.quiz_id,
+            question_text='What format does a user story follow?',
+            option_a='As a developer, I need to...',
+            option_b='The system shall...',
+            option_c='As a [user], I want [goal], so that [reason]',
+            option_d='Feature: [name], Scenario: [case]',
+            correct_answer='c',
+            user_answer='c',
+            order_index=4
+        ),
 
-        # qs5 - Agile quiz
-        QuizQuestion(session_id=qs5.quiz_id, question_text='What does the Agile Manifesto value over processes and tools?', option_a='Documentation', option_b='Individuals and interactions', option_c='Contract negotiation', option_d='Following a plan', correct_option='b', user_answer='b', is_correct=True, order_index=0),
-        QuizQuestion(session_id=qs5.quiz_id, question_text='What is the role of the Product Owner in Scrum?', option_a='Writing code', option_b='Facilitating the process', option_c='Defining and prioritising the product backlog', option_d='Testing the product', correct_option='c', user_answer='c', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs5.quiz_id, question_text='How long is a Daily Standup?', option_a='1 hour', option_b='30 minutes', option_c='15 minutes', option_d='5 minutes', correct_option='c', user_answer='c', is_correct=True, order_index=2),
-        QuizQuestion(session_id=qs5.quiz_id, question_text='What is a Sprint Retrospective?', option_a='A demo of working software', option_b='A meeting to reflect on the process and improve', option_c='Planning the next sprint', option_d='A daily check-in', correct_option='b', user_answer='a', is_correct=False, order_index=3),
-        QuizQuestion(session_id=qs5.quiz_id, question_text='What format does a user story follow?', option_a='As a developer, I need to...', option_b='The system shall...', option_c='As a [user], I want [goal], so that [reason]', option_d='Feature: [name], Scenario: [case]', correct_option='c', user_answer='c', is_correct=True, order_index=4),
-
-        # qs6 - HTML quiz
-        QuizQuestion(session_id=qs6.quiz_id, question_text='What does DOCTYPE html declare?', option_a='The CSS version being used', option_b='The JavaScript version being used', option_c='That the document is HTML5', option_d='The server type', correct_option='c', user_answer='a', is_correct=False, order_index=0),
-        QuizQuestion(session_id=qs6.quiz_id, question_text='Which element is used for the main content of a page?', option_a='<content>', option_b='<main>', option_c='<body>', option_d='<article>', correct_option='b', user_answer='b', is_correct=True, order_index=1),
-        QuizQuestion(session_id=qs6.quiz_id, question_text='What attribute is required on <img> for accessibility?', option_a='title', option_b='src', option_c='alt', option_d='id', correct_option='c', user_answer='a', is_correct=False, order_index=2),
-        QuizQuestion(session_id=qs6.quiz_id, question_text='What does data-* attribute allow you to do?', option_a='Style elements with CSS', option_b='Store custom data on HTML elements', option_c='Link to external resources', option_d='Define element behaviour', correct_option='b', user_answer='b', is_correct=True, order_index=3),
-        QuizQuestion(session_id=qs6.quiz_id, question_text='Which form method sends data in the URL?', option_a='POST', option_b='PUT', option_c='GET', option_d='DELETE', correct_option='c', user_answer='d', is_correct=False, order_index=4),
+        # q6 - HTML quiz
+        QuizQuestion(
+            quiz_id=q6.quiz_id,
+            question_text='What does DOCTYPE html declare?',
+            option_a='The CSS version being used',
+            option_b='The JavaScript version being used',
+            option_c='That the document is HTML5',
+            option_d='The server type',
+            correct_answer='c',
+            user_answer='a',
+            order_index=0
+        ),
+        QuizQuestion(
+            quiz_id=q6.quiz_id,
+            question_text='Which element is used for the main content of a page?',
+            option_a='<content>',
+            option_b='<main>',
+            option_c='<body>',
+            option_d='<article>',
+            correct_answer='b',
+            user_answer='b',
+            order_index=1
+        ),
+        QuizQuestion(
+            quiz_id=q6.quiz_id,
+            question_text='What attribute is required on <img> for accessibility?',
+            option_a='title',
+            option_b='src',
+            option_c='alt',
+            option_d='id',
+            correct_answer='c',
+            user_answer='a',
+            order_index=2
+        ),
+        QuizQuestion(
+            quiz_id=q6.quiz_id,
+            question_text='What does data-* attribute allow you to do?',
+            option_a='Style elements with CSS',
+            option_b='Store custom data on HTML elements',
+            option_c='Link to external resources',
+            option_d='Define element behaviour',
+            correct_answer='b',
+            user_answer='b',
+            order_index=3
+        ),
+        QuizQuestion(
+            quiz_id=q6.quiz_id,
+            question_text='Which form method sends data in the URL?',
+            option_a='POST',
+            option_b='PUT',
+            option_c='GET',
+            option_d='DELETE',
+            correct_answer='c',
+            user_answer='d',
+            order_index=4
+        )
     ]
 
     db.session.add_all(questions)
@@ -1390,11 +1672,12 @@ colours.discard('purple') # no error if not found
     # Dummy quiz questions ported over from quiz.js frontend
 
     q2 = Quiz(
-        note_id=n4.note_id,
+        note_id=n1.note_id,
         name='Just a bit of everything',
         total_questions=8,
         total_correct=5,
-        is_completed=True
+        is_completed=False,
+        created_at=datetime(2026, 5, 11, tzinfo=timezone.utc)
     )
     db.session.add(q2)
     db.session.commit()
@@ -1407,7 +1690,7 @@ colours.discard('purple') # no error if not found
         option_c='18e^3x',
         option_d='18e^3',
         correct_answer='c',
-        user_answer='c',
+        user_answer=None,
         order_index=0
     )
     qq4 = QuizQuestion(
@@ -1418,7 +1701,7 @@ colours.discard('purple') # no error if not found
         option_c='The Internet is a subset of the WWW used only for websites',
         option_d='The WWW consists of web pages and browsers, while the Internet includes physical connections and routing',
         correct_answer='c',
-        user_answer='c',
+        user_answer=None,
         order_index=1
     )
     qq5 = QuizQuestion(
@@ -1440,7 +1723,7 @@ colours.discard('purple') # no error if not found
         option_c='250 m',
         option_d='300 m',
         correct_answer='c',
-        user_answer='a',
+        user_answer=None,
         order_index=3
     )
     qq7 = QuizQuestion(
@@ -1451,7 +1734,7 @@ colours.discard('purple') # no error if not found
         option_c='Static analyzers require compiled binaries and monitor memory usage during execution, while dynamic analyzers only read source files and provide compile-time warnings.',
         option_d='There is no meaningful difference; both static and dynamic analyzers perform identical checks on code at compile time without execution.',
         correct_answer='a',
-        user_answer='a',
+        user_answer=None,
         order_index=4
     )
     qq8 = QuizQuestion(
@@ -1462,7 +1745,7 @@ colours.discard('purple') # no error if not found
         option_c='Encryption, Decryption, Hashing',
         option_d='Prevention, Detection, Response',
         correct_answer='b',
-        user_answer='b',
+        user_answer=None,
         order_index=5
     )
     qq9 = QuizQuestion(
@@ -1473,7 +1756,7 @@ colours.discard('purple') # no error if not found
         option_c='Pure ALOHA eliminates collisions entirely by using acknowledgements, while slotted ALOHA introduces random transmission delays to reduce efficiency.',
         option_d='There is no difference between pure and slotted ALOHA; both operate identically with continuous transmission and equal collision probability.',
         correct_answer='a',
-        user_answer='a',
+        user_answer=None,
         order_index=6
     )
     qq10 = QuizQuestion(
@@ -1484,7 +1767,7 @@ colours.discard('purple') # no error if not found
         option_c='<link href="#MyTitle">Go to title</link>',
         option_d='<a link="#MyTitle">Go to title</a>',
         correct_answer='b',
-        user_answer='d',
+        user_answer=None,
         order_index=7
     )
 
@@ -1496,5 +1779,5 @@ colours.discard('purple') # no error if not found
     print(f'Notes: {Note.query.count()} notes created')
     print(f'Decks: {Deck.query.count()} decks created')
     print(f'Flashcards: {Flashcard.query.count()} flashcards created')
-    print(f'Quiz sessions: {QuizSession.query.count()} sessions created')
+    print(f'Quizzes: {Quiz.query.count()} quizzes created')
     print(f'Quiz questions: {QuizQuestion.query.count()} questions created')
