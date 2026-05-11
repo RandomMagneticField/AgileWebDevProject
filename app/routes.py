@@ -756,11 +756,6 @@ def quiz_retake():
     
     return redirect(url_for('main.quiz_active', id=quiz_id))
 
-@main.route('/quiz/history')
-@login_required
-def quiz_history():
-    return render_template('quiz/history.html' , active='dashboard')
-
 @main.route('/quiz/results')
 @login_required
 def quiz_results():
