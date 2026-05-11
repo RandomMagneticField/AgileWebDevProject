@@ -987,6 +987,138 @@ body.mode-preview .md-preview {
     background: var(--nav-active-bg);
 }
 
+#quiz-history-list {
+    max-height: 220px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#quiz-history-list::-webkit-scrollbar {
+    display: none;
+}
+
+.quiz-history-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 8px;
+    padding: 3px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.quiz-history-name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.quiz-history-item:hover .quiz-history-name {
+    color: var(--text-primary);
+}
+
+.quiz-history-score {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.quiz-history-score.is-completed {
+    color: var(--btn-green-color);
+}
+
+.quiz-history-delete-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.quiz-history-delete-btn:hover {
+    color: var(--btn-danger-color);
+    border-color: var(--btn-danger-border);
+    background: var(--btn-danger-bg);
+}
+
+.quiz-history-empty {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.quiz-delete-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+
+.quiz-delete-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg);
+    border: 1px solid var(--editor-box-border);
+    border-radius: 14px;
+    padding: 24px;
+    z-index: 1000;
+    width: min(90vw, 400px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.quiz-delete-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.quiz-delete-modal-message {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.quiz-delete-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.quiz-delete-modal-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.quiz-delete-modal-btn-cancel {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+}
+
+.quiz-delete-modal-btn-delete {
+    background: var(--btn-danger-bg);
+    color: var(--btn-danger-color);
+    border: 1px solid var(--btn-danger-border);
+}
+
 #toc-list {
     max-height: 300px;
     overflow-y: auto;

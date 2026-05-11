@@ -1,0 +1,205 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Notella — Quiz Results{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
+{% endblock %}
+
+{% block page_content %}
+
+<!-- Header -->
+<div class="quiz-header">
+    <div class="quiz-header-left">
+        <div class="dash-greeting">
+            <a href="{{ url_for('main.note_editor', id=quiz.note_id) }}" class="quiz-back-btn">
+                <i class="bi bi-arrow-left"></i>
+                Note Editor
+            </a>
+        </div>
+        <div class="dash-title quiz-title">{{ quiz.name }}</div>
+    </div>
+    <div class="quiz-header-right">
+        <button
+            type="button"
+            class="quiz-results-btn quiz-results-btn-edit"
+            id="btn-edit-name"
+        >
+            <i class="bi bi-pencil"></i>
+            Edit quiz name
+        </button>
+        <button
+            type="button"
+            class="quiz-results-btn quiz-results-btn-delete"
+            id="btn-delete"
+        >
+            <i class="bi bi-trash"></i>
+            Delete quiz
+        </button>
+    </div>
+</div>
+
+<div class="dash-divider"></div>
+
+
+
+<!-- MCQ Questions -->
+<div class="quiz-active-layout quiz-results-mode">
+    <div class="quiz-active-placeholder">
+        <div id="quiz-mcq-container">
+            <!-- Quiz statistics -->
+            <div class="quiz-mcq-panel quiz-results-summary-panel" id="quiz-results-statistics">
+                <h2>Quiz Completed</h2>
+                <div class="quiz-results-stats">
+                    <div class="quiz-results-score" id="results-score">Score: {{ results_summary.score_percentage }}%</div>
+                    <div class="quiz-results-stat quiz-results-stat-correct" id="results-correct">
+                        <span class="quiz-results-stat-text">{{ results_summary.correct }} Correct</span>
+                        <i class="bi bi-check-circle-fill quiz-results-stat-icon"></i>
+                    </div>
+                    <div class="quiz-results-stat quiz-results-stat-incorrect" id="results-incorrect">
+                        <span class="quiz-results-stat-text">{{ results_summary.incorrect }} Incorrect</span>
+                        <i class="bi bi-x-circle-fill quiz-results-stat-icon"></i>
+                    </div>
+                    <div class="quiz-results-stat quiz-results-stat-unanswered" id="results-unanswered">
+                        <span class="quiz-results-stat-text">{{ results_summary.unanswered }} Unanswered</span>
+                        <i class="bi bi-circle quiz-results-stat-icon"></i>
+                    </div>
+                </div>
+                {% set retake_url = url_for('main.quiz_retake', id=quiz.quiz_id) %}
+                {% set edit_url = url_for('main.note_editor', id=quiz.note_id) %}
+                <div class="quiz-panel-buttons-container">
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ retake_url }}'; return false;">
+                        <i class="bi bi-arrow-repeat"></i>
+                        Retake Quiz
+                    </button>
+                    <button type="button" class="quiz-panel-button" onclick="location.href='{{ edit_url }}'; return false;">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Results -->
+            {% for question in quiz.questions|sort(attribute='order_index') %}
+            {% set ua = question.user_answer %}
+            {% set ca = question.correct_answer %}
+            <div class="quiz-mcq-panel" id="question-{{ loop.index }}" data-question-number="{{ loop.index }}" data-question-id="question-{{ loop.index }}">
+                <div class="quiz-question-title">Question {{ loop.index }}</div>
+                <div class="quiz-question-prompt">{{ question.question_text }}</div>
+                <div class="quiz-correct-answer">
+                    Correct answer: {{ question.correct_answer|upper }}
+                </div>
+                <div class="quiz-mcq-stack">
+                    <div class="quiz-mcq-box{% if ua == 'a' and ua == ca %} quiz-option-result-correct{% elif ua == 'a' and ua != ca and ua %} quiz-option-result-incorrect{% endif %}" data-option="A">
+                        <div class="quiz-option-letter">A</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_a }}</div>
+                        {% if ua == 'a' %}
+                            {% if ua == ca %}
+                                <i class="bi bi-check-circle-fill quiz-option-icon quiz-option-icon-correct"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill quiz-option-icon quiz-option-icon-incorrect"></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="quiz-mcq-box{% if ua == 'b' and ua == ca %} quiz-option-result-correct{% elif ua == 'b' and ua != ca and ua %} quiz-option-result-incorrect{% endif %}" data-option="B">
+                        <div class="quiz-option-letter">B</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_b }}</div>
+                        {% if ua == 'b' %}
+                            {% if ua == ca %}
+                                <i class="bi bi-check-circle-fill quiz-option-icon quiz-option-icon-correct"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill quiz-option-icon quiz-option-icon-incorrect"></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="quiz-mcq-box{% if ua == 'c' and ua == ca %} quiz-option-result-correct{% elif ua == 'c' and ua != ca and ua %} quiz-option-result-incorrect{% endif %}" data-option="C">
+                        <div class="quiz-option-letter">C</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_c }}</div>
+                        {% if ua == 'c' %}
+                            {% if ua == ca %}
+                                <i class="bi bi-check-circle-fill quiz-option-icon quiz-option-icon-correct"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill quiz-option-icon quiz-option-icon-incorrect"></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="quiz-mcq-box{% if ua == 'd' and ua == ca %} quiz-option-result-correct{% elif ua == 'd' and ua != ca and ua %} quiz-option-result-incorrect{% endif %}" data-option="D">
+                        <div class="quiz-option-letter">D</div>
+                        <div class="note-card-body quiz-option-text">{{ question.option_d }}</div>
+                        {% if ua == 'd' %}
+                            {% if ua == ca %}
+                                <i class="bi bi-check-circle-fill quiz-option-icon quiz-option-icon-correct"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill quiz-option-icon quiz-option-icon-incorrect"></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Questions list -->
+    <div class="quiz-active-side">
+        <div class="quiz-side-card quiz-question-list-card">
+            <div class="quiz-side-label">Quiz Navigation</div>
+            <div class="quiz-question-list" id="quiz-question-list">
+                <a class="quiz-question-item quiz-question-item-summary" href="#quiz-results-statistics" data-question-number="summary">
+                    <span class="quiz-question-item-full"><i class="bi bi-percent quiz-question-item-summary-icon"></i> Quiz Results</span>
+                    <span class="quiz-question-item-short"><i class="bi bi-percent quiz-question-item-summary-icon"></i></span>
+                </a>
+                {% for question in quiz.questions|sort(attribute='order_index') %}
+                {% set ua = question.user_answer %}
+                {% set ca = question.correct_answer %}
+                <a class="quiz-question-item{% if ua and ua == ca %} is-result-correct{% elif ua and ua != ca %} is-result-incorrect{% else %} is-result-unanswered{% endif %}" href="#question-{{ loop.index }}" data-question-number="{{ loop.index }}">
+                    {% if ua and ua == ca %}
+                        <span class="quiz-question-item-full"><i class="bi bi-check-circle-fill" style="color: var(--btn-green-color);"></i> Question {{ loop.index }}</span>
+                        <span class="quiz-question-item-short"><i class="bi bi-check-circle-fill" style="color: var(--btn-green-color);"></i> {{ loop.index }}</span>
+                    {% elif ua and ua != ca %}
+                        <span class="quiz-question-item-full"><i class="bi bi-x-circle-fill" style="color: var(--btn-danger-color);"></i> Question {{ loop.index }}</span>
+                        <span class="quiz-question-item-short"><i class="bi bi-x-circle-fill" style="color: var(--btn-danger-color);"></i> {{ loop.index }}</span>
+                    {% else %}
+                        <span class="quiz-question-item-full"><i class="bi bi-circle" style="color: var(--text-secondary-color);"></i> Question {{ loop.index }}</span>
+                        <span class="quiz-question-item-short"><i class="bi bi-circle" style="color: var(--text-secondary-color);"></i> {{ loop.index }}</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Quiz Name Modal -->
+<div class="quiz-edit-modal-backdrop" id="quiz-edit-modal-backdrop" hidden></div>
+<div class="quiz-edit-modal" id="quiz-edit-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-edit-modal-title" hidden>
+    <div class="quiz-edit-modal-content">
+        <div class="quiz-edit-modal-title" id="quiz-edit-modal-title">Edit Quiz Name</div>
+        <input
+            type="text"
+            id="quiz-edit-name-input"
+            class="quiz-edit-modal-input"
+            maxlength="30"
+            value="{{ quiz.name }}"
+        />
+        <div class="quiz-edit-modal-actions">
+            <button type="button" class="quiz-edit-modal-btn quiz-edit-modal-btn-cancel" id="quiz-edit-modal-cancel">Cancel</button>
+            <button type="button" class="quiz-edit-modal-btn quiz-edit-modal-btn-submit" id="quiz-edit-modal-submit">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Quiz Modal -->
+<div class="quiz-delete-modal-backdrop" id="quiz-delete-modal-backdrop" hidden></div>
+<div class="quiz-delete-modal" id="quiz-delete-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-delete-modal-title" hidden>
+    <div class="quiz-delete-modal-title" id="quiz-delete-modal-title">Delete Quiz</div>
+    <div class="quiz-delete-modal-message">Are you sure you want to permanently delete this quiz? This action cannot be undone.</div>
+    <div class="quiz-delete-modal-actions">
+        <button type="button" class="quiz-delete-modal-btn quiz-delete-modal-btn-cancel" id="quiz-delete-modal-cancel">Cancel</button>
+        <button type="button" class="quiz-delete-modal-btn quiz-delete-modal-btn-delete" id="quiz-delete-modal-confirm">Delete</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/quiz_results.js') }}"></script>
+{% endblock %}
