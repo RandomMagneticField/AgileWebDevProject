@@ -42,9 +42,9 @@ function NoteCard(note) {
     const heartIcon = note.liked ? 'bi-heart-fill' : 'bi-heart'
     const heartColour = note.liked ? 'color:#e05c5c;' : '' 
     return `
-        <div class="note-card">
+        <div class="note-card" onclick="window.location='/discover/note/${note.id}'" style="cursor:pointer;">
             <div class="note-card-content">
-                <a href="/discover/note/${note.id}" class="note-card-title">${note.title}</a>
+                <div class="note-card-title">${note.title}</div>
                 <div class="note-card-body">${note.body}</div>
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
@@ -68,11 +68,11 @@ function DeckCard(deck) {
     const heartIcon = deck.liked ? 'bi-heart-fill' : 'bi-heart'
     const heartColour = deck.liked ? 'color:#e05c5c;' : '' 
     return `
-        <div class="deck-card">
+        <div class="deck-card" onclick="window.location='/discover/deck/${deck.id}'" style="cursor:pointer;">
             <div class="deck-card-content">
                 <div class="deck-card-header">
                     <div class="deck-card-info">
-                        <a href="/discover/deck/${deck.id}" class="note-card-title">${deck.title}</a>
+                        <div class="note-card-title">${deck.title}</div>
                         <div class="deck-card-count">${deck.count} Cards</div>
                     </div>
                 </div>
