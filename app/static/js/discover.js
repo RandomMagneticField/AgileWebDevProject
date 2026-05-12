@@ -18,6 +18,8 @@
 
 let notesData = []
 let decksData = []
+let selectedTags = new Set()
+let searchTimeout
 
 //fetch discover data
 fetch('/api/discover')
@@ -49,11 +51,11 @@ function NoteCard(note) {
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
                     <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                        <button class="like-btn" onclick="toggleNoteLike(this, ${note.id})">
+                        <button class="like-btn" onclick="event.stopPropagation(); toggleNoteLike(this, ${note.id})">
                             <i class="bi ${heartIcon}" style="${heartColour}"></i>
                             <span>${note.likes}</span>
                         </button>
-                        <button class="copy-btn" onclick="copyNote(this, ${note.id})" title="Copy to my library">
+                        <button class="copy-btn" onclick="event.stopPropagation(); copyNote(this, ${note.id})" title="Copy to my library">
                             <i class="bi bi-copy"></i>
                         </button>
                     </div>
@@ -79,11 +81,11 @@ function DeckCard(deck) {
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
                     <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                        <button class="like-btn" onclick="toggleDeckLike(this, ${deck.id})">
+                        <button class="like-btn" onclick="event.stopPropagation(); toggleDeckLike(this, ${deck.id})">
                             <i class="bi ${heartIcon}" style="${heartColour}"></i>
                             <span>${deck.likes}</span>
                         </button>
-                        <button class="copy-btn" onclick="copyDeck(this, ${deck.id})" title="Copy to my library">
+                        <button class="copy-btn" onclick="event.stopPropagation(); copyDeck(this, ${deck.id})" title="Copy to my library">
                             <i class="bi bi-copy"></i>
                         </button>
                     </div>
@@ -192,23 +194,113 @@ function copyDeck(btn, deckId){
         })
 }
 
- //search..
- const searchinput = document.getElementById("search-input")
+// ── AJAX Search ──
+const searchInput = document.getElementById('search-input')
+let currentQuery = ''
 
- searchinput.addEventListener('input', function(){
-    const val = this.value.toLowerCase()
+searchInput.addEventListener('input', function () {
+    clearTimeout(searchTimeout)
+    const query = this.value.trim()
+    currentQuery = query
 
-    const filteredNotes = sortdata(notesData).filter(note =>
-        note.title.toLowerCase().includes(val) || note.tags.some(t => t.toLowerCase().includes(val))
-    )
+    if (query === '') {
+        fetch('/api/discover')
+            .then(res => res.json())
+            .then(data => {
+                if(currentQuery !== '') return
+                notesData = data.notes
+                decksData = data.decks
+                selectedTags.clear()
+                updateTagFilterBtn()
+                rebuildTagModal()
+                renderCards()
+            })
+        return
+    }
 
-    const filteredDecks = sortdata(decksData).filter(deck =>
-        deck.title.toLowerCase().includes(val) || deck.tags.some(t => t.toLowerCase().includes(val))
-    )
-
-    document.getElementById('notes-grid').innerHTML = filteredNotes.map(NoteCard).join('')
-    document.getElementById('decks-grid').innerHTML = filteredDecks.map(DeckCard).join('')
+    searchTimeout = setTimeout(() => {
+        fetch(`/api/discover/search?q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (currentQuery !== query) return
+                notesData = data.notes
+                decksData = data.decks
+                // clear any tags that no longer exist in new results
+                const availableTags = getAvailableTags()
+                selectedTags.forEach(t => { if (!availableTags.has(t)) selectedTags.delete(t) })
+                updateTagFilterBtn()
+                rebuildTagModal()
+                renderCards()
+            })
+    }, 300)
 })
+
+// ── Tag modal ──
+function getAvailableTags() {
+    const isNotes = document.getElementById('panel-notes').style.display !== 'none'
+    const data = isNotes ? notesData : decksData
+    const tags = new Set()
+    data.forEach(item => item.tags.forEach(t => tags.add(t)))
+    return tags
+}
+
+function rebuildTagModal() {
+    const pills = document.getElementById('tag-modal-pills')
+    const availableTags = getAvailableTags()
+
+    if (availableTags.size === 0) {
+        pills.innerHTML = '<span style="color:var(--text-secondary); font-size:13px;">No tags available</span>'
+        return
+    }
+
+    pills.innerHTML = [...availableTags].sort().map(tag => `
+        <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" onclick="toggleTag('${tag}')">
+            ${tag}
+        </button>
+    `).join('')
+}
+
+function openTagModal() {
+    rebuildTagModal()
+    document.getElementById('tag-modal-backdrop').style.display = 'block'
+    document.getElementById('tag-modal').style.display = 'block'
+}
+
+function closeTagModal() {
+    document.getElementById('tag-modal-backdrop').style.display = 'none'
+    document.getElementById('tag-modal').style.display = 'none'
+}
+
+function toggleTag(tag) {
+    if (selectedTags.has(tag)) {
+        selectedTags.delete(tag)
+    } else {
+        selectedTags.add(tag)
+    }
+    rebuildTagModal()
+    updateTagFilterBtn()
+    renderCards()
+}
+
+function clearTags() {
+    selectedTags.clear()
+    rebuildTagModal()
+    updateTagFilterBtn()
+    renderCards()
+}
+
+function updateTagFilterBtn() {
+    const count = document.getElementById('tag-filter-count')
+    const btn = document.getElementById('tag-filter-btn')
+    if (selectedTags.size > 0) {
+        count.textContent = selectedTags.size
+        count.style.display = 'inline'
+        btn.classList.add('active')
+    } else {
+        count.style.display = 'none'
+        btn.classList.remove('active')
+    }
+}
 
 
 
@@ -244,7 +336,7 @@ function sortdata(data){
     if(currentSort === 'alpha'){
         sorted.sort((a,b) => a.title.localeCompare(b.title))
     } else if(currentSort === 'date'){
-        sorted.sort((a,b) => new Date(b.date) - new Date(a.date))
+        sorted.sort((a,b) => new Date(b.date_sort) - new Date(a.date_sort))
     } else if(currentSort === 'likes'){
         sorted.sort((a,b) => (b.likes || 0) - (a.likes || 0))
     }
@@ -253,6 +345,13 @@ function sortdata(data){
 
 // ── Render ──
 function renderCards() {
-    document.getElementById('notes-grid').innerHTML = sortdata(notesData).map(NoteCard).join('');
-    document.getElementById('decks-grid').innerHTML = sortdata(decksData).map(DeckCard).join('');
+    let notes = sortdata(notesData)
+    let decks = sortdata(decksData)
+
+    if (selectedTags.size > 0) {
+        notes = notes.filter(n => n.tags.some(t => selectedTags.has(t)))
+        decks = decks.filter(d => d.tags.some(t => selectedTags.has(t)))
+    }
+    document.getElementById('notes-grid').innerHTML = notes.map(NoteCard).join('');
+    document.getElementById('decks-grid').innerHTML = decks.map(DeckCard).join('');
 }

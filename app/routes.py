@@ -633,6 +633,51 @@ def get_deck_preview(deck_id):
         'count': len(deck.flashcards),
     })
 
+@main.route('/api/discover/search')
+@login_required
+def discover_search():
+    # q is URL param, and returns '' if not present
+    query = request.args.get('q', '').strip()
+    
+    if not query:
+        return jsonify({'notes': [], 'decks': []})
+    
+    notes = Note.query.filter(
+        Note.user_id != current_user.user_id,
+        Note.is_public == True,
+        # ilike is case insensitive version of SQLs LIKE operator
+        Note.title.ilike(f'%{query}%')
+    ).order_by(Note.created_at.desc()).all()
+    
+    decks = Deck.query.filter(
+        Deck.user_id != current_user.user_id,
+        Deck.is_public == True,
+        Deck.title.ilike(f'%{query}%')
+    ).order_by(Deck.created_at.desc()).all()
+    
+    return jsonify({
+        'notes': [{
+            'id': n.note_id,
+            'title': n.title,
+            'body': n.description or '',
+            'tags': [t.name for t in n.tags],
+            'date': n.created_at.strftime('%d %b'),
+            'likes': len(n.likes),
+            'liked': current_user in n.likes,
+        } for n in notes],
+        'decks': [{
+            'id': d.deck_id,
+            'title': d.title,
+            'count': len(d.flashcards),
+            'lastScore': get_last_score(d, current_user.user_id)[0],
+            'lastTotal': get_last_score(d, current_user.user_id)[1],
+            'tags': [t.name for t in d.tags],
+            'date': d.created_at.strftime('%d %b'),
+            'likes': len(d.likes),
+            'liked': current_user in d.likes,
+        } for d in decks]
+    })
+
 @main.route('/api/quizzes/generate', methods=['POST'])
 @login_required
 def generate_quiz():
