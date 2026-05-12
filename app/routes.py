@@ -916,7 +916,7 @@ def save_quiz(note_id):
             db.session.rollback()
             return jsonify({'error': 'Quiz question options are invalid; expected `options` array of length 4'}), 400
 
-        correct_answer = extract_correct_answer(question, options)
+        correct_answer = extract_correct_answer(question)
         if correct_answer is None:
             db.session.rollback()
             return jsonify({'error': 'Quiz question correct answer is invalid; expected a/b/c/d or 1-4'}), 400

@@ -33,7 +33,7 @@ def extract_quiz_question_options(question):
     return clean_opts
 
 
-def extract_correct_answer(question, options):
+def extract_correct_answer(question):
     # Expect `correct_index` as integer 0-3
     correct_index = question.get('correct_index')
     if correct_index is None:
