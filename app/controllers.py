@@ -8,7 +8,7 @@ def build_quiz_content(note):
         note.content_md or '',
     ]
     content = '\n\n'.join(part for part in parts if part).strip()
-    return content[:8000]
+    return content
 
 
 def extract_quiz_question_options(question):

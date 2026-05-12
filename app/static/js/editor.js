@@ -863,6 +863,10 @@ async function goToQuiz() {
             return;
         }
 
+        if (generatedQuiz.content_truncated) {
+            alert('Note content is too long (approximately more than 40k characters). Generated quiz may not cover later parts of your note. Try splitting up your note into smaller notes in future quiz generations.');
+        }
+
         window.location.href = `/quiz/active?id=${savedQuiz.quiz_id}`;
     } catch (error) {
         alert('Could not generate quiz');
