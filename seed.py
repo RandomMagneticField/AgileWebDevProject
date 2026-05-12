@@ -1,8 +1,9 @@
 from app import create_app, db
+from app.config import DeploymentConfig
 from app.models import User, Note, Tag, Deck, Flashcard, Quiz, QuizQuestion
 from datetime import datetime, timezone
 
-app = create_app()
+app = create_app(DeploymentConfig)
 
 with app.app_context():
     db.drop_all()
