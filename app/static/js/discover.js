@@ -303,6 +303,14 @@ function updateTagFilterBtn() {
 }
 
 
+document.addEventListener('click', function (e) {
+    if (!e.target.closest('#tag-wrapper') && !e.target.closest('#tag-modal-backdrop')) {
+        closeTagModal()
+    }
+    if (!e.target.closest('#sort-wrapper')) {
+        sortDropdown.style.display = 'none'
+    }
+})
 
 //sort the notes and decks 
 const sortBtn = document.getElementById('sort-btn')
@@ -349,8 +357,12 @@ function renderCards() {
     let decks = sortdata(decksData)
 
     if (selectedTags.size > 0) {
-        notes = notes.filter(n => n.tags.some(t => selectedTags.has(t)))
-        decks = decks.filter(d => d.tags.some(t => selectedTags.has(t)))
+        //all selected tag(s) must be in the shown note
+        notes = notes.filter(n => [...selectedTags].every(t => n.tags.includes(t)))
+        decks = decks.filter(d => [...selectedTags].every(t => d.tags.includes(t)))
+        //as long as some of the selected tags are present
+        // notes = notes.filter(n => n.tags.some(t => selectedTags.has(t)))
+        // decks = decks.filter(d => d.tags.some(t => selectedTags.has(t)))
     }
     document.getElementById('notes-grid').innerHTML = notes.map(NoteCard).join('');
     document.getElementById('decks-grid').innerHTML = decks.map(DeckCard).join('');

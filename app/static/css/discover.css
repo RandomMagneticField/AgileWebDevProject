@@ -81,38 +81,40 @@
     color: var(--text-primary);
 }
 
-/* Tag filter button */
+/* Tag filter button  */
 .tag-filter-btn {
     position: relative;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    color: var(--text-secondary);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 10px 16px;
+    color: var(--text-muted);
     font-size: 14px;
-    transition: all 0.15s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    font-family: var(--font);
 }
 .tag-filter-btn:hover, .tag-filter-btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--text-muted);
+    color: var(--text-primary);
 }
 .tag-filter-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
     background: var(--accent);
     color: white;
     border-radius: 50%;
     font-size: 10px;
     width: 16px;
     height: 16px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Tag modal */
+/* Tag modal — anchored below the button */
 .tag-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -120,14 +122,16 @@
 }
 .tag-modal {
     position: absolute;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
+    top: calc(100% + 6px);
+    right: 0;
+    background: #202020;
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     padding: 16px;
     z-index: 101;
     min-width: 260px;
     max-width: 340px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 .tag-modal-header {
     display: flex;
@@ -144,29 +148,31 @@
     background: none;
     border: none;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     cursor: pointer;
     padding: 0;
+    font-family: var(--font);
 }
-.tag-modal-clear:hover { color: var(--accent); }
+.tag-modal-clear:hover { color: var(--text-primary); }
 .tag-modal-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 .tag-pill {
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: none;
+    border: 1px solid var(--input-border);
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 12px;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--text-muted);
+    font-family: var(--font);
     transition: all 0.15s;
 }
-.tag-pill:hover { border-color: var(--accent); color: var(--accent); }
+.tag-pill:hover { border-color: var(--text-muted); color: var(--text-primary); }
 .tag-pill.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--bg);
 }
