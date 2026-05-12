@@ -52,7 +52,8 @@ function createNoteCard(note) {
 
 function createDeckCard(deck) {
     const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
-    const pct = Math.round((deck.lastScore / deck.lastTotal) * 100);
+    const pct = deck.lastTotal === 0 ? 0 : Math.round((deck.lastScore / deck.lastTotal) * 100);
+    const scoreLabel = deck.lastTotal === 0 ? 'Not attempted' : `${deck.lastScore} / ${deck.lastTotal}`;
     return `
         <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor + '?id=${deck.id}'">
             <div class="deck-card-content">
@@ -68,7 +69,7 @@ function createDeckCard(deck) {
                 <div class="deck-progress-section">
                     <div class="deck-progress-labels">
                         <span class="deck-progress-label">Last Session</span>
-                        <span class="deck-progress-value">${deck.lastScore} / ${deck.lastTotal}</span>
+                        <span class="deck-progress-value">${scoreLabel}</span>
                     </div>
                     <div class="deck-progress-bar">
                         <div class="deck-progress-fill" style="width: ${pct}%"></div>

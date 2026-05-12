@@ -500,6 +500,11 @@ body.mode-preview .md-preview {
     display: none; 
 } */
 
+.note-preview-page .md-preview {
+    display: block;
+    flex: 1;
+}
+
 @media (max-width: 900px) {
 
 

@@ -1,0 +1,104 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Notella — Flashcard Preview{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
+{% endblock %}
+
+{% block page_content %}
+
+    <!--Header-->
+    <div class="editor-header fc-header">
+        <div class="editor-header-left">
+            <div class="dash-greeting">
+                <a href="{{ url_for('main.discover') }}" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Flashcard Preview
+                </a>
+            </div>
+            <div class="dash-title editor-title" id="decks-title"></div>
+        </div>
+
+        <!--Progress-->
+        <div class="editor-header-center">
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <span class="progress-label" id="progress-label"></span>
+            <button class="btn-save" id="btn-save" onclick="copyDeck()">Copy</button>
+        </div>
+    </div>
+
+    <div class="dash-divider"></div>
+
+    <div class="editor-layout">
+        <!--Card viewer-->
+        <div class="flashcard-layout" id="card-viewer">
+            <div class="fc-stage">
+                <div class="viewer" style="min-height: 300px; height: 300px;">
+                    <div class="fc-card" id="card">
+                        <div class="fc-inner" id="inner" onclick="flipCard()">
+
+                            <div class="fc-front">
+                                <p class="fc-label">FRONT</p>
+                                <div class="fc-text" id="front-text"></div>
+                            </div>
+
+                            <div class="fc-back">
+                                <p class="fc-label">BACK</p>
+                                <div class="fc-text" id="back-text"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fc-controls">
+                    <div class="fc-counter" id="counter">Card 1 of 1</div>
+                    <div class="fc-btns">
+                        <button class="flip-btn" id="btn-prev" onclick="prevCard()" style="width:auto; padding:8px 20px;">
+                            <i class="bi bi-arrow-left"></i> Prev
+                        </button>
+                        <button class="flip-btn" id="btn-next" onclick="nextCard()" style="width:auto; padding:8px 20px;">
+                            Next <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+        <!--Side panel-->
+        <div class="editor-side">
+            <div class="editor-side-card">
+                <div class="editor-side-label">Tags</div>
+                <div class="tags-wrap" id="tags-wrap"></div>
+            </div>
+            <div class="editor-side-card">
+                <div class="editor-side-label">Details:</div>
+                <div class="note-detail-row">
+                    <div class="note-detail-label">Creator</div>
+                    <span class="note-detail-value" id="detail-creator">-</span>
+                </div>
+                <div class="note-detail-row">
+                    <div class="note-detail-label">Cards</div>
+                    <span class="note-detail-value" id="detail-count">-</span>
+                </div>
+                <div class="note-detail-row">
+                    <div class="note-detail-label">Created</div>
+                    <span class="note-detail-value" id="detail-created">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/deck_preview.js') }}"></script>
+
+{% endblock %}
