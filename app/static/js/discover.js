@@ -253,11 +253,25 @@ function rebuildTagModal() {
         return
     }
 
-    pills.innerHTML = [...availableTags].sort().map(tag => `
-        <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" onclick="toggleTag('${tag}')">
-            ${tag}
-        </button>
-    `).join('')
+    const existing = document.getElementById('tag-search-input')
+    const inputsearch = existing ? existing.value.toLowerCase() : ''
+    const wasFocused = existing && document.activeElement === existing
+    const filtered = [...availableTags].sort().filter(t => t.toLowerCase().includes(inputsearch))
+
+    pills.innerHTML = `
+        <input class="tag-search-input" id="tag-search-input" type="text" placeholder="Search tags..." value="${inputsearch}" oninput="rebuildTagModal()" onclick="event.stopPropagation()"/>
+        ${filtered.map(tag => `
+            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${tag}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
+                ${tag}
+            </button>
+        `).join('')}
+    `
+
+    if (wasFocused) {
+        const newInput = document.getElementById('tag-search-input')
+        newInput.focus()
+        newInput.setSelectionRange(newInput.value.length, newInput.value.length)
+    }
 }
 
 function openTagModal() {

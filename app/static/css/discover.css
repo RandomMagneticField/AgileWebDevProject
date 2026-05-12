@@ -172,3 +172,19 @@
     border-color: var(--text-primary);
     color: var(--bg);
 }
+.tag-search-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    font-family: var(--font);
+    margin-bottom: 4px;
+    box-sizing: border-box;
+    outline: none;
+}
+.tag-search-input:focus {
+    border-color: var(--text-muted);
+}
