@@ -5,7 +5,7 @@ from app.controllers import extract_correct_answer, extract_quiz_question_option
 from app import create_app, db
 from app.config import TestConfig
 
-class someTests(unittest.TestCase):
+class UnitTests(unittest.TestCase):
     # Essential functions
 
     def setUp(self):
