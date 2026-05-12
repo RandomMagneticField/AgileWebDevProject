@@ -21,10 +21,6 @@
     cursor: pointer;
 }
 
-.note-card-title:hover, .deck-card-title:hover{
-    text-decoration: underline;
-}
-
 .select {
     position: relative;
 }
