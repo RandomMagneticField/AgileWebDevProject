@@ -82,7 +82,7 @@ def validate_quiz(quiz_json):
             return jsonify({'error': f'Each question must have exactly 4 distinct options (index {i}) and each option must be <=120 chars'}), 400
 
         # correct index
-        correct = extract_correct_answer(question, options)
+        correct = extract_correct_answer(question)
         if correct is None:
             return jsonify({'error': f'Question at index {i} has invalid correct_index; expected integer 0-3'}), 400
 
