@@ -1,7 +1,7 @@
 import unittest
 
 from app.controllers import extract_correct_answer, extract_quiz_question_options
-# from app.models import User
+from app.models import User, Note, Quiz, QuizQuestion
 from app import create_app, db
 from app.config import TestConfig
 
@@ -19,6 +19,14 @@ class UnitTests(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
+
+    # Helper functions
+    def addUser(self, test_username='myname', test_password="123", test_email='myname@test.com'):
+        user = User(username=test_username, email=test_email)
+        user.set_password(test_password)
+        db.session.add(user)
+        db.session.commit()
+        return user
 
     # Test quiz correct answer extraction
 
@@ -116,3 +124,11 @@ class UnitTests(unittest.TestCase):
             extract_quiz_question_options(question_dict_7),
             'Expected to return None due to there not being 4 options'
         )
+
+    # Test quiz/question cascade delete
+
+
+
+    # Test deck/flashcard cascade delete
+
+    # Test tag processing

@@ -7,7 +7,7 @@ from openai import APIConnectionError, APITimeoutError, OpenAI, RateLimitError
 
 from app.blueprints import main
 from app import db
-from app.controllers import validate_quiz, build_quiz_content, extract_quiz_question_options, extract_correct_answer
+from app.controllers import validate_quiz, build_quiz_content, extract_quiz_question_options, extract_correct_answer, delete_quizzes_for_note, delete_flashcards_for_deck, process_tags, get_last_score, get_next_quiz_name
 from app.models import User, Note, Deck, Tag, Quiz, QuizQuestion, Flashcard, FlashcardResult, DeckProgress, SessionAnswer
 from app.forms import RegisterForm, LoginForm, QuizSubmissionForm
 from datetime import datetime, timezone
@@ -51,21 +51,6 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard/index.html', active='dashboard', user=current_user)
-
-def get_last_score(deck, user_id):
-    correct = 0
-    total = 0
-    for card in deck.flashcards:
-        latest = FlashcardResult.query.filter_by(
-            flashcard_id = card.flashcard_id,
-            user_id = user_id
-        ).order_by(FlashcardResult.attempted_at.desc()).first()
-
-        if latest:
-            total += 1
-            if latest.is_correct:
-                correct += 1
-    return correct, total
 
 @main.route('/api/dashboard')
 @login_required
@@ -147,15 +132,7 @@ def save_note(note_id):
 
     # handle tags
     if 'tags' in data:
-        tag_names = data['tags']
-        tags = []
-        for name in tag_names:
-            tag = Tag.query.filter_by(name=name).first()
-            if not tag:
-                tag = Tag(name=name)
-                db.session.add(tag)
-            tags.append(tag)
-        note.tags = tags
+        note.tags = process_tags(data['tags'])
 
     db.session.commit()
     return jsonify({'success': True})
@@ -168,10 +145,7 @@ def delete_note(note_id):
         return jsonify({'error': 'Unauthorised'}), 403
     
     # delete related quizzes and questions first
-    for quiz in note.quizzes:
-        for question in quiz.questions:
-            db.session.delete(question)
-        db.session.delete(quiz)
+    delete_quizzes_for_note(note)
     
     note.likes.clear()
     db.session.delete(note)
@@ -310,15 +284,7 @@ def save_deck(deck_id):
 
     # handle tags
     if 'tags' in data:
-        tag_names = data['tags']
-        tags = []
-        for name in tag_names:
-            tag = Tag.query.filter_by(name=name).first()
-            if not tag:
-                tag = Tag(name=name)
-                db.session.add(tag)
-            tags.append(tag)
-        deck.tags = tags
+        deck.tags = process_tags(data['tags'])
 
     #reset progress when the deck is updated and saved
     progress = DeckProgress.query.filter_by(
@@ -349,9 +315,7 @@ def delete_deck(deck_id):
     SessionAnswer.query.filter_by(deck_id = deck_id).delete()
 
     # delete flashcard results and flashcards
-    for card in deck.flashcards:
-        FlashcardResult.query.filter_by(flashcard_id = card.flashcard_id).delete()
-        db.session.delete(card)
+    delete_flashcards_for_deck(deck)
 
     deck.likes.clear()
     db.session.delete(deck)
@@ -883,22 +847,7 @@ def save_quiz(note_id):
     questions = quiz_data.get('questions', [])
 
     # Determine the next quiz name number for this user's quizzes using this note title prefix.
-    quiz_name_prefix = f"{note.title} Quiz "
-    existing_quizzes = (
-        Quiz.query
-        .join(Note, Quiz.note_id == Note.note_id)
-        .filter(Note.user_id == current_user.user_id)
-        .filter(Quiz.name.like(f"{quiz_name_prefix}%"))
-        .all()
-    )
-
-    max_suffix = 0
-    for existing_quiz in existing_quizzes:
-        suffix = existing_quiz.name.replace(quiz_name_prefix, "", 1).strip()
-        if suffix.isdigit():
-            max_suffix = max(max_suffix, int(suffix))
-
-    quiz_name = f"{quiz_name_prefix}{max_suffix + 1}"
+    quiz_name = get_next_quiz_name(note, current_user.user_id)
 
     quiz = Quiz(
         note_id=note.note_id,
@@ -1133,10 +1082,7 @@ def delete_account():
     
     # delete quizzes and questions related to user's notes
     for note in user.notes:
-        for quiz in note.quizzes:
-            for question in quiz.questions:
-                db.session.delete(question)
-            db.session.delete(quiz)
+        delete_quizzes_for_note(note)
     
     # delete flashcard results
     for result in user.flashcard_results:
@@ -1144,8 +1090,7 @@ def delete_account():
     
     # delete flashcards and decks
     for deck in user.decks:
-        for card in deck.flashcards:
-            db.session.delete(card)
+        delete_flashcards_for_deck(deck)
         db.session.delete(deck)
     
     # delete notes (note_tags junction rows removed automatically)

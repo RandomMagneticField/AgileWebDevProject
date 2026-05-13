@@ -1,4 +1,6 @@
 from flask import jsonify
+from app import db
+from app.models import FlashcardResult, Tag, Quiz, Note, Deck
 
 
 def build_quiz_content(note):
@@ -87,3 +89,60 @@ def validate_quiz(quiz_json):
             return jsonify({'error': f'Question at index {i} has invalid correct_index; expected integer 0-3'}), 400
 
     return jsonify(quiz_json), 200
+
+def delete_quizzes_for_note(note):
+    for quiz in note.quizzes:
+        for question in quiz.questions:
+            db.session.delete(question)
+        db.session.delete(quiz)
+
+def delete_flashcards_for_deck(deck):
+    for card in deck.flashcards:
+        FlashcardResult.query.filter_by(flashcard_id=card.flashcard_id).delete()
+        db.session.delete(card)
+
+
+def process_tags(tag_names):
+    tags = []
+    for name in tag_names:
+        tag = Tag.query.filter_by(name=name).first()
+        if not tag:
+            tag = Tag(name=name)
+            db.session.add(tag)
+        tags.append(tag)
+    return tags
+
+
+def get_last_score(deck, user_id):
+    correct = 0
+    total = 0
+    for card in deck.flashcards:
+        latest = FlashcardResult.query.filter_by(
+            flashcard_id=card.flashcard_id,
+            user_id=user_id,
+        ).order_by(FlashcardResult.attempted_at.desc()).first()
+
+        if latest:
+            total += 1
+            if latest.is_correct:
+                correct += 1
+    return correct, total
+
+
+def get_next_quiz_name(note, user_id):
+    quiz_name_prefix = f"{note.title} Quiz "
+    existing_quizzes = (
+        Quiz.query
+        .join(Note, Quiz.note_id == Note.note_id)
+        .filter(Note.user_id == user_id)
+        .filter(Quiz.name.like(f"{quiz_name_prefix}%"))
+        .all()
+    )
+
+    max_suffix = 0
+    for existing_quiz in existing_quizzes:
+        suffix = existing_quiz.name.replace(quiz_name_prefix, "", 1).strip()
+        if suffix.isdigit():
+            max_suffix = max(max_suffix, int(suffix))
+
+    return f"{quiz_name_prefix}{max_suffix + 1}"
