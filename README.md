@@ -40,7 +40,7 @@ Text
 
 5. Set up the database
     ```bash
-    flask db upgrade
+    flask --app run.py db upgrade
     ```
 
 6. (Optional) Seed the database with sample data
@@ -52,8 +52,16 @@ Text
 
 7. Run the app
     ```bash
-    flask run 
+    flask --app run.py run 
     ```
 
 ## Test insturctions
-Text
+To run function unit tests, run:
+```bash
+python -m unittest test/unitTests.py
+```
+
+To run Selenium server tests, run:
+```bash
+python -m unittest test/systemTests.py
+```
