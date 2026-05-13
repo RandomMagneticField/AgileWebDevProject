@@ -10,10 +10,17 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
   {% block styles %}{% endblock %}
   <script>
-    const user_darkmode = {{ (current_user.darkmode if current_user.is_authenticated else true) | tojson }};
-    if (!user_darkmode) {
-        document.documentElement.setAttribute('data-theme', 'light');
-    }
+    {% if current_user.is_authenticated %}
+      const user_darkmode = {{ current_user.darkmode | tojson }};
+      if (!user_darkmode) {
+          document.documentElement.setAttribute('data-theme', 'light');
+      }
+    {% else %}
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+      }
+    {% endif %}
   </script>
 </head>
 <body>

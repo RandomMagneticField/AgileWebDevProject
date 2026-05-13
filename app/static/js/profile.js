@@ -73,7 +73,17 @@ function saveProfile() {
 // });
 
 //dark and light mode switch
-const lightordark = document.getElementById('dark-toggle')
+const lightordark = document.getElementById('dark-toggle');
+//change toggle based on previous selection or default
+document.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/api/profile/darkmode');
+    const data = await response.json();
+    const previousMode = data.darkmode;
+    lightordark.checked = previousMode;
+    document.documentElement.setAttribute('data-theme', previousMode ? 'dark' : 'light')
+})
+
+//change mode based on toggle
 lightordark.addEventListener('change', () => {
     if (lightordark.checked) {
         document.documentElement.setAttribute('data-theme', 'dark');
