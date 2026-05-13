@@ -1097,6 +1097,14 @@ def update_profile():
     
     return jsonify({'success': True})
 
+@main.route('/api/profile/darkmode', methods=['POST'])
+@login_required
+def darkmode():
+    data = request.get_json()
+    current_user.darkmode = data.get('darkmode', True)
+    db.session.commit()
+    return jsonify({'success': True, 'darkmode': current_user.darkmode})
+
 @main.route('/change_password')
 @login_required
 def change_password():

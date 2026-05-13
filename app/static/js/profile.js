@@ -72,6 +72,22 @@ function saveProfile() {
 //     window.location.href = "{{ url_for('main.register') }}";
 // });
 
+//dark and light mode switch
+const lightordark = document.getElementById('dark-toggle')
+lightordark.addEventListener('change', () => {
+    if (lightordark.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+    fetch('/api/profile/darkmode', {
+        method:'POST',
+        headers:{'Content-Type': 'application/json'},
+        body: JSON.stringify({darkmode: lightordark.checked})
+    })
+});
+
 document.getElementById('del').addEventListener('click', function() {
     window.location.href = this.dataset.url;
 });
