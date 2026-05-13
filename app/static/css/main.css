@@ -197,6 +197,10 @@ body {
     justify-content: center;
 }
 
+[data-theme="light"] .logo-img {
+    filter: invert(0);
+}
+
 /* Ambient glow blob — smaller, top left area */
 body::before {
     content: '';

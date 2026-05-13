@@ -43,6 +43,7 @@ class User(db.Model, UserMixin):
     pfp_filepath = db.Column(db.String(256), nullable=True)
     user_tier = db.Column(db.String(10), nullable=False, default='free')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    darkmode = db.Column(db.Boolean, nullable=False, default=True)
 
     # relationships
     notes = db.relationship('Note', back_populates='user', foreign_keys='Note.user_id')

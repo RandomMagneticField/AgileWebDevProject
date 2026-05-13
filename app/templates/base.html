@@ -10,12 +10,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
   {% block styles %}{% endblock %}
   <script>
-  {% if current_user.is_authenticated and current_user.darkmode is not none %}
-    const darkmode = {{ current_user.darkmode | tojson }};
-    if (!darkmode) {
+    const user_darkmode = {{ (current_user.darkmode if current_user.is_authenticated else true) | tojson }};
+    if (!user_darkmode) {
         document.documentElement.setAttribute('data-theme', 'light');
     }
-  {% endif %}
   </script>
 </head>
 <body>
