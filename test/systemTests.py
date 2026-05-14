@@ -133,6 +133,10 @@ class SystemTests(unittest.TestCase):
         final_titles = [title for title in self.get_note_titles() if title in expected_titles]
         self.assertEqual(expected_titles, final_titles, msg)
 
+    def get_discover_note_titles(self):
+        cards = self.driver.find_elements(By.CSS_SELECTOR, "#notes-grid .note-card .note-card-title")
+        return [card.text.strip() for card in cards if card.text.strip()]
+
     # Test login page
 
     def test_login_page(self):
@@ -327,7 +331,7 @@ class SystemTests(unittest.TestCase):
         WebDriverWait(self.driver, 5).until(lambda _: len(self.get_note_titles()) >= 3)
         initial_titles = self.get_note_titles()
         for title in expected_titles:
-            self.assertIn(title, initial_titles, f"Expected dashboard to load all of user's notes")
+            self.assertIn(title, initial_titles, f"Expected dashboard to load user's notes")
 
         self.apply_sort('alpha')
         self.assert_note_order([n1.title, n2.title, n3.title], "Expected correct alphabetical sorting")
@@ -340,3 +344,104 @@ class SystemTests(unittest.TestCase):
 
         self.apply_sort('accessed')
         self.assert_note_order([n2.title, n1.title, n3.title], "Expected correct last accessed at sorting")
+
+    # Test note private and public
+    def test_note_visibility(self):
+        alice_note_title = 'Alice Note 1'
+        alice_note_editor_url = self.localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
+
+        # Assumes all testseed notes are private
+        self.login("alice", "password123")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(self.localHost + "discover")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "discover")
+        )
+        self.assertEqual(
+            [],
+            self.get_discover_note_titles(),
+            "Expected no discover notes since all notes are private"
+        )
+
+        # Switch note to public and save
+        self.driver.get(alice_note_editor_url)
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(alice_note_editor_url)
+        )
+        public_btn = WebDriverWait(self.driver, 5).until(
+            expected_conditions.element_to_be_clickable((By.ID, "vis-public"))
+        )
+        public_btn.click()
+        save_btn = self.driver.find_element(By.ID, "btn-save")
+        save_btn.click()
+        WebDriverWait(self.driver, 5).until(
+            lambda _: "unsaved" not in save_btn.get_attribute("class")
+        )
+
+        # Verify visibility in discover as Bob, as discover excludes own notes
+        self.driver.get(self.localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "login")
+        )
+        self.login("bob", "ap23km2oso38r4j4s731sj")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(self.localHost + "discover")
+        WebDriverWait(self.driver, 5).until(
+            lambda _: alice_note_title in self.get_discover_note_titles()
+        )
+        self.assertIn(
+            alice_note_title,
+            self.get_discover_note_titles(),
+            "Expected note to appear in discover after setting it from private to public"
+        )
+
+        # Switch note back to private
+        self.driver.get(self.localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "login")
+        )
+        self.login("alice", "password123")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(alice_note_editor_url)
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(alice_note_editor_url)
+        )
+        private_btn = WebDriverWait(self.driver, 5).until(
+            expected_conditions.element_to_be_clickable((By.ID, "vis-private"))
+        )
+        private_btn.click()
+        save_btn = self.driver.find_element(By.ID, "btn-save")
+        save_btn.click()
+        WebDriverWait(self.driver, 5).until(
+            lambda _: "unsaved" not in save_btn.get_attribute("class")
+        )
+
+        # Verify note is hidden again
+        self.driver.get(self.localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "login")
+        )
+        self.login("bob", "ap23km2oso38r4j4s731sj")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(self.localHost + "discover")
+        WebDriverWait(self.driver, 5).until(
+            lambda _: alice_note_title not in self.get_discover_note_titles()
+        )
+        self.assertNotIn(
+            alice_note_title,
+            self.get_discover_note_titles(),
+            "Expected note to be hidden from discover after setting it from public to private"
+        )
+        
