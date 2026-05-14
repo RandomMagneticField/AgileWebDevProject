@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="scrollbar-width: none;">
+<div class="container">
 
     <!-- Header -->
     <section class="header">
@@ -31,13 +31,30 @@
 
     <!-- Features -->
     <section class="features">
-        <div class="feature-row">
+        <div class="feature-row" id="notes-row">
             <div class="feature-text">
                 <p class="feature-label">Notes</p>
                 <h2 class="feature-heading">Write notes easily</h2>
                 <p class="feature-desc">Effortlessly format your notes using our built-in Markdown. Complete with live preview and a formatting toolbar for easier syntax access. Easily tag, organise, and share your notes with other students.</p>
             </div>
-            <div class="image"></div>
+            <div class="image">
+                <div class="editor-box">
+                    <div class="md-toolbar">
+                        <button class="tb-btn"><b>B</b></button>
+                        <button class="tb-btn"><i>I</i></button>
+                        <button class="tb-btn" style="text-decoration:line-through;">S</button>
+                        <div class="tb-sep"></div>
+                        <button class="tb-btn">H1</button>
+                        <button class="tb-btn">H2</button>
+                        <button class="tb-btn">H3</button>
+                        <div class="tb-sep"></div>
+                        <button class="tb-btn"><i class="bi bi-list-ul"></i></button>
+                        <button class="tb-btn"><i class="bi bi-list-ol"></i></button>
+                        <button class="tb-btn"><i class="bi bi-code"></i></button>
+                    </div>
+                    <div id="notes-demo"></div>
+                </div>
+            </div>
         </div>
 
         <div class="feature-row reverse">
@@ -96,6 +113,10 @@
     function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
     function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
 </script>
+<script>
+    document.getElementById('md-preview').innerHTML = '<h1 style="color:white">TEST</h1>';
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="{{ url_for('static', filename='js/starting.js') }}"></script>
 {% endblock %}

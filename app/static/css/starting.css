@@ -138,6 +138,9 @@ html {
   border-radius: 20px;
   transition: all 0.3s ease;
   padding: 20px;
+  overflow: hidden;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .feature-row:hover .feature-heading {
@@ -257,4 +260,37 @@ html {
 .demo-fc-btns .btn-danger {
     width: auto !important; 
     padding: 8px 20px !important; 
+}
+
+/*Note demo*/
+#notes-demo {
+    color: var(--text-primary);
+    font-size: 12px;
+    padding: 16px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.image .editor-box {
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+#notes-demo h1 { font-size: 16px; }
+#notes-demo h2 { font-size: 14px; }
+#notes-demo h3 { font-size: 13px; }
+
+#notes-demo ul {
+    padding-left: 20px;
+}
+
+#notes-demo strong {
+    color: var(--text-primary);
+}
+
+#notes-demo code {
+    background: var(--input-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
 }
