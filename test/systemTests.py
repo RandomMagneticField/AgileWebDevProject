@@ -128,3 +128,142 @@ class SystemTests(unittest.TestCase):
             "Expected to stay on login page with invalid credentials")
 
     # Test signup page
+
+    def test_signup_page(self):
+        # Register user
+
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john@example.com")
+        username_field.send_keys("john")
+        password_field.send_keys("as90md09jrsoajm")
+        confirm_field.send_keys("as90md09jrsoajm")
+        
+        submit_btn.click()
+
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.assertEqual(
+            self.localHost + "dashboard",
+            self.driver.current_url,
+            "Expected to be redirected to localHost/dashboard")
+
+        # Email already used
+
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john@example.com")
+        username_field.send_keys("john2004")
+        password_field.send_keys("as90md09jrsoajm")
+        confirm_field.send_keys("as90md09jrsoajm")
+
+        submit_btn.click()
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "register",
+            self.driver.current_url,
+            "Expected to stay on register page as user already exists")
+
+        # Username already used
+
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john2004@example.com")
+        username_field.send_keys("john")
+        password_field.send_keys("as90md09jrsoajm")
+        confirm_field.send_keys("as90md09jrsoajm")
+
+        submit_btn.click()
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "register",
+            self.driver.current_url,
+            "Expected to stay on register page as user already exists")
+
+        # Invalid email
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john")
+        username_field.send_keys("john")
+        password_field.send_keys("as90md09jrsoajm")
+        confirm_field.send_keys("as90md09jrsoajm")
+
+        submit_btn.click()
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "register",
+            self.driver.current_url,
+            "Expected to stay on register page as email is invalid")
+
+        # Password not long enough
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john@example.com")
+        username_field.send_keys("john")
+        password_field.send_keys("2sJm8")
+        confirm_field.send_keys("2sJm8")
+
+        submit_btn.click()
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "register",
+            self.driver.current_url,
+            "Expected to stay on register page as password isn't long enough")
+
+        # Could not confirm password
+        self.driver.get(self.localHost + "register")
+
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys("john@example.com")
+        username_field.send_keys("john")
+        password_field.send_keys("as90md09jrsoajm")
+        confirm_field.send_keys("as90md09josoajm")
+
+        submit_btn.click()
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "register",
+            self.driver.current_url,
+            "Expected to stay on register page due to incorrect confirmation password")
