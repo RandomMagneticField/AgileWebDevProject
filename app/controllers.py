@@ -1,6 +1,6 @@
 from flask import jsonify
 from app import db
-from app.models import FlashcardResult, Tag, Quiz, Note, Deck
+from app.models import FlashcardResult, Tag, Quiz, Note, Deck, Flashcard
 
 
 def build_quiz_content(note):
@@ -97,9 +97,13 @@ def delete_quizzes_for_note(note):
         db.session.delete(quiz)
 
 def delete_flashcards_for_deck(deck):
-    for card in deck.flashcards:
-        FlashcardResult.query.filter_by(flashcard_id=card.flashcard_id).delete()
-        db.session.delete(card)
+    # Also includes deleting results
+    flashcard_ids = [card.flashcard_id for card in deck.flashcards]
+    
+    for flashcard_id in flashcard_ids:
+        FlashcardResult.query.filter_by(flashcard_id=flashcard_id).delete()
+    
+    Flashcard.query.filter_by(deck_id=deck.deck_id).delete()
 
 
 def process_tags(tag_names):

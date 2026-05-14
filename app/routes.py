@@ -1084,11 +1084,7 @@ def delete_account():
     for note in user.notes:
         delete_quizzes_for_note(note)
     
-    # delete flashcard results
-    for result in user.flashcard_results:
-        db.session.delete(result)
-    
-    # delete flashcards and decks
+    # delete flashcards, their results, and decks
     for deck in user.decks:
         delete_flashcards_for_deck(deck)
         db.session.delete(deck)

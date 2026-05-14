@@ -1,7 +1,7 @@
 import unittest
 
-from app.controllers import extract_correct_answer, extract_quiz_question_options, delete_quizzes_for_note
-from app.models import User, Note, Quiz, QuizQuestion
+from app.controllers import extract_correct_answer, extract_quiz_question_options, delete_quizzes_for_note, delete_flashcards_for_deck
+from app.models import User, Note, Quiz, QuizQuestion, Flashcard, FlashcardResult, Deck
 from app import create_app, db
 from app.config import TestConfig
 
@@ -162,5 +162,35 @@ class UnitTests(unittest.TestCase):
         self.assertIsNotNone(QuizQuestion.query.get(4), 'Question not belonging to a deleted quiz from passed note should not have been deleted')
 
     # Test deck/flashcard cascade delete
+
+    def test_deck_flashcard_cascade_delete(self):
+        fc1 = Flashcard(flashcard_id=0, deck_id=TestDeckID.ALICE_DECK_0.value, front='Front 1', back='Back 1')
+        fc2 = Flashcard(flashcard_id=1, deck_id=TestDeckID.ALICE_DECK_0.value, front='Front 2', back='Back 2')
+        fc3 = Flashcard(flashcard_id=2, deck_id=TestDeckID.ALICE_DECK_1.value, front='Front 3', back='Back 3')
+        fc4 = Flashcard(flashcard_id=3, deck_id=TestDeckID.BOB_DECK_0.value, front='Front 4', back='Back 4')
+        db.session.add_all([fc1, fc2, fc3, fc4])
+        db.session.commit()
+
+        fr1 = FlashcardResult(results_id=0, user_id=TestUserID.ALICE.value, flashcard_id=0, is_correct=True)
+        fr2 = FlashcardResult(results_id=1, user_id=TestUserID.ALICE.value, flashcard_id=1, is_correct=False)
+        fr3 = FlashcardResult(results_id=2, user_id=TestUserID.ALICE.value, flashcard_id=2, is_correct=True)
+        fr4 = FlashcardResult(results_id=3, user_id=TestUserID.BOB.value, flashcard_id=3, is_correct=True)
+        db.session.add_all([fr1, fr2, fr3, fr4])
+        db.session.commit()
+
+        deck = Deck.query.get(TestDeckID.ALICE_DECK_0.value)
+        delete_flashcards_for_deck(deck)
+
+        self.assertIsNone(Flashcard.query.get(0), 'Flashcard belonging to passed deck should have been deleted')
+        self.assertIsNone(Flashcard.query.get(1), 'Flashcard belonging to passed deck should have been deleted')
+
+        self.assertIsNotNone(Flashcard.query.get(2), 'Flashcard not belonging to passed deck should not have been deleted')
+        self.assertIsNotNone(Flashcard.query.get(3), 'Flashcard not belonging to passed deck should not have been deleted')
+
+        self.assertIsNone(FlashcardResult.query.get(0), 'FlashcardResult belonging to a deleted flashcard from passed deck should have been deleted')
+        self.assertIsNone(FlashcardResult.query.get(1), 'FlashcardResult belonging to a deleted flashcard from passed deck should have been deleted')
+
+        self.assertIsNotNone(FlashcardResult.query.get(2), 'FlashcardResult belonging to a deleted flashcard from passed deck should have been deleted')
+        self.assertIsNotNone(FlashcardResult.query.get(3), 'FlashcardResult belonging to a deleted flashcard from passed deck should have been deleted')
 
     # Test tag processing
