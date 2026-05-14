@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
 {% endblock %}
 
 {% block content %}
@@ -94,7 +95,10 @@
                 <h2 class="feature-heading">Generate quizzes instantly with AI</h2>
                 <p class="feature-desc">Let AI do the hard work. Generate multiple choice quizzes directly from your notes in seconds. Save your favourite quizzes, retake them anytime, or generate new questions whenever you need them.</p>
             </div>
-            <div class="image"></div>
+            <div class="image" id="quiz-row">
+                <div id="demo-quiz-question" class="quiz-question-prompt" style="padding: 16px 16px 8px;"></div>
+                <div class="quiz-mcq-stack" id="demo-quiz-opts" style="padding: 0 16px 16px;"></div>
+            </div>
         </div>
 
         <div class="feature-row reverse">

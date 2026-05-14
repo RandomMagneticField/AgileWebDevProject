@@ -294,3 +294,13 @@ html {
     border-radius: 4px;
     font-size: 12px;
 }
+
+.quiz-option-correct {
+    border-color: var(--btn-green-border) !important;
+    background: var(--btn-green-bg) !important;
+}
+
+.quiz-option-wrong {
+    border-color: var(--btn-danger-border) !important;
+    background: var(--btn-danger-bg) !important;
+}

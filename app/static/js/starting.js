@@ -101,3 +101,41 @@ hovernotes.addEventListener('mouseenter', function() {
     demoPreview.innerHTML = '';
     typeDemo();
 });
+
+//Quiz demo
+const demoQuizzes = [
+    { q: "What does HTML stand for?", opts: ["HyperText Markup Language", "High Transfer Markup Language", "HyperText Management Language", "Home Tool Markup Language"], correct: 0 },
+    { q: "Which HTTP method is used to submit a form?", opts: ["GET", "POST", "PUT", "DELETE"], correct: 1 },
+    { q: "What is the purpose of CSS?", opts: ["Server-side logic", "Database management", "Styling web pages", "Handling HTTP requests"], correct: 2 },
+    { q: "What does Flask use to render HTML templates?", opts: ["Django", "Jinja2", "React", "Handlebars"], correct: 1 },
+];
+let demoQuizIndex = 0;
+let demoQuizAnswered = false;
+
+function renderDemoQuiz() {
+    demoQuizAnswered = false;
+    const q = demoQuizzes[demoQuizIndex];
+    document.getElementById('demo-quiz-question').textContent = q.q;
+    document.getElementById('demo-quiz-opts').innerHTML = q.opts.map((o, i) => `
+        <div class="quiz-mcq-box" data-idx="${i}" onclick="selectDemoOpt(this, ${i})">
+            <div class="quiz-option-letter">${String.fromCharCode(65+i)}</div>
+            <div class="quiz-option-text">${o}</div>
+        </div>
+    `).join('');
+}
+
+function selectDemoOpt(el, idx) {
+    if (demoQuizAnswered) return;
+    demoQuizAnswered = true;
+    const correct = demoQuizzes[demoQuizIndex].correct;
+    document.querySelectorAll('#demo-quiz-opts .quiz-mcq-box').forEach((o, i) => {
+        if (i === correct) o.classList.add('quiz-option-correct');
+        else if (i === idx) o.classList.add('quiz-option-wrong');
+    });
+    setTimeout(() => {
+        demoQuizIndex = (demoQuizIndex + 1) % demoQuizzes.length;
+        renderDemoQuiz();
+    }, 1500);
+}
+
+renderDemoQuiz();
