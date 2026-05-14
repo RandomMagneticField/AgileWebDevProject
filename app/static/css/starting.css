@@ -304,3 +304,55 @@ html {
     border-color: var(--btn-danger-border) !important;
     background: var(--btn-danger-bg) !important;
 }
+
+.feature-row:last-child .notes-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.feature-row:last-child .note-card {
+    padding: 0;
+}
+
+
+.feature-row:last-child .note-card{
+  width: 150px !important;
+  height: 100px !important;
+}
+
+.feature-row:last-child .search-row{
+  width: 300px !important;
+}
+
+.feature-row:last-child .note-card-tags {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 65%;
+}
+
+.feature-row:last-child .note-card-content{
+  width: 139 !important;
+  height: 70 !important;
+  padding: 5px 10px !important;
+}
+
+.demo-search-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
+  padding-bottom: 8px;
+}
+
+.feature-row:last-child #panel-notes {
+  margin-top: 8px;
+}
+
+.demo-scroll-area {
+    overflow-y: scroll;
+    height: calc(280px - 60px);
+    scrollbar-width: none;
+    padding: 8px 20px 20px 20px;
+}

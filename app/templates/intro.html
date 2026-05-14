@@ -3,6 +3,7 @@
 {% block title %}Notella{% endblock %}
 
 {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/starting.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
@@ -10,6 +11,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/discover.css') }}"/>
 {% endblock %}
 
 {% block content %}
@@ -107,18 +109,44 @@
                 <h2 class="feature-heading">Explore notes and flashcards from other students</h2>
                 <p class="feature-desc">Browse public notes and flashcard decks created by fellow students. Filter by tag, preview content before copying, and build your own personalised library.</p>
             </div>
-            <div class="image"></div>
+            <div class="image">
+                <div class="demo-search-wrap">
+                    <div class="search-row">
+                        <!--search input-->
+                        <input class="search-input" type="text" placeholder="Search..." id ="search-input">
+                        <!--Tag filter-->
+                        <div style="position:relative;" id="tag-wrapper">
+                            <button class="tag-filter-btn" id="tag-filter-btn" onclick="openTagModal()" title="Filter by tags">
+                                <i class="bi bi-funnel"></i>
+                                <span class="tag-filter-count" id="tag-filter-count" style="display:none;"></span>
+                            </button>
+                            <div class="tag-modal" id="tag-modal" style="display:none;">
+                                <div class="tag-modal-header">
+                                    <span class="tag-modal-title">Filter by Tags</span>
+                                    <button class="tag-modal-clear" onclick="clearTags()">Clear all</button>
+                                </div>
+                                <div class="tag-modal-pills" id="tag-modal-pills"></div>
+                            </div>
+                        </div>
+                        <div class="tag-modal-backdrop" id="tag-modal-backdrop" style="display:none;" onclick="closeTagModal()"></div>
+                    </div>
+                </div>
+                
+
+                <!--Notes panel-->
+                <div class="demo-scroll-area">
+                    <div id="panel-notes">
+                        <div class="notes-grid" id="notes-grid"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
-
 </div>
 
 <script>
     function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
     function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
-</script>
-<script>
-    document.getElementById('md-preview').innerHTML = '<h1 style="color:white">TEST</h1>';
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
