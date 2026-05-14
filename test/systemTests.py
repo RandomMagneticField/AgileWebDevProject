@@ -96,6 +96,20 @@ class SystemTests(unittest.TestCase):
         password_field.send_keys(password)
         submit_btn.click()
 
+    def register(self, email, username, password, confirm_password):
+        email_field = self.driver.find_element(By.ID, "email")
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        confirm_field = self.driver.find_element(By.ID, "confirm_password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        email_field.send_keys(email)
+        username_field.send_keys(username)
+        password_field.send_keys(password)
+        confirm_field.send_keys(confirm_password)
+        
+        submit_btn.click()
+
     # Test login page
 
     def test_login_page(self):
@@ -117,21 +131,26 @@ class SystemTests(unittest.TestCase):
         # Test case 2 : user does not exist
 
         self.driver.get(self.localHost + "login")
-
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        username_field.send_keys("myname2")
-        password_field.send_keys("123")
         
-        submit_btn.click()
+        self.login("myname", "security456")
         time.sleep(1)
 
         self.assertEqual(
             self.localHost + "login",
             self.driver.current_url,
-            "Expected to stay on login page with invalid credentials")
+            "Expected to stay on login page with invalid username")
+        
+        # Test case 3 : incorrect password
+
+        self.driver.get(self.localHost + "login")
+        
+        self.login("alice", "password124")
+        time.sleep(1)
+
+        self.assertEqual(
+            self.localHost + "login",
+            self.driver.current_url,
+            "Expected to stay on login page with invalid password")
 
     # Test signup page
 
@@ -140,18 +159,7 @@ class SystemTests(unittest.TestCase):
 
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john@example.com")
-        username_field.send_keys("john")
-        password_field.send_keys("as90md09jrsoajm")
-        confirm_field.send_keys("as90md09jrsoajm")
-        
-        submit_btn.click()
+        self.register("john@example.com", "john", "as90md09jrsoajm", "as90md09jrsoajm")
 
         WebDriverWait(self.driver, 5).until(
             expected_conditions.url_to_be(self.localHost + "dashboard")
@@ -166,18 +174,7 @@ class SystemTests(unittest.TestCase):
 
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john@example.com")
-        username_field.send_keys("john2004")
-        password_field.send_keys("as90md09jrsoajm")
-        confirm_field.send_keys("as90md09jrsoajm")
-
-        submit_btn.click()
+        self.register("john@example.com", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
         time.sleep(1)
 
         self.assertEqual(
@@ -189,18 +186,7 @@ class SystemTests(unittest.TestCase):
 
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john2004@example.com")
-        username_field.send_keys("john")
-        password_field.send_keys("as90md09jrsoajm")
-        confirm_field.send_keys("as90md09jrsoajm")
-
-        submit_btn.click()
+        self.register("john2004@example.com", "john", "as90md09jrsoajm", "as90md09jrsoajm")
         time.sleep(1)
 
         self.assertEqual(
@@ -211,18 +197,7 @@ class SystemTests(unittest.TestCase):
         # Invalid email
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john")
-        username_field.send_keys("john")
-        password_field.send_keys("as90md09jrsoajm")
-        confirm_field.send_keys("as90md09jrsoajm")
-
-        submit_btn.click()
+        self.register("john", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
         time.sleep(1)
 
         self.assertEqual(
@@ -233,18 +208,7 @@ class SystemTests(unittest.TestCase):
         # Password not long enough
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john@example.com")
-        username_field.send_keys("john")
-        password_field.send_keys("2sJm8")
-        confirm_field.send_keys("2sJm8")
-
-        submit_btn.click()
+        self.register("john2004@example.com", "john2004", "2sJm8", "2sJm8")
         time.sleep(1)
 
         self.assertEqual(
@@ -255,18 +219,7 @@ class SystemTests(unittest.TestCase):
         # Could not confirm password
         self.driver.get(self.localHost + "register")
 
-        email_field = self.driver.find_element(By.ID, "email")
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        confirm_field = self.driver.find_element(By.ID, "confirm_password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        email_field.send_keys("john@example.com")
-        username_field.send_keys("john")
-        password_field.send_keys("as90md09jrsoajm")
-        confirm_field.send_keys("as90md09josoajm")
-
-        submit_btn.click()
+        self.register("john2004@example.com", "john2004", "as90md09jrsoajm", "as90md09josoajm")
         time.sleep(1)
 
         self.assertEqual(

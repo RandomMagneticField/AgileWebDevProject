@@ -1,7 +1,7 @@
 import unittest
 
-from app.controllers import extract_correct_answer, extract_quiz_question_options, delete_quizzes_for_note, delete_flashcards_for_deck
-from app.models import User, Note, Quiz, QuizQuestion, Flashcard, FlashcardResult, Deck
+from app.controllers import extract_correct_answer, extract_quiz_question_options, delete_quizzes_for_note, delete_flashcards_for_deck, process_tags
+from app.models import User, Note, Quiz, QuizQuestion, Flashcard, FlashcardResult, Deck, Tag
 from app import create_app, db
 from app.config import TestConfig
 
@@ -29,6 +29,9 @@ class UnitTests(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
         return user
+    
+    def get_all_tag_names(self):
+        return [tag.name for tag in Tag.query.order_by(Tag.name.asc()).all()]
 
     # Test quiz correct answer extraction
 
@@ -194,3 +197,63 @@ class UnitTests(unittest.TestCase):
         self.assertIsNotNone(FlashcardResult.query.get(4), 'FlashcardResult belonging to a deleted flashcard from passed deck should have been deleted')
 
     # Test tag processing
+    def test_tag_processing(self):
+        tags = ['science']
+        returned_tags = process_tags(tags)
+        db.session.commit()
+
+        self.assertEqual(
+            tags,
+            [tag.name for tag in returned_tags],
+            'Expected returned tags to match passed tag names in order'
+        )
+        self.assertEqual(
+            ['science'],
+            self.get_all_tag_names(),
+            'Expected fresh database to contain one tag after processing one tag'
+        )
+
+        tags = ['math', 'history', 'art']
+        returned_tags = process_tags(tags)
+        db.session.commit()
+
+        self.assertEqual(
+            tags,
+            [tag.name for tag in returned_tags],
+            'Expected returned tags to match passed tag names in order'
+        )
+        self.assertEqual(
+            ['art', 'history', 'math', 'science'],
+            self.get_all_tag_names(),
+            'Expected database to contain existing tags and new distinct tags after processing new distinct tags'
+        )
+
+        tags = ['physics', 'music', 'science', 'history']
+        returned_tags = process_tags(tags)
+        db.session.commit()
+
+        self.assertEqual(
+            tags,
+            [tag.name for tag in returned_tags],
+            'Expected returned tags to match passed tag names in order'
+        )
+        self.assertEqual(
+            ['art', 'history', 'math', 'music', 'physics', 'science'],
+            self.get_all_tag_names(),
+            'Expected database to contain existing tags, new distinct tags and no duplicate tags after processing new distinct tags and existing tags'
+        )
+
+        tags = ['sports', 'english', 'english', 'sports']
+        returned_tags = process_tags(tags)
+        db.session.commit()
+
+        self.assertEqual(
+            tags,
+            [tag.name for tag in returned_tags],
+            'Expected returned tags to match passed tag names in order'
+        )
+        self.assertEqual(
+            ['art', 'english', 'history', 'math', 'music', 'physics', 'science', 'sports'],
+            self.get_all_tag_names(),
+            'Expected database to contain existing tags, new distinct tags and no duplicate tags after processing an array of tags that are all distinct from the existing tags, but have some repeats'
+        )
