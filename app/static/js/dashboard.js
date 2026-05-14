@@ -229,6 +229,96 @@ searchInput.addEventListener('input', function() {
     }, 300);
 });
 
+// ── Tag modal ──
+function getAvailableTags() {
+    const isNotes = document.getElementById('panel-notes').style.display !== 'none'
+    const data = isNotes ? notesData : decksData
+    const tags = new Set()
+    data.forEach(item => item.tags.forEach(t => tags.add(t)))
+    return tags
+}
+
+function rebuildTagModal() {
+    const pills = document.getElementById('tag-modal-pills')
+    const availableTags = getAvailableTags()
+
+    if (availableTags.size === 0) {
+        pills.innerHTML = '<span style="color:var(--text-secondary); font-size:13px;">No tags available</span>'
+        return
+    }
+
+    const existing = document.getElementById('tag-search-input')
+    const inputsearch = existing ? existing.value.toLowerCase() : ''
+    const wasFocused = existing && document.activeElement === existing
+    const filtered = [...availableTags].sort().filter(t => t.toLowerCase().includes(inputsearch))
+
+    pills.innerHTML = `
+        <input class="tag-search-input" id="tag-search-input" type="text" placeholder="Search tags..." value="${inputsearch}" oninput="rebuildTagModal()" onclick="event.stopPropagation()"/>
+        ${filtered.map(tag => `
+            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${tag}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
+                ${tag}
+            </button>
+        `).join('')}
+    `
+
+    if (wasFocused) {
+        const newInput = document.getElementById('tag-search-input')
+        newInput.focus()
+        newInput.setSelectionRange(newInput.value.length, newInput.value.length)
+    }
+}
+
+function openTagModal() {
+    rebuildTagModal()
+    document.getElementById('tag-modal-backdrop').style.display = 'block'
+    document.getElementById('tag-modal').style.display = 'block'
+}
+
+function closeTagModal() {
+    document.getElementById('tag-modal-backdrop').style.display = 'none'
+    document.getElementById('tag-modal').style.display = 'none'
+}
+
+function toggleTag(tag) {
+    if (selectedTags.has(tag)) {
+        selectedTags.delete(tag)
+    } else {
+        selectedTags.add(tag)
+    }
+    rebuildTagModal()
+    updateTagFilterBtn()
+    renderCards()
+}
+
+function clearTags() {
+    selectedTags.clear()
+    rebuildTagModal()
+    updateTagFilterBtn()
+    renderCards()
+}
+
+function updateTagFilterBtn() {
+    const count = document.getElementById('tag-filter-count')
+    const btn = document.getElementById('tag-filter-btn')
+    if (selectedTags.size > 0) {
+        count.textContent = selectedTags.size
+        count.style.display = 'inline'
+        btn.classList.add('active')
+    } else {
+        count.style.display = 'none'
+        btn.classList.remove('active')
+    }
+}
+
+
+document.addEventListener('click', function (e) {
+    if (!e.target.closest('#tag-wrapper') && !e.target.closest('#tag-modal-backdrop')) {
+        closeTagModal()
+    }
+    if (!e.target.closest('#sort-wrapper')) {
+        sortDropdown.style.display = 'none'
+    }
+})
 
 function getGreeting() {
     const hour = new Date().getHours();

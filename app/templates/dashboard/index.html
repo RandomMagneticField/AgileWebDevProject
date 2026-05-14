@@ -21,6 +21,21 @@
                 </div>
                 <div class="search-row">
                     <input class="search-input" type="text" placeholder="Search..."/>
+                    <!--Tag filter-->
+                    <div style="position:relative;" id="tag-wrapper">
+                        <button class="tag-filter-btn" id="tag-filter-btn" onclick="openTagModal()" title="Filter by tags">
+                            <i class="bi bi-funnel"></i>
+                            <span class="tag-filter-count" id="tag-filter-count" style="display:none;"></span>
+                        </button>
+                        <div class="tag-modal" id="tag-modal" style="display:none;">
+                            <div class="tag-modal-header">
+                                <span class="tag-modal-title">Filter by Tags</span>
+                                <button class="tag-modal-clear" onclick="clearTags()">Clear all</button>
+                            </div>
+                            <div class="tag-modal-pills" id="tag-modal-pills"></div>
+                        </div>
+                    </div>
+                    <div class="tag-modal-backdrop" id="tag-modal-backdrop" style="display:none;" onclick="closeTagModal()"></div>
                     <!--sort dropdown-->
                     <div class="select" id="sort-wrapper">
                         <button class="select-btn" id="sort-btn">
