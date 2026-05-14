@@ -4,9 +4,9 @@ import threading
 import time
 import unittest
 
-from app.controllers import extract_correct_answer, extract_quiz_question_options
-from app.models import User
+from app.models import User, Note
 from app import create_app, db
+from datetime import datetime, timezone
 from app.config import TestConfig
 
 from selenium import webdriver
@@ -109,6 +109,29 @@ class SystemTests(unittest.TestCase):
         confirm_field.send_keys(confirm_password)
         
         submit_btn.click()
+
+    def apply_sort(self, sort_value):
+        sort_btn = self.driver.find_element(By.ID, "sort-btn")
+        sort_btn.click()
+        sort_option = WebDriverWait(self.driver, 5).until(
+            expected_conditions.element_to_be_clickable(
+                (By.CSS_SELECTOR, f"#sort-dropdown .select-option[data-value='{sort_value}']")
+            )
+        )
+        sort_option.click()
+
+    def get_note_titles(self):
+        cards = self.driver.find_elements(By.CSS_SELECTOR, ".note-card .note-card-title")
+        return [card.text.strip() for card in cards if card.text.strip()]
+
+    def assert_note_order(self, expected_titles, msg):
+        def titles_sorted(_):
+            filtered_titles = [title for title in self.get_note_titles() if title in expected_titles]
+            return filtered_titles == expected_titles
+
+        WebDriverWait(self.driver, 5).until(titles_sorted)
+        final_titles = [title for title in self.get_note_titles() if title in expected_titles]
+        self.assertEqual(expected_titles, final_titles, msg)
 
     # Test login page
 
@@ -269,4 +292,51 @@ class SystemTests(unittest.TestCase):
             "Expected user to be redirected to dashboard when attempting to access another user's note"
         )
 
-    
+    # Dashboard loading and sorting test
+    def test_dashboard_loading_and_sorting(self):
+        n1 = Note(
+            title='Agile Web Development',
+            user_id=TestUserID.ALICE.value,
+            created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+            updated_at=datetime(2026, 4, 5, tzinfo=timezone.utc),
+            accessed_at=datetime(2026, 5, 10, tzinfo=timezone.utc)
+        )
+        n2 = Note(
+            title='Computer Networks',
+            user_id=TestUserID.ALICE.value,
+            created_at=datetime(2026, 3, 5, tzinfo=timezone.utc),
+            updated_at=datetime(2026, 4, 10, tzinfo=timezone.utc),
+            accessed_at=datetime(2026, 5, 15, tzinfo=timezone.utc)
+        )
+        n3 = Note(
+            title='Secure Coding',
+            user_id=TestUserID.ALICE.value,
+            created_at=datetime(2026, 3, 10, tzinfo=timezone.utc),
+            updated_at=datetime(2026, 4, 15, tzinfo=timezone.utc),
+            accessed_at=datetime(2026, 5, 5, tzinfo=timezone.utc)
+        )
+        db.session.add_all([n1, n2, n3])
+        db.session.commit()
+
+        self.login("alice", "password123")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        expected_titles = [n1.title, n2.title, n3.title]
+        WebDriverWait(self.driver, 5).until(lambda _: len(self.get_note_titles()) >= 3)
+        initial_titles = self.get_note_titles()
+        for title in expected_titles:
+            self.assertIn(title, initial_titles, f"Expected dashboard to load all of user's notes")
+
+        self.apply_sort('alpha')
+        self.assert_note_order([n1.title, n2.title, n3.title], "Expected correct alphabetical sorting")
+
+        self.apply_sort('created')
+        self.assert_note_order([n1.title, n3.title, n2.title], "Expected correct created at sorting")
+
+        self.apply_sort('updated')
+        self.assert_note_order([n3.title, n2.title, n1.title], "Expected correct last updated at sorting")
+
+        self.apply_sort('accessed')
+        self.assert_note_order([n2.title, n1.title, n3.title], "Expected correct last accessed at sorting")
