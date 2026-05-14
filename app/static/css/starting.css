@@ -1,3 +1,7 @@
+html {
+    scrollbar-width: none !important;
+}
+
 .header{
   align-items: center;
   text-align: center;
@@ -133,6 +137,7 @@
   border: 1px solid var(--input-border);
   border-radius: 20px;
   transition: all 0.3s ease;
+  padding: 20px;
 }
 
 .feature-row:hover .feature-heading {
@@ -180,4 +185,76 @@
   color: var(--text-primary);
 }
 
+/* Flashcard demo */
+.demo-fc-wrap {
+    width: 100%;
+    height: 150px;
+    perspective: 1000px;
+    cursor: pointer;
+}
 
+.demo-fc-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+
+.demo-fc-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+.demo-fc-front, .demo-fc-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.demo-fc-back {
+    transform: rotateY(180deg);
+}
+
+.demo-fc-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.demo-fc-text {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.demo-fc-counter {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+}
+
+.demo-fc-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.demo-fc-btns .btn-danger {
+    width: auto !important; 
+    padding: 8px 20px !important; 
+}

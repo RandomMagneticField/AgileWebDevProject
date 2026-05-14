@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Notetella{% endblock %}
+{% block title %}Notella{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/starting.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container" style="scrollbar-width: none;">
 
     <!-- Header -->
     <section class="header">
@@ -42,7 +46,29 @@
                 <h2 class="feature-heading">Study with flashcard decks</h2>
                 <p class="feature-desc">Build flashcard decks and study at your own pace. Flip through cards, mark each one right or wrong, and get a results summary at the end of every session so you know exactly where to focus next.</p>
             </div>
-            <div class="image"></div>
+            <div class="image">
+                <div class="demo-fc-wrap" onclick="demoFlipCard()">
+                    <div class="demo-fc-inner" id="demo-inner">
+                        <div class="demo-fc-front">
+                            <p class="demo-fc-label">Front</p>
+                            <div class="demo-fc-text" id="demo-front-text"></div>
+                        </div>
+                        <div class="demo-fc-back">
+                            <p class="demo-fc-label">Back</p>
+                            <div class="demo-fc-text" id="demo-back-text"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-fc-counter" id="demo-counter"></div>
+                <div class="demo-fc-btns">
+                    <button class="flip-btn" id="demo-btn-correct">
+                        <i class="bi bi-check-circle-fill"></i> Correct
+                    </button>
+                    <button class="btn-danger" id="demo-btn-wrong">
+                        <i class="bi bi-x-circle-fill"></i> Wrong
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="feature-row">
@@ -70,4 +96,6 @@
     function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
     function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
 </script>
+
+<script src="{{ url_for('static', filename='js/starting.js') }}"></script>
 {% endblock %}
