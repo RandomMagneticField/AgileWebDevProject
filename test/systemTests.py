@@ -83,6 +83,19 @@ class SystemTests(unittest.TestCase):
         db.session.commit()
         return user
 
+    def login(self, username, password):
+        self.driver.get(self.localHost + "login")
+
+        username_field = self.driver.find_element(By.ID, "username")
+        password_field = self.driver.find_element(By.ID, "password")
+        submit_btn = self.driver.find_element(By.ID, "submit")
+
+        username_field.clear()
+        password_field.clear()
+        username_field.send_keys(username)
+        password_field.send_keys(password)
+        submit_btn.click()
+
     # Test login page
 
     def test_login_page(self):
@@ -90,14 +103,7 @@ class SystemTests(unittest.TestCase):
 
         self.driver.get(self.localHost + "login")
 
-        username_field = self.driver.find_element(By.ID, "username")
-        password_field = self.driver.find_element(By.ID, "password")
-        submit_btn = self.driver.find_element(By.ID, "submit")
-
-        username_field.send_keys("alice")
-        password_field.send_keys("password123")
-        
-        submit_btn.click()
+        self.login("alice", "password123")
 
         WebDriverWait(self.driver, 5).until(
             expected_conditions.url_to_be(self.localHost + "dashboard")
@@ -267,3 +273,47 @@ class SystemTests(unittest.TestCase):
             self.localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page due to incorrect confirmation password")
+        
+    # Test forbidden access of note
+
+    def test_forbidden_access_of_note(self):
+        alice_note_url = self.localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
+
+        self.login("alice", "password123")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(alice_note_url)
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(alice_note_url)
+        )
+
+        self.assertEqual(
+            alice_note_url,
+            self.driver.current_url,
+            "Expected user to be able to load their own note editor page"
+        )
+
+        self.driver.get(self.localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "login")
+        )
+
+        self.login("bob", "ap23km2oso38r4j4s731sj")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.driver.get(alice_note_url)
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "dashboard")
+        )
+
+        self.assertEqual(
+            self.localHost + "dashboard",
+            self.driver.current_url,
+            "Expected user to be redirected to dashboard when attempting to access another user's note"
+        )
+
+    
