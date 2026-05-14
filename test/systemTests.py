@@ -1,48 +1,30 @@
-import os
-import tempfile
-import threading
 import time
 import unittest
+import multiprocessing
 
 from app.controllers import extract_correct_answer, extract_quiz_question_options
 from app.models import User
 from app import create_app, db
-from app.config import TestConfig
+from app.config import ServerTestConfig
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
-from werkzeug.serving import make_server
 
-
-
-class ServerThread(threading.Thread):
-    def __init__(self, app):
-        super().__init__(daemon=True)
-        self.server = make_server("127.0.0.1", 0, app)
-
-    def run(self):
-        self.server.serve_forever()
-
-    def shutdown(self):
-        self.server.shutdown()
+localHost = "http://127.0.0.1:5000/"
 
 class SystemTests(unittest.TestCase):
     # Essential functions
 
     def setUp(self):
-        testApplication = create_app(TestConfig)
-        self.temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-        self.temp_db.close()
-        testApplication.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{self.temp_db.name}"
-
+        testApplication = create_app(ServerTestConfig)
         self.app_context = testApplication.app_context()
         self.app_context.push()
         db.create_all()
         # Add test data to db
 
-        self.server_thread = ServerThread(testApplication)
+        self.server_thread = multiprocessing.Process(target=testApplication.run)
         self.server_thread.start()
 
         options = webdriver.ChromeOptions()
@@ -50,29 +32,15 @@ class SystemTests(unittest.TestCase):
         #self.driver = webdriver.Chrome(options=options)
         self.driver = webdriver.Chrome()
 
-        self.localHost = f"http://127.0.0.1:{self.server_thread.server.server_port}/"
-
-        # Wait briefly for the server to accept connections.
-        deadline = time.time() + 5
-        while time.time() < deadline:
-            try:
-                self.driver.get(self.localHost)
-                break
-            except Exception:
-                time.sleep(0.1)
-        else:
-            raise RuntimeError("Test server did not start in time")
+        # self.driver.get(localHost)
 
     def tearDown(self):
-        self.driver.quit()
-        self.server_thread.shutdown()
-        self.server_thread.join(timeout=5)
+        self.server_thread.terminate()
+        self.driver.close()
 
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
-
-        os.unlink(self.temp_db.name)
 
     # Helper functions
 
@@ -86,7 +54,6 @@ class SystemTests(unittest.TestCase):
     # Test login page
 
     def test_login_page(self):
-
         # Test case 1 : user exists
         student1 = self.addUser("myname", "123")
 

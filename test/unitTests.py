@@ -1,9 +1,11 @@
 import unittest
 
-from app.controllers import extract_correct_answer, extract_quiz_question_options
+from app.controllers import extract_correct_answer, extract_quiz_question_options, delete_quizzes_for_note
 from app.models import User, Note, Quiz, QuizQuestion
 from app import create_app, db
 from app.config import TestConfig
+
+from test.testseed import test_seed, TestUserID, TestNoteID, TestDeckID
 
 class UnitTests(unittest.TestCase):
     # Essential functions
@@ -13,7 +15,7 @@ class UnitTests(unittest.TestCase):
         self.app_context = testApplication.app_context()
         self.app_context.push()
         db.create_all()
-        # Add test data to db
+        test_seed(db)
 
     def tearDown(self):
         db.session.remove()
@@ -127,7 +129,37 @@ class UnitTests(unittest.TestCase):
 
     # Test quiz/question cascade delete
 
+    def test_quiz_question_cascade_delete(self):
+        q1 = Quiz(quiz_id=0, note_id=TestNoteID.ALICE_NOTE_0.value, name='Quiz 1')
+        q2 = Quiz(quiz_id=1, note_id=TestNoteID.ALICE_NOTE_0.value, name='Quiz 2')
+        q3 = Quiz(quiz_id=2, note_id=TestNoteID.ALICE_NOTE_1.value, name='Quiz 3')
+        q4 = Quiz(quiz_id=3, note_id=TestNoteID.BOB_NOTE_0.value, name='Quiz 4')
+        db.session.add_all([q1, q2, q3, q4])
+        db.session.commit()
 
+        qq1 = QuizQuestion(question_id=0, quiz_id=0, question_text='Question 1.1', correct_answer='a')
+        qq2 = QuizQuestion(question_id=1, quiz_id=1, question_text='Question 2.1', correct_answer='a')
+        qq3 = QuizQuestion(question_id=2, quiz_id=1, question_text='Question 2.2', correct_answer='a')
+        qq4 = QuizQuestion(question_id=3, quiz_id=2, question_text='Question 3.1', correct_answer='a')
+        qq5 = QuizQuestion(question_id=4, quiz_id=3, question_text='Question 4.1', correct_answer='a')
+        db.session.add_all([qq1, qq2, qq3, qq4, qq5])
+        db.session.commit()
+
+        note = Note.query.get(TestNoteID.ALICE_NOTE_0.value)
+        delete_quizzes_for_note(note)
+
+        self.assertIsNone(Quiz.query.get(0), 'Quiz belonging to passed note should have been deleted')
+        self.assertIsNone(Quiz.query.get(1), 'Quiz belonging to passed note should have been deleted')
+
+        self.assertIsNotNone(Quiz.query.get(2), 'Quiz not belonging to passed note should not have been deleted')
+        self.assertIsNotNone(Quiz.query.get(3), 'Quiz not belonging to passed note should not have been deleted')
+
+        self.assertIsNone(QuizQuestion.query.get(0), 'Question belonging to a deleted quiz from passed note should have been deleted')
+        self.assertIsNone(QuizQuestion.query.get(1), 'Question belonging to a deleted quiz from passed note should have been deleted')
+        self.assertIsNone(QuizQuestion.query.get(2), 'Question belonging to a deleted quiz from passed note should have been deleted')
+
+        self.assertIsNotNone(QuizQuestion.query.get(3), 'Question not belonging to a deleted quiz from passed note should not have been deleted')
+        self.assertIsNotNone(QuizQuestion.query.get(4), 'Question not belonging to a deleted quiz from passed note should not have been deleted')
 
     # Test deck/flashcard cascade delete
 
