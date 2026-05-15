@@ -416,8 +416,8 @@
     padding: 8px 20px;
     border-radius: 10px;
     background: var(--btn-login-bg);
-    border: 1px solid var(--btn-login-border);
-    color: var(--btn-login-color);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
     font-family: var(--font);
     font-size: 12px;
     cursor: pointer;
@@ -667,7 +667,7 @@
 }
 
 .quiz-results-btn-edit:hover {
-    background: var(--btn-blue-hover);
+    background: var(--btn-blue-bg-hover);
 }
 
 .quiz-results-btn-delete {
@@ -677,7 +677,7 @@
 }
 
 .quiz-results-btn-delete:hover {
-    background: var(--btn-danger-hover);
+    background: var(--btn-danger-bg-hover);
 }
 
 /* Edit Quiz Name Modal */
@@ -715,7 +715,7 @@
 .quiz-edit-modal-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary-color);
+    color: var(--text-primary);
 }
 
 .quiz-edit-modal-input {
@@ -723,7 +723,7 @@
     border: 1px solid var(--input-border);
     border-radius: 8px;
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     font-family: var(--font);
     font-size: 14px;
     outline: none;
@@ -767,7 +767,7 @@
 }
 
 .quiz-edit-modal-btn-submit:hover {
-    background: var(--btn-blue-hover);
+    background: var(--btn-blue-bg-hover);
 }
 
 /* Delete Quiz Modal */
@@ -807,7 +807,7 @@
 
 .quiz-delete-modal-message {
     font-size: 14px;
-    color: var(--text-secondary-color);
+    color: var(--text-muted);
 }
 
 .quiz-delete-modal-actions {
@@ -843,7 +843,7 @@
 }
 
 .quiz-delete-modal-btn-delete:hover {
-    background: var(--btn-danger-hover);
+    background: var(--btn-danger-bg-hover);
 }
 
 @media (max-width: 900px) {
