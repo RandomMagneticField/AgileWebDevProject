@@ -106,6 +106,18 @@ class SystemTests(unittest.TestCase):
         cards = self.driver.find_elements(By.CSS_SELECTOR, "#notes-grid .note-card .note-card-title")
         return [card.text.strip() for card in cards if card.text.strip()]
 
+    def get_auth_errors(self):
+        return [el.text.strip() for el in self.driver.find_elements(By.CSS_SELECTOR, ".errors") if el.text.strip()]
+
+    def wait_for_auth_error(self):
+        WebDriverWait(self.driver, 5).until(
+            lambda d: len(d.find_elements(By.CSS_SELECTOR, ".errors")) > 0
+        )
+
+    def field_is_valid(self, field_id):
+        field = self.driver.find_element(By.ID, field_id)
+        return self.driver.execute_script("return arguments[0].checkValidity();", field)
+
     # Test login page
 
     def test_login_page(self):
@@ -129,22 +141,22 @@ class SystemTests(unittest.TestCase):
         self.driver.get(localHost + "login")
         
         self.login("myname", "security456")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "login",
+            localHost + "login",
             self.driver.current_url,
             "Expected to stay on login page with invalid username")
         
         # Test case 3 : incorrect password
 
-        self.driver.get(self.localHost + "login")
+        self.driver.get(localHost + "login")
         
         self.login("alice", "password124")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "login",
+            localHost + "login",
             self.driver.current_url,
             "Expected to stay on login page with invalid password")
 
@@ -153,84 +165,92 @@ class SystemTests(unittest.TestCase):
     def test_signup_page(self):
         # Register user
 
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john@example.com", "john", "as90md09jrsoajm", "as90md09jrsoajm")
 
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         self.assertEqual(
-            self.localHost + "dashboard",
+            localHost + "dashboard",
             self.driver.current_url,
             "Expected to be redirected to localHost/dashboard")
 
+        self.driver.get(localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(localHost + "login")
+        )
+
         # Email already used
 
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john@example.com", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "register",
+            localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page as user already exists")
 
         # Username already used
 
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john2004@example.com", "john", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "register",
+            localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page as user already exists")
 
         # Invalid email
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "register",
+            localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page as email is invalid")
 
         # Password not long enough
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john2004@example.com", "john2004", "2sJm8", "2sJm8")
-        time.sleep(1)
+        self.assertFalse(
+            self.field_is_valid("password"),
+            "Expected password field to fail HTML validity checks for a too-short password"
+        )
 
         self.assertEqual(
-            self.localHost + "register",
+            localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page as password isn't long enough")
 
         # Could not confirm password
-        self.driver.get(self.localHost + "register")
+        self.driver.get(localHost + "register")
 
         self.register("john2004@example.com", "john2004", "as90md09jrsoajm", "as90md09josoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
-            self.localHost + "register",
+            localHost + "register",
             self.driver.current_url,
             "Expected to stay on register page due to incorrect confirmation password")
         
     # Test forbidden access of note
 
     def test_forbidden_access_of_note(self):
-        alice_note_url = self.localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
+        alice_note_url = localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
 
         self.login("alice", "password123")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         self.driver.get(alice_note_url)
@@ -244,23 +264,23 @@ class SystemTests(unittest.TestCase):
             "Expected user to be able to load their own note editor page"
         )
 
-        self.driver.get(self.localHost + "logout")
+        self.driver.get(localHost + "logout")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "login")
+            expected_conditions.url_to_be(localHost + "login")
         )
 
         self.login("bob", "ap23km2oso38r4j4s731sj")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         self.driver.get(alice_note_url)
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         self.assertEqual(
-            self.localHost + "dashboard",
+            localHost + "dashboard",
             self.driver.current_url,
             "Expected user to be redirected to dashboard when attempting to access another user's note"
         )
@@ -293,7 +313,7 @@ class SystemTests(unittest.TestCase):
 
         self.login("alice", "password123")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         expected_titles = [n1.title, n2.title, n3.title]
@@ -317,17 +337,17 @@ class SystemTests(unittest.TestCase):
     # Test note private and public
     def test_note_visibility(self):
         alice_note_title = 'Alice Note 1'
-        alice_note_editor_url = self.localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
+        alice_note_editor_url = localHost + f"dashboard/note_editor?id={TestNoteID.ALICE_NOTE_1.value}"
 
         # Assumes all testseed notes are private
         self.login("alice", "password123")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
-        self.driver.get(self.localHost + "discover")
+        self.driver.get(localHost + "discover")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "discover")
+            expected_conditions.url_to_be(localHost + "discover")
         )
         self.assertEqual(
             [],
@@ -351,16 +371,16 @@ class SystemTests(unittest.TestCase):
         )
 
         # Verify visibility in discover as Bob, as discover excludes own notes
-        self.driver.get(self.localHost + "logout")
+        self.driver.get(localHost + "logout")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "login")
+            expected_conditions.url_to_be(localHost + "login")
         )
         self.login("bob", "ap23km2oso38r4j4s731sj")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
-        self.driver.get(self.localHost + "discover")
+        self.driver.get(localHost + "discover")
         WebDriverWait(self.driver, 5).until(
             lambda _: alice_note_title in self.get_discover_note_titles()
         )
@@ -371,13 +391,13 @@ class SystemTests(unittest.TestCase):
         )
 
         # Switch note back to private
-        self.driver.get(self.localHost + "logout")
+        self.driver.get(localHost + "logout")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "login")
+            expected_conditions.url_to_be(localHost + "login")
         )
         self.login("alice", "password123")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
         self.driver.get(alice_note_editor_url)
@@ -395,16 +415,16 @@ class SystemTests(unittest.TestCase):
         )
 
         # Verify note is hidden again
-        self.driver.get(self.localHost + "logout")
+        self.driver.get(localHost + "logout")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "login")
+            expected_conditions.url_to_be(localHost + "login")
         )
         self.login("bob", "ap23km2oso38r4j4s731sj")
         WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "dashboard")
+            expected_conditions.url_to_be(localHost + "dashboard")
         )
 
-        self.driver.get(self.localHost + "discover")
+        self.driver.get(localHost + "discover")
         WebDriverWait(self.driver, 5).until(
             lambda _: alice_note_title not in self.get_discover_note_titles()
         )
@@ -413,4 +433,3 @@ class SystemTests(unittest.TestCase):
             self.get_discover_note_titles(),
             "Expected note to be hidden from discover after setting it from public to private"
         )
-        
