@@ -1134,6 +1134,12 @@ def change_password_api():
 @login_required
 def delete_account():
     user = current_user._get_current_object()
+
+    # delete profile picture file
+    if user.pfp_filepath:
+        pfp_abs_path = os.path.join(current_app.static_folder, user.pfp_filepath)
+        if os.path.exists(pfp_abs_path):
+            os.remove(pfp_abs_path)
     
     # delete quizzes and questions related to user's notes
     for note in user.notes:
@@ -1151,12 +1157,6 @@ def delete_account():
     # delete password resets
     for reset in user.password_resets:
         db.session.delete(reset)
-
-    # delete profile picture file
-    if user.pfp_filepath:
-        pfp_abs_path = os.path.join(current_app.static_folder, user.pfp_filepath)
-        if os.path.exists(pfp_abs_path):
-            os.remove(pfp_abs_path)
     
     db.session.delete(user)
     db.session.commit()
