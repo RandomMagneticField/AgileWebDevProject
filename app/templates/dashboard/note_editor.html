@@ -4,7 +4,9 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_preview.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_table.css') }}"/>
 {% endblock %}
 
 {% block page_content %}
@@ -195,7 +197,10 @@
 
   
 
-  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/note_editor.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/note_table.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/note_main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/note_quiz.js') }}"></script>
 {% endblock %}
 
 
