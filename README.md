@@ -1,8 +1,5 @@
 # AgileWebDevProject
-Repo for the agile web dev project
-
-## Project Description
-Text
+Repository for the Agile Web Development project.
 
 ## Group Members
 | UWA ID | Name | Github Username |
@@ -10,6 +7,11 @@ Text
 | 24578417 | Chen Foong Lim | chenfoonglim |
 | 24374107 | Zoelene Velinsky | zoevelin |
 | 24412669 | Gabriel Masbate | RandomMagneticField |
+
+## Project Description
+Notella is a student-focused study platform that brings notes, flashcards, and AI-generated quizzes into one workspace. Users can create Markdown notes with a formatting toolbar, live preview, headings, lists, code blocks, tables, tags, and public/private visibility controls. Flashcard decks can also be created for self-paced study sessions, where users flip through cards, mark answers as right or wrong, and receive a results summary to help identify what to review next.
+
+The app also includes an AI quiz feature that generates multiple-choice questions directly from saved notes, allowing students to retake quizzes and track saved quiz results. Through the Discover page, users can browse public notes and flashcard decks shared by other students, filter resources by tags, preview content, and copy useful materials into their own personal library for editing and study.
 
 ## Launch instructions
 1. Clone the repository
