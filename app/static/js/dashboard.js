@@ -16,6 +16,8 @@
 //     { title: 'Git Commands', count: 24, lastScore: 18, lastTotal: 24, tags: ['CITS3000', 'tools'], date: '18 Mar' },
 // ];
 
+let selectedTags = new Set();
+
 fetch('/api/dashboard')
     .then(res => res.json())
     .then(data => {
@@ -133,10 +135,20 @@ if(params.get('tab') === 'decks'){
 
 // ── Render ──
 function renderCards() {
-    document.getElementById('notes-grid').innerHTML = sortdata(notesData).map(createNoteCard).join('');
-    document.getElementById('decks-grid').innerHTML = sortdata(decksData).map(createDeckCard).join('');
-}
+    let notes = sortdata(notesData)
+    let decks = sortdata(decksData)
 
+    if (selectedTags.size > 0) {
+        //all selected tag(s) must be in the shown note
+        notes = notes.filter(n => [...selectedTags].every(t => n.tags.includes(t)))
+        decks = decks.filter(d => [...selectedTags].every(t => d.tags.includes(t)))
+        //as long as some of the selected tags are present
+        // notes = notes.filter(n => n.tags.some(t => selectedTags.has(t)))
+        // decks = decks.filter(d => d.tags.some(t => selectedTags.has(t)))
+    }
+    document.getElementById('notes-grid').innerHTML = notes.map(createNoteCard).join('');
+    document.getElementById('decks-grid').innerHTML = decks.map(createDeckCard).join('');
+}
 
 function openCreateModal() {
     document.getElementById('create-note-backdrop').style.display = 'block';
@@ -230,6 +242,7 @@ searchInput.addEventListener('input', function() {
 });
 
 // ── Tag modal ──
+
 function getAvailableTags() {
     const isNotes = document.getElementById('panel-notes').style.display !== 'none'
     const data = isNotes ? notesData : decksData
