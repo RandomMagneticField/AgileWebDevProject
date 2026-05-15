@@ -26,7 +26,7 @@ if (NOTE_ID) {
             document.getElementById('note-title').innerText = note.title
             preview.innerHTML = marked.parse(note.content || '')
             document.getElementById('note-description').textContent = note.description || 'No description'
-            document.getElementById('detail-creator').textContent = note.creator || 'Unknown'
+            creatorpfp(note.creator, note.pfp_url)
             document.getElementById('detail-created').textContent = note.created_at
             document.getElementById('detail-updated').textContent = note.updated_at
             const tagsWrap = document.getElementById('tags-wrap') 
@@ -85,6 +85,22 @@ function bindAnchorLinks() {
             }
         })
     })
+}
+
+//Profile picture + username
+function creatorpfp(username, pfpUrl) {
+    const el = document.getElementById('detail-creator')
+    const initial = (username || '?')[0].toUpperCase()
+
+    el.innerHTML = `
+    <span style="display: flex; align-items: center; gap:8px;">
+        ${pfpUrl
+            ?`<img src="${pfpUrl}" alt="${username}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;">`
+            : `<span style="width:24px; height:24px; border-radius:50%; background:var(--avatar-bg); color:var(--text-primary); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600;">${initial}</span>`
+        }
+        ${username || 'Unknown'}
+        </span>
+    `
 }
 
 // copy note

@@ -583,6 +583,7 @@ def get_note_preview(note_id):
         'content': note.content_md or '',
         'description': note.description or '',
         'creator': note.user.username,
+        'pfp_url' : url_for('static', filename = note.user.pfp_filepath) if note.user.pfp_filepath else None,
         'tags': [t.name for t in note.tags],
         'created_at': note.created_at.strftime('%d %b %Y'),
         'updated_at': note.updated_at.strftime('%d %b %Y'),
@@ -609,6 +610,7 @@ def get_deck_preview(deck_id):
         'cards':[{'id' : c.flashcard_id, 'front': c.front, 'back': c.back} 
                  for c in sorted(deck.flashcards, key=lambda c: c.order_index)],
         'creator': deck.user.username,
+        'pfp_url' : url_for('static', filename = deck.user.pfp_filepath) if deck.user.pfp_filepath else None,
         'tags': [t.name for t in deck.tags],
         'created_at': deck.created_at.strftime('%d %b %Y'),
         'count': len(deck.flashcards),
