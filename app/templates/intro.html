@@ -3,8 +3,15 @@
 {% block title %}Notella{% endblock %}
 
 {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/starting.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/discover.css') }}"/>
 {% endblock %}
 
 {% block content %}
@@ -27,13 +34,30 @@
 
     <!-- Features -->
     <section class="features">
-        <div class="feature-row">
+        <div class="feature-row" id="notes-row">
             <div class="feature-text">
                 <p class="feature-label">Notes</p>
                 <h2 class="feature-heading">Write notes easily</h2>
                 <p class="feature-desc">Effortlessly format your notes using our built-in Markdown. Complete with live preview and a formatting toolbar for easier syntax access. Easily tag, organise, and share your notes with other students.</p>
             </div>
-            <div class="image"></div>
+            <div class="image">
+                <div class="editor-box">
+                    <div class="md-toolbar">
+                        <button class="tb-btn"><b>B</b></button>
+                        <button class="tb-btn"><i>I</i></button>
+                        <button class="tb-btn" style="text-decoration:line-through;">S</button>
+                        <div class="tb-sep"></div>
+                        <button class="tb-btn">H1</button>
+                        <button class="tb-btn">H2</button>
+                        <button class="tb-btn">H3</button>
+                        <div class="tb-sep"></div>
+                        <button class="tb-btn"><i class="bi bi-list-ul"></i></button>
+                        <button class="tb-btn"><i class="bi bi-list-ol"></i></button>
+                        <button class="tb-btn"><i class="bi bi-code"></i></button>
+                    </div>
+                    <div id="notes-demo"></div>
+                </div>
+            </div>
         </div>
 
         <div class="feature-row reverse">
@@ -42,7 +66,29 @@
                 <h2 class="feature-heading">Study with flashcard decks</h2>
                 <p class="feature-desc">Build flashcard decks and study at your own pace. Flip through cards, mark each one right or wrong, and get a results summary at the end of every session so you know exactly where to focus next.</p>
             </div>
-            <div class="image"></div>
+            <div class="image">
+                <div class="demo-fc-wrap" onclick="demoFlipCard()">
+                    <div class="demo-fc-inner" id="demo-inner">
+                        <div class="demo-fc-front">
+                            <p class="demo-fc-label">Front</p>
+                            <div class="demo-fc-text" id="demo-front-text"></div>
+                        </div>
+                        <div class="demo-fc-back">
+                            <p class="demo-fc-label">Back</p>
+                            <div class="demo-fc-text" id="demo-back-text"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-fc-counter" id="demo-counter"></div>
+                <div class="demo-fc-btns">
+                    <button class="flip-btn" id="demo-btn-correct">
+                        <i class="bi bi-check-circle-fill"></i> Correct
+                    </button>
+                    <button class="btn-danger" id="demo-btn-wrong">
+                        <i class="bi bi-x-circle-fill"></i> Wrong
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="feature-row">
@@ -51,7 +97,10 @@
                 <h2 class="feature-heading">Generate quizzes instantly with AI</h2>
                 <p class="feature-desc">Let AI do the hard work. Generate multiple choice quizzes directly from your notes in seconds. Save your favourite quizzes, retake them anytime, or generate new questions whenever you need them.</p>
             </div>
-            <div class="image"></div>
+            <div class="image" id="quiz-row">
+                <div id="demo-quiz-question" class="quiz-question-prompt" style="padding: 16px 16px 8px;"></div>
+                <div class="quiz-mcq-stack" id="demo-quiz-opts" style="padding: 0 16px 16px;"></div>
+            </div>
         </div>
 
         <div class="feature-row reverse">
@@ -60,14 +109,41 @@
                 <h2 class="feature-heading">Explore notes and flashcards from other students</h2>
                 <p class="feature-desc">Browse public notes and flashcard decks created by fellow students. Filter by tag, preview content before copying, and build your own personalised library.</p>
             </div>
-            <div class="image"></div>
-        </div>
+            <div class="image" style="padding: 0; overflow: hidden;">
+                <div class="demo-search-wrap">
+                    <div class="search-row">
+                        <input class="search-input" type="text" placeholder="Search..." id="search-input">
+                        <div style="position:relative;" id="tag-wrapper">
+                            <button class="tag-filter-btn" id="tag-filter-btn" onclick="openTagModal()" title="Filter by tags">
+                                <i class="bi bi-funnel"></i>
+                                <span class="tag-filter-count" id="tag-filter-count" style="display:none;"></span>
+                            </button>
+                            <div class="tag-modal" id="tag-modal" style="display:none;">
+                                <div class="tag-modal-header">
+                                    <span class="tag-modal-title">Filter by Tags</span>
+                                    <button class="tag-modal-clear" onclick="clearTags()">Clear all</button>
+                                </div>
+                                <div class="tag-modal-pills" id="tag-modal-pills"></div>
+                            </div>
+                        </div>
+                        <div class="tag-modal-backdrop" id="tag-modal-backdrop" style="display:none;" onclick="closeTagModal()"></div>
+                    </div>
+                    <div class="dash-divider"></div>
+                </div>
+                <div class="demo-scroll-area">
+                    <div id="panel-notes">
+                        <div class="notes-grid" id="notes-grid"></div>
+                    </div>
+                </div>
+            </div>
     </section>
-
 </div>
 
 <script>
     function goToSignup() { window.location.href = "{{ url_for('main.register') }}"; }
     function goToLogin() { window.location.href = "{{ url_for('main.login') }}"; }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ url_for('static', filename='js/starting.js') }}"></script>
 {% endblock %}
