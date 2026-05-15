@@ -610,6 +610,11 @@ body.mode-preview .md-preview {
         max-height: 900px;
     }
 
+    .note-preview-page .editor-pane-right {
+        display: flex;
+        flex: 1;
+    }
+
 }
 
 
