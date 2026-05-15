@@ -128,10 +128,23 @@ function selectDemoOpt(el, idx) {
     if (demoQuizAnswered) return;
     demoQuizAnswered = true;
     const correct = demoQuizzes[demoQuizIndex].correct;
-    document.querySelectorAll('#demo-quiz-opts .quiz-mcq-box').forEach((o, i) => {
-        if (i === correct) o.classList.add('quiz-option-correct');
-        else if (i === idx) o.classList.add('quiz-option-wrong');
+    const opts = document.querySelectorAll('#demo-quiz-opts .quiz-mcq-box');
+    
+    opts.forEach((o, i) => {
+        if (i === correct) {
+            o.classList.add('quiz-option-result-correct');
+            // add "Correct answer: X" label if user got it wrong
+            if (idx !== correct) {
+                const label = document.createElement('div');
+                label.className = 'quiz-correct-answer';
+                label.textContent = `Correct answer: ${String.fromCharCode(65 + correct)}`;
+                o.parentNode.insertBefore(label, o);
+            }
+        } else if (i === idx && i !== correct) {
+            o.classList.add('quiz-option-result-incorrect');
+        }
     });
+
     setTimeout(() => {
         demoQuizIndex = (demoQuizIndex + 1) % demoQuizzes.length;
         renderDemoQuiz();
@@ -141,7 +154,6 @@ function selectDemoOpt(el, idx) {
 renderDemoQuiz();
 
 //discover page demo
-// ── Discover Demo ──
 const discoverDemoNotes = [
     { id: null, title: 'Agile Development', body: 'Agile is an iterative approach to project management and software development that helps teams deliver value faster.', tags: ['CITS3000', 'week-2'], likes: 12, liked: false },
     { id: null, title: 'HTTP & REST APIs', body: 'REST stands for Representational State Transfer. Key HTTP methods include GET, POST, PUT, and DELETE.', tags: ['CITS3000', 'exam-prep'], likes: 78, liked: false },
@@ -156,6 +168,14 @@ let demoSelectedTags = new Set();
 function DiscoverDemo() {
     const searchInput = document.getElementById('search-input');
     if (!searchInput) return;
+
+    // make sure modal and backdrop are hidden on init
+    const modal = document.getElementById('tag-modal');
+    const backdrop = document.getElementById('tag-modal-backdrop');
+    const pills = document.getElementById('tag-modal-pills');
+    if (modal) modal.style.display = 'none';
+    if (backdrop) backdrop.style.display = 'none';
+    if (pills) pills.innerHTML = ''; // clear any stray content including "..."
 
     searchInput.addEventListener('input', function () {
         renderDemoCards();
@@ -172,17 +192,22 @@ function getDemoAvailableTags() {
 
 function openTagModal() {
     rebuildDemoTagModal();
-    document.getElementById('tag-modal-backdrop').style.display = 'block';
-    document.getElementById('tag-modal').style.display = 'block';
+    const backdrop = document.getElementById('tag-modal-backdrop');
+    const modal = document.getElementById('tag-modal');
+    if (backdrop) backdrop.style.display = 'block';
+    if (modal) modal.style.display = 'block';
 }
 
 function closeTagModal() {
-    document.getElementById('tag-modal-backdrop').style.display = 'none';
-    document.getElementById('tag-modal').style.display = 'none';
+    const backdrop = document.getElementById('tag-modal-backdrop');
+    const modal = document.getElementById('tag-modal');
+    if (backdrop) backdrop.style.display = 'none';
+    if (modal) modal.style.display = 'none';
 }
 
 function rebuildDemoTagModal() {
     const pills = document.getElementById('tag-modal-pills');
+    if (!pills) return;
     const availableTags = getDemoAvailableTags();
 
     const existing = document.getElementById('tag-search-input');
@@ -227,6 +252,7 @@ function clearTags() {
 function updateDemoTagFilterBtn() {
     const count = document.getElementById('tag-filter-count');
     const btn = document.getElementById('tag-filter-btn');
+    if (!count || !btn) return;
     if (demoSelectedTags.size > 0) {
         count.textContent = demoSelectedTags.size;
         count.style.display = 'inline';
@@ -244,14 +270,14 @@ function DemoNoteCard(note) {
     return `
         <div class="note-card" style="cursor:default;">
             <div class="note-card-content">
-                <div class="note-card-title" style="font-size:13px;">${note.title}</div>
-                <div class="note-card-footer" style="margin-top:8px;">
-                    <div class="note-card-tags">${tags}</div>
-                    <button class="like-btn" onclick="toggleDemoLike(this, '${note.title}')">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                    <div class="note-card-title" style="font-size:13px; flex:1;">${note.title}</div>
+                    <button class="like-btn" style="flex-shrink:0;" onclick="toggleDemoLike(this, '${note.title}')">
                         <i class="bi ${heartIcon}" style="${heartColour}"></i>
                         <span>${note.likes}</span>
                     </button>
                 </div>
+                <div class="note-card-tags" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:4px;">${tags}</div>
             </div>
         </div>
     `;
@@ -289,4 +315,4 @@ document.addEventListener('click', function (e) {
     }
 });
 
-DiscoverDemo()
+DiscoverDemo();

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/starting.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_editor.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard_editor.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}"/>
@@ -109,12 +109,10 @@
                 <h2 class="feature-heading">Explore notes and flashcards from other students</h2>
                 <p class="feature-desc">Browse public notes and flashcard decks created by fellow students. Filter by tag, preview content before copying, and build your own personalised library.</p>
             </div>
-            <div class="image">
+            <div class="image" style="padding: 0; overflow: hidden;">
                 <div class="demo-search-wrap">
                     <div class="search-row">
-                        <!--search input-->
-                        <input class="search-input" type="text" placeholder="Search..." id ="search-input">
-                        <!--Tag filter-->
+                        <input class="search-input" type="text" placeholder="Search..." id="search-input">
                         <div style="position:relative;" id="tag-wrapper">
                             <button class="tag-filter-btn" id="tag-filter-btn" onclick="openTagModal()" title="Filter by tags">
                                 <i class="bi bi-funnel"></i>
@@ -130,17 +128,14 @@
                         </div>
                         <div class="tag-modal-backdrop" id="tag-modal-backdrop" style="display:none;" onclick="closeTagModal()"></div>
                     </div>
+                    <div class="dash-divider"></div>
                 </div>
-                
-
-                <!--Notes panel-->
                 <div class="demo-scroll-area">
                     <div id="panel-notes">
                         <div class="notes-grid" id="notes-grid"></div>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
 </div>
 
