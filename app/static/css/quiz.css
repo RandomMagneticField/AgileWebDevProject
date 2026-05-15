@@ -445,7 +445,7 @@
 }
 
 .quiz-empty-panel {
-    width: min(100%, 900px);
+    width: 100%;
     margin: 0 auto;
     background: var(--note-card-bg);
     border: 1px solid var(--note-card-border);
@@ -456,7 +456,7 @@
 }
 
 .quiz-mcq-panel {
-    width: min(100%, 900px);
+    width: 100%;
     margin: 0 auto;
     background: var(--side-card-bg);
     border: 1px solid var(--editor-box-border);
