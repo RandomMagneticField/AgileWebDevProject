@@ -128,7 +128,7 @@
     position: absolute;
     top: calc(100% + 6px);
     right: 0;
-    background: var(--sidebar-bg);
+    background: var(--bg);
     border: 1px solid var(--input-border);
     border-radius: 12px;
     overflow: hidden;
@@ -534,4 +534,116 @@
     width: 320px;
     font-family: var(--font);
     box-shadow: 0 24px 60px var(--modal-shadow);
+}
+
+/* Tag filter button  */
+.tag-filter-btn {
+    position: relative;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 15px;
+    padding: 10px 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    font-family: var(--font);
+}
+.tag-filter-btn:hover, .tag-filter-btn.active {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+}
+.tag-filter-count {
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tag modal — anchored below the button */
+.tag-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+}
+.tag-modal {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 101;
+    min-width: 260px;
+    max-width: 340px;
+    box-shadow: 0 4px 20px var(--modal-shadow);
+}
+.tag-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.tag-modal-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.tag-modal-clear {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font);
+}
+.tag-modal-clear:hover { color: var(--text-primary); }
+.tag-modal-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.tag-pill {
+    background: none;
+    border: 1px solid var(--input-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: var(--font);
+    transition: all 0.15s;
+}
+.tag-pill:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.tag-pill.active {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--bg);
+}
+.tag-search-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    font-family: var(--font);
+    margin-bottom: 4px;
+    box-sizing: border-box;
+    outline: none;
+}
+.tag-search-input:focus {
+    border-color: var(--text-muted);
 }
