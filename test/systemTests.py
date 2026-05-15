@@ -1,8 +1,9 @@
 import os
 import tempfile
 import threading
-import time
 import unittest
+from urllib.error import URLError
+from urllib.request import urlopen
 
 from app.models import User, Note
 from app import create_app, db
@@ -53,15 +54,8 @@ class SystemTests(unittest.TestCase):
         self.localHost = f"http://127.0.0.1:{self.server_thread.server.server_port}/"
 
         # Wait briefly for the server to accept connections.
-        deadline = time.time() + 5
-        while time.time() < deadline:
-            try:
-                self.driver.get(self.localHost)
-                break
-            except Exception:
-                time.sleep(0.1)
-        else:
-            raise RuntimeError("Test server did not start in time")
+        self.wait_for_server_ready()
+        self.driver.get(self.localHost)
 
     def tearDown(self):
         self.driver.quit()
@@ -75,6 +69,16 @@ class SystemTests(unittest.TestCase):
         os.unlink(self.temp_db.name)
 
     # Helper functions
+
+    def wait_for_server_ready(self):
+        def server_ready(_):
+            try:
+                with urlopen(self.localHost, timeout=1):
+                    return True
+            except URLError:
+                return False
+
+        WebDriverWait(self.driver, 5, poll_frequency=0.1).until(server_ready)
 
     def addUser(self, test_username='myname', test_password="123", test_email='myname@test.com'):
         user = User(username=test_username, email=test_email)
@@ -137,6 +141,18 @@ class SystemTests(unittest.TestCase):
         cards = self.driver.find_elements(By.CSS_SELECTOR, "#notes-grid .note-card .note-card-title")
         return [card.text.strip() for card in cards if card.text.strip()]
 
+    def get_auth_errors(self):
+        return [el.text.strip() for el in self.driver.find_elements(By.CSS_SELECTOR, ".errors") if el.text.strip()]
+
+    def wait_for_auth_error(self):
+        WebDriverWait(self.driver, 5).until(
+            lambda d: len(d.find_elements(By.CSS_SELECTOR, ".errors")) > 0
+        )
+
+    def field_is_valid(self, field_id):
+        field = self.driver.find_element(By.ID, field_id)
+        return self.driver.execute_script("return arguments[0].checkValidity();", field)
+
     # Test login page
 
     def test_login_page(self):
@@ -160,7 +176,7 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "login")
         
         self.login("myname", "security456")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "login",
@@ -172,7 +188,7 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "login")
         
         self.login("alice", "password124")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "login",
@@ -197,12 +213,17 @@ class SystemTests(unittest.TestCase):
             self.driver.current_url,
             "Expected to be redirected to localHost/dashboard")
 
+        self.driver.get(self.localHost + "logout")
+        WebDriverWait(self.driver, 5).until(
+            expected_conditions.url_to_be(self.localHost + "login")
+        )
+
         # Email already used
 
         self.driver.get(self.localHost + "register")
 
         self.register("john@example.com", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "register",
@@ -214,7 +235,7 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "register")
 
         self.register("john2004@example.com", "john", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "register",
@@ -225,7 +246,7 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "register")
 
         self.register("john", "john2004", "as90md09jrsoajm", "as90md09jrsoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "register",
@@ -236,7 +257,10 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "register")
 
         self.register("john2004@example.com", "john2004", "2sJm8", "2sJm8")
-        time.sleep(1)
+        self.assertFalse(
+            self.field_is_valid("password"),
+            "Expected password field to fail HTML validity checks for a too-short password"
+        )
 
         self.assertEqual(
             self.localHost + "register",
@@ -247,7 +271,7 @@ class SystemTests(unittest.TestCase):
         self.driver.get(self.localHost + "register")
 
         self.register("john2004@example.com", "john2004", "as90md09jrsoajm", "as90md09josoajm")
-        time.sleep(1)
+        self.wait_for_auth_error()
 
         self.assertEqual(
             self.localHost + "register",
