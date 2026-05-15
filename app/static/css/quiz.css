@@ -698,7 +698,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: var(--modal-bg, var(--editor-box-bg));
-    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border: 1px solid var(--editor-box-border);
     border-radius: 14px;
     padding: 24px;
     z-index: 1000;
@@ -752,7 +752,7 @@
 
 .quiz-edit-modal-btn-cancel {
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     border: 1px solid var(--input-border);
 }
 
@@ -788,7 +788,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: var(--modal-bg, var(--editor-box-bg));
-    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border: 1px solid var(--editor-box-border);
     border-radius: 14px;
     padding: 24px;
     z-index: 1000;
@@ -802,7 +802,7 @@
 .quiz-delete-modal-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary-color);
+    color: var(--text-primary);
 }
 
 .quiz-delete-modal-message {
@@ -828,7 +828,7 @@
 
 .quiz-delete-modal-btn-cancel {
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     border: 1px solid var(--input-border);
 }
 
