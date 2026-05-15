@@ -16,6 +16,7 @@
 
 .info-header {
     margin-bottom: 32px;
+    
 }
 
 .info-section{
@@ -155,4 +156,17 @@ details[open] summary::after{
     height: 1px;
     background: var(--sidebar-divider);
     margin-bottom: 32px;
+}
+
+
+.info-logo-img {
+    display: block;
+    width: 150px;
+    height: auto;
+    margin: 0 auto 24px;
+    filter: brightness(0) invert(1);
+}
+
+[data-theme="light"] .info-logo-img {
+    filter: invert(0);
 }
