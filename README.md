@@ -65,3 +65,9 @@ To run Selenium server tests, run:
 ```bash
 python -m unittest test/systemTests.py
 ```
+**NOTE:** This version of our server tests was designed to be ran on windows/mac
+
+For a version of our server tests with a setup more akin to the suggested setup on linux, run:
+```bash
+python -m unittest test/systemTests_linux.py
+```
