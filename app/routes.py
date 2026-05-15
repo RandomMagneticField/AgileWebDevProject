@@ -1140,13 +1140,20 @@ def delete_account():
         pfp_abs_path = os.path.join(current_app.static_folder, user.pfp_filepath)
         if os.path.exists(pfp_abs_path):
             os.remove(pfp_abs_path)
+
+    # delete user-specific flashcard/session data first
+    SessionAnswer.query.filter_by(user_id=user.user_id).delete()
+    DeckProgress.query.filter_by(user_id=user.user_id).delete()
+    FlashcardResult.query.filter_by(user_id=user.user_id).delete()
     
     # delete quizzes and questions related to user's notes
     for note in user.notes:
         delete_quizzes_for_note(note)
     
-    # delete flashcards, their results, and decks
+    # delete flashcards, their results, session data, progress, and decks
     for deck in user.decks:
+        SessionAnswer.query.filter_by(deck_id=deck.deck_id).delete()
+        DeckProgress.query.filter_by(deck_id=deck.deck_id).delete()
         delete_flashcards_for_deck(deck)
         db.session.delete(deck)
     
