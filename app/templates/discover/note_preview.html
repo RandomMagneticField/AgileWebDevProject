@@ -4,7 +4,10 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_editor.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/note_preview.css') }}"/>
+
 {% endblock %}
 
 {% block page_content %}
@@ -14,7 +17,7 @@
           <div class="dash-greeting">
             <a href="{{ url_for('main.discover') }}" class="back-btn">
               <i class="bi bi-arrow-left"></i>
-               Note Preview
+               Discover
             </a> 
            
           </div>
@@ -30,14 +33,14 @@
       <div class="dash-divider"></div>
 
 
-      <div class="editor-layout">
+      <div class="editor-layout note-preview-page">
 
 
         <div class="editor-box">
           <div class="editor-pane">
                 <div class="editor-pane-right">
                   <!-- <div class="editor-pane-label preview-label">Preview Section</div> -->
-                  <div class="md-preview" id="md-preview" style="display:block; flex:1;"></div>
+                  <div class="md-preview" id="md-preview"></div>
               </div>
           </div>
 
