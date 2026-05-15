@@ -29,28 +29,34 @@ function discardEdit() {
 function saveProfile() {
     const username = document.getElementById('input-username').value.trim();
     const email = document.getElementById('input-email').value.trim();
+    const pfpInput = document.getElementById('input-pfp');
 
     if (!username || !email) {
         alert('Username and email cannot be empty.');
         return;
     }
 
-    // username: 3-50 chars, letters, numbers, underscores only
     if (!/^[a-zA-Z0-9_]{3,50}$/.test(username)) {
         alert('Username must be 3-50 characters and can only contain letters, numbers, and underscores.');
         return;
     }
 
-    // basic email format check
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert('Please enter a valid email address.');
         return;
     }
 
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+
+    if (pfpInput.files[0]) {
+        formData.append('pfp', pfpInput.files[0]);
+    }
+
     fetch('/api/profile/update', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email })
+        body: formData
     })
     .then(res => res.json())
     .then(data => {
@@ -59,7 +65,14 @@ function saveProfile() {
             document.getElementById('display-email').textContent = email;
             document.getElementById('profile-username').textContent = username;
             document.getElementById('profile-email').textContent = email;
-            document.getElementById('profile-avatar').textContent = (username[0] || 'U').toUpperCase();
+
+            const avatar = document.getElementById('profile-avatar');
+            if (data.pfp_url) {
+                avatar.innerHTML = `<img src="${data.pfp_url}?v=${Date.now()}" alt="Profile picture">`;
+            } else {
+                avatar.textContent = (username[0] || 'U').toUpperCase();
+            }
+
             discardEdit();
         } else {
             alert(data.error || 'Failed to update profile');
@@ -98,9 +111,9 @@ lightordark.addEventListener('change', () => {
     })
 });
 
-document.getElementById('del').addEventListener('click', function() {
-    window.location.href = this.dataset.url;
-});
+// document.getElementById('del').addEventListener('click', function() {
+//     window.location.href = this.dataset.url;
+// });
 
 document.getElementById('change_password').addEventListener('click', function() {
     window.location.href = this.dataset.url;
@@ -124,3 +137,19 @@ document.getElementById('del').addEventListener('click', function() {
         }
     })
 });
+
+const pfpInput = document.getElementById('input-pfp');
+const pfpButton = document.getElementById('btn-pfp');
+const pfpFileName = document.getElementById('profile-file-name');
+
+if (pfpInput && pfpButton && pfpFileName) {
+    pfpButton.addEventListener('click', () => {
+        pfpInput.click();
+    });
+
+    pfpInput.addEventListener('change', () => {
+        pfpFileName.textContent = pfpInput.files[0]
+            ? pfpInput.files[0].name
+            : 'No image selected';
+    });
+}

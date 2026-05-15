@@ -18,3 +18,7 @@ env/
 # IDE
 .vscode/
 .idea/
+
+
+app/static/images/profile_pictures/*
+!app/static/images/profile_pictures/.gitkeep

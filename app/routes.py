@@ -1,7 +1,7 @@
 import json
 import os
 
-from flask import render_template, redirect, url_for, flash, jsonify, request
+from flask import render_template, redirect, url_for, flash, jsonify, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from openai import APIConnectionError, APITimeoutError, OpenAI, RateLimitError
 
@@ -12,8 +12,18 @@ from app.models import User, Note, Deck, Tag, Quiz, QuizQuestion, Flashcard, Fla
 from app.forms import RegisterForm, LoginForm, QuizSubmissionForm
 from datetime import datetime, timezone
 
+from werkzeug.utils import secure_filename
+
 openai_api_key = os.getenv('OPENAI_API_KEY')
 openai_client = OpenAI(api_key=openai_api_key, timeout=25.0) if openai_api_key else None
+
+ALLOWED_PROFILE_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_profile_image(filename):
+    return (
+        '.' in filename
+        and filename.rsplit('.', 1)[1].lower() in ALLOWED_PROFILE_IMAGE_EXTENSIONS
+    )
 
 @main.route('/')
 def home():
@@ -1034,10 +1044,15 @@ def profile():
 @main.route('/api/profile/update', methods=['POST'])
 @login_required
 def update_profile():
-    data = request.get_json()
-    
-    new_username = data.get('username', '').strip()
-    new_email = data.get('email', '').strip()
+    if request.content_type and request.content_type.startswith('multipart/form-data'):
+        new_username = request.form.get('username', '').strip()
+        new_email = request.form.get('email', '').strip()
+        pfp_file = request.files.get('pfp')
+    else:
+        data = request.get_json() or {}
+        new_username = data.get('username', '').strip()
+        new_email = data.get('email', '').strip()
+        pfp_file = None
     
     if not new_username or not new_email:
         return jsonify({'error': 'Username and email cannot be empty'}), 400
@@ -1047,12 +1062,39 @@ def update_profile():
     
     if new_email != current_user.email and User.query.filter_by(email=new_email).first():
         return jsonify({'error': 'Email already in use'}), 400
+
+    if pfp_file and pfp_file.filename:
+        if not allowed_profile_image(pfp_file.filename):
+            return jsonify({'error': 'Profile picture must be png, jpg, jpeg, gif, or webp'}), 400
+
+        original_filename = secure_filename(pfp_file.filename)
+        extension = original_filename.rsplit('.', 1)[1].lower()
+        filename = f'user_{current_user.user_id}.{extension}'
+
+        upload_folder = current_app.config['PROFILE_UPLOAD_FOLDER']
+        upload_abs_dir = os.path.join(current_app.static_folder, upload_folder)
+        os.makedirs(upload_abs_dir, exist_ok=True)
+
+        if current_user.pfp_filepath:
+            old_abs_path = os.path.join(current_app.static_folder, current_user.pfp_filepath)
+            if os.path.exists(old_abs_path):
+                os.remove(old_abs_path)
+
+        save_abs_path = os.path.join(upload_abs_dir, filename)
+        pfp_file.save(save_abs_path)
+
+        current_user.pfp_filepath = f'{upload_folder}/{filename}'
     
     current_user.username = new_username
     current_user.email = new_email
     db.session.commit()
     
-    return jsonify({'success': True})
+    return jsonify({
+        'success': True,
+        'username': current_user.username,
+        'email': current_user.email,
+        'pfp_url': url_for('static', filename=current_user.pfp_filepath) if current_user.pfp_filepath else None
+    })
 
 @main.route('/api/profile/darkmode', methods=['POST'])
 @login_required
@@ -1109,6 +1151,12 @@ def delete_account():
     # delete password resets
     for reset in user.password_resets:
         db.session.delete(reset)
+
+    # delete profile picture file
+    if user.pfp_filepath:
+        pfp_abs_path = os.path.join(current_app.static_folder, user.pfp_filepath)
+        if os.path.exists(pfp_abs_path):
+            os.remove(pfp_abs_path)
     
     db.session.delete(user)
     db.session.commit()
