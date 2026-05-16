@@ -697,13 +697,13 @@ Basline Rules:
 - Each question MUST have exactly 4 options
 - Question max length: 300 characters
 - Option max length: 120 characters
-- All options must be distinct
+- All options must be distinct, in both text and meaning (i.e. no two options should mean the same thing worded differently)
 - Exactly one correct answer per question
 - Do not use backticks, markdown, or LaTeX. If the question involves math expressions or code, leave them in plaintext.
 - Avoid ambiguous distractors
-- "All of the above" and "none of the above" are allowed only sparingly
-- At most 20 percent of the questions in a quiz may use either of those options
+- "All of the above" and "none of the above" are allowed only sparingly, at MOST 15 percent of the questions in a quiz may use either of those options
 - If you use "all of the above" or "none of the above", it MUST be the 4th option
+- In a "all of the above" or "none of the above" type question, this option should usually be incorrect rather than correct
 - Prefer normal distractors whenever possible
 - If a candidate question would violate any rule, replace it with a different valid question
 
