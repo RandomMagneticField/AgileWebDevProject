@@ -691,7 +691,6 @@ Basline Rules:
 - Avoid ambiguous distractors
 - "All of the above" and "none of the above" are allowed only sparingly, at MOST 15 percent of the questions in a quiz may use either of those options
 - If you use "all of the above" or "none of the above", it MUST be the 4th option
-- In a "all of the above" or "none of the above" type question, this option should usually be incorrect rather than correct
 - Prefer normal distractors whenever possible
 - If a candidate question would violate any rule, replace it with a different valid question
 
