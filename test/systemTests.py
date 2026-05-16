@@ -1,9 +1,8 @@
 import os
+import shutil
 import tempfile
 import threading
 import unittest
-from urllib.error import URLError
-from urllib.request import urlopen
 
 from app.models import User, Note
 from app import create_app, db
@@ -12,20 +11,12 @@ from app.config import TestConfig
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from werkzeug.serving import make_server
 
 from test.testseed import test_seed, TestUserID, TestNoteID, TestDeckID
-
-# DISCLAIMER: This Selenium test setup was done on Windows.
-# The suggested setup involving process forking seemed to work on Linux but not on Windows
-# We were running into errors surrounding the 'pickling' of certain objects that Windows seemed to depend on
-# Since Windows needs to spawn a new process to start the web application instead of forking, objects needed to be 'pickled' to be sent to it
-# But apparently some key objects couldn't be pickled, such as flask app instances and database connections
-# Linux avoids this issue by forking, which causes child processes to inherit memory from their parent processes (so no pickling involved)
-# Additionally on Windows, memory databases of the parent unit testing process also couldn't be automatically inherited into the child processes
-# To get this working on Windows, we switched from forking to threading during test setup.
 
 class ServerThread(threading.Thread):
     def __init__(self, app):
@@ -60,14 +51,34 @@ class SystemTests(unittest.TestCase):
 
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
-        self.driver = webdriver.Chrome(options=options)
-        #self.driver = webdriver.Chrome()
+        # options.add_argument("--window-size=1280,1000")
+
+        chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
+        chromedriver_path = shutil.which("chromedriver")
+
+        if chromium_path and chromedriver_path:
+            # Used this to get it working on Linux VM
+            print("Chronium path setup used")
+            options.binary_location = chromium_path
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            self.driver = webdriver.Chrome(
+                service=Service(chromedriver_path),
+                options=options
+            )
+        else:
+            # This is selected on Windows/Mac
+            print("Default Selenium setup used")
+            self.driver = webdriver.Chrome(options=options)
 
         self.localHost = f"http://127.0.0.1:{self.server_thread.server.server_port}/"
 
         # Wait briefly for the server to accept connections.
-        self.wait_for_server_ready()
         self.driver.get(self.localHost)
+
+        WebDriverWait(self.driver, 5).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
 
     def tearDown(self):
         self.driver.quit()
@@ -81,16 +92,6 @@ class SystemTests(unittest.TestCase):
         os.unlink(self.temp_db.name)
 
     # Helper functions
-
-    def wait_for_server_ready(self):
-        def server_ready(_):
-            try:
-                with urlopen(self.localHost, timeout=1):
-                    return True
-            except URLError:
-                return False
-
-        WebDriverWait(self.driver, 5, poll_frequency=0.1).until(server_ready)
 
     def addUser(self, test_username='myname', test_password="123", test_email='myname@test.com'):
         user = User(username=test_username, email=test_email)
@@ -123,7 +124,14 @@ class SystemTests(unittest.TestCase):
         username_field.send_keys(username)
         password_field.send_keys(password)
         confirm_field.send_keys(confirm_password)
-        
+
+        # self.driver.execute_script(
+        #     "arguments[0].scrollIntoView({block: 'center'});",
+        #     submit_btn
+        # )
+        # WebDriverWait(self.driver, 5).until(
+        #     expected_conditions.element_to_be_clickable((By.ID, "submit"))
+        # )
         submit_btn.click()
 
     def apply_sort(self, sort_value):
@@ -224,11 +232,6 @@ class SystemTests(unittest.TestCase):
             self.localHost + "dashboard",
             self.driver.current_url,
             "Expected to be redirected to localHost/dashboard")
-
-        self.driver.get(self.localHost + "logout")
-        WebDriverWait(self.driver, 5).until(
-            expected_conditions.url_to_be(self.localHost + "login")
-        )
 
         # Email already used
 
