@@ -58,7 +58,13 @@ function saveProfile() {
         method: 'POST',
         body: formData
     })
-    .then(res => res.json())
+    .then(res => {
+        if (res.status === 413) {
+            throw new Error('Profile picture must be smaller than 2 MB.');
+        }
+
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             document.getElementById('display-username').textContent = username;
@@ -78,7 +84,9 @@ function saveProfile() {
             alert(data.error || 'Failed to update profile');
         }
     })
-    .catch(() => alert('Network error. Please try again.'));
+    .catch(error => {
+        alert(error.message || 'Network error. Please try again.');
+    });
 }
 
 // document.getElementById('del').addEventListener('click', function() {
