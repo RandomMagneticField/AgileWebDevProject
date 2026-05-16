@@ -17,15 +17,6 @@ from werkzeug.serving import make_server
 
 from test.testseed import test_seed, TestUserID, TestNoteID, TestDeckID
 
-# DISCLAIMER: This Selenium test setup was done on Windows.
-# The suggested setup involving process forking seemed to work on Linux but not on Windows
-# We were running into errors surrounding the 'pickling' of certain objects that Windows seemed to depend on
-# Since Windows needs to spawn a new process to start the web application instead of forking, objects needed to be 'pickled' to be sent to it
-# But apparently some key objects couldn't be pickled, such as flask app instances and database connections
-# Linux avoids this issue by forking, which causes child processes to inherit memory from their parent processes (so no pickling involved)
-# Additionally on Windows, memory databases of the parent unit testing process also couldn't be automatically inherited into the child processes
-# To get this working on Windows, we switched from forking to threading during test setup.
-
 class ServerThread(threading.Thread):
     def __init__(self, app):
         super().__init__(daemon=True)
@@ -42,8 +33,6 @@ class SystemTests(unittest.TestCase):
 
     def setUp(self):
         testApplication = create_app(TestConfig)
-
-        # Not a memory database, but for each instance of Selenium tests this should be unique and expire on test end representative of memory databases
         self.temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
         self.temp_db.close()
         testApplication.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{self.temp_db.name}"
@@ -53,14 +42,13 @@ class SystemTests(unittest.TestCase):
         db.create_all()
         test_seed(db)
 
-        # Use threading instead of forking
         self.server_thread = ServerThread(testApplication)
         self.server_thread.start()
 
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")
-        self.driver = webdriver.Chrome(options=options)
-        #self.driver = webdriver.Chrome()
+        #options.add_argument("--headless=new")
+        #self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome()
 
         self.localHost = f"http://127.0.0.1:{self.server_thread.server.server_port}/"
 
