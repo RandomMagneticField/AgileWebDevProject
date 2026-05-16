@@ -51,9 +51,15 @@ class SystemTests(unittest.TestCase):
 
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
-        # options.add_argument("--window-size=1280,1000")
+        options.add_argument("--window-size=1280,1000")
 
-        chromium_path = shutil.which("chromium") or shutil.which("chromium-browser")
+        chromium_path = (
+            shutil.which("chromium")
+            or shutil.which("chromium-browser")
+            or shutil.which("google-chrome")
+            or shutil.which("google-chrome-stable")
+        )
+
         chromedriver_path = shutil.which("chromedriver")
 
         if chromium_path and chromedriver_path:
