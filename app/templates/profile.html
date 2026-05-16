@@ -13,7 +13,13 @@
 
     <!-- Header -->
     <div class="profile-header">
-        <div class="profile-avatar" id="profile-avatar">{{ user.username[0].upper() if user else 'U' }}</div>
+        <div class="profile-avatar" id="profile-avatar">
+            {% if user.pfp_filepath %}
+                <img src="{{ url_for('static', filename=user.pfp_filepath) }}" alt="Profile picture">
+            {% else %}
+                {{ user.username[0].upper() if user else 'U' }}
+            {% endif %}
+        </div>
         <div style="flex: 1;">
             <div class="profile-name" id="profile-username">{{ user.username if user else 'user' }}</div>
             <div class="profile-email" id="profile-email">{{ user.email if user else 'email' }}</div>
@@ -77,6 +83,24 @@
         <span class="settings-label">email</span>
         <input class="profile-input" id="input-email" type="email" value="{{ user.email if user else '' }}" spellcheck="false"/>
     </div>
+   <div class="settings-row">
+    <span class="settings-label">profile picture</span>
+
+    <div class="profile-file-control">
+        <span class="profile-file-name" id="profile-file-name">No image selected</span>
+
+        <input
+            class="profile-file-input"
+            id="input-pfp"
+            type="file"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+        />
+
+        <button type="button" class="btn-back profile-file-btn" id="btn-pfp">
+            Choose Image
+        </button>
+    </div>
+</div>
     <div class="settings-row">
         <span class="settings-label">password</span>
         <button class="btn-back" id="change_password_edit" data-url="{{ url_for('main.change_password') }}">Change Password</button>

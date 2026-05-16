@@ -22,7 +22,7 @@ if (DECK_ID) {
         })
         .then(deck => {
             document.getElementById('decks-title').innerText = deck.title
-            document.getElementById('detail-creator').textContent = deck.creator || 'unknown'
+            creatorpfp(deck.creator, deck.pfp_url)
             document.getElementById('detail-count').textContent = deck.count ?? '-'
             document.getElementById('detail-created').textContent = deck.created_at
             const tagsWrap = document.getElementById('tags-wrap')
@@ -64,6 +64,22 @@ function renderCard() {
         `Card ${currentIndex + 1} of ${cards.length}`
 
     updateProgress()
+}
+
+//Profile picture + username
+function creatorpfp(username, pfpUrl) {
+    const el = document.getElementById('detail-creator')
+    const initial = (username || '?')[0].toUpperCase()
+
+    el.innerHTML = `
+    <span style="display: flex; align-items: center; gap:8px;">
+        ${pfpUrl
+            ?`<img src="${pfpUrl}" alt="${username}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;">`
+            : `<span style="width:24px; height:24px; border-radius:50%; background:var(--avatar-bg); color:var(--text-primary); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600;">${initial}</span>`
+        }
+        ${username || 'Unknown'}
+        </span>
+    `
 }
 
 // progress bar
