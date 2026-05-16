@@ -61,11 +61,11 @@ To run function unit tests, run:
 python -m unittest test/unitTests.py
 ```
 
-To run Selenium server tests, run:
+To run our main Selenium server tests, run:
 ```bash
 python -m unittest test/systemTests.py
 ```
-**NOTE:** This version of our server tests was designed to be ran on windows/mac
+**NOTE:** This version of our server tests was heavily modified from the suggested setup to also work on Windows
 
 For a version of our server tests with a setup more akin to the suggested setup on linux, run:
 ```bash
