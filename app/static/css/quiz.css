@@ -264,8 +264,8 @@
     border: 0;
     border-radius: 10px;
     padding: 10px 10px;
-    background: rgba(74, 74, 74, 0.22);
-    color: rgba(220, 220, 220, 0.82);
+    background:var(--dash-bg);
+    color:var( --text-primary);
     font-family: inherit;
     font-size: 11px;
     font-weight: 400;
@@ -285,48 +285,48 @@
 }
 
 .quiz-question-item:hover {
-    background: rgba(82, 82, 82, 0.34);
+    background: var(--nav-active-bg);
     color: var(--text-primary);
 }
 
 .quiz-question-item.is-completed {
-    background: rgba(38, 72, 170, 0.36);
+    background: var(--btn-blue-bg);
     color: var(--btn-blue-color);
 }
 
 .quiz-question-item.is-completed:hover {
-    background: rgba(38, 72, 170, 0.48);
+    background: var(--btn-blue-bg-hover);
     color: var(--btn-blue-color);
 }
 
 .quiz-question-item.is-result-correct {
-    background: rgba(46, 125, 72, 0.34);
+    background: var(--btn-green-bg);
     color: var(--btn-green-color);
 }
 
 .quiz-question-item.is-result-correct:hover {
-    background: rgba(46, 125, 72, 0.44);
+    background: var(--btn-green-bg-hover);
     color: var(--btn-green-color);
 }
 
 .quiz-question-item.is-result-incorrect {
-    background: rgba(176, 59, 59, 0.34);
+    background: var(--btn-danger-bg);
     color: var(--btn-danger-color);
 }
 
 .quiz-question-item.is-result-incorrect:hover {
-    background: rgba(176, 59, 59, 0.44);
+    background: var(--btn-danger-bg-hover);
     color: var(--btn-danger-color);
 }
 
 .quiz-question-item.is-result-unanswered {
     /* Use the same neutral styling as the active page list items */
-    background: rgba(74, 74, 74, 0.22);
-    color: rgba(220, 220, 220, 0.82);
+    background: var(--deck-play-bg);
+    color: var(--text-muted);
 }
 
 .quiz-question-item.is-result-unanswered:hover {
-    background: rgba(82, 82, 82, 0.34);
+    background: var(--deck-play-bg-hover);
     color: var(--text-primary);
 }
 
@@ -334,12 +334,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    background: rgba(74, 74, 74, 0.22);
-    color: rgba(220, 220, 220, 0.82);
+    background: var(--deck-play-bg);
+    color: var(--text-muted);
 }
 
 .quiz-question-item-summary:hover {
-    background: rgba(82, 82, 82, 0.34);
+    background: var(--deck-play-bg-hover);
     color: var(--text-primary);
 }
 
@@ -409,15 +409,15 @@
 }
 
 .quiz-results-stat-unanswered {
-    color: rgba(220, 220, 220, 0.82);
+    color: var(--text-muted);
 }
 
 .quiz-panel-button {
     padding: 8px 20px;
     border-radius: 10px;
     background: var(--btn-login-bg);
-    border: 1px solid var(--btn-login-border);
-    color: var(--btn-login-color);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
     font-family: var(--font);
     font-size: 12px;
     cursor: pointer;
@@ -445,7 +445,7 @@
 }
 
 .quiz-empty-panel {
-    width: min(100%, 900px);
+    width: 100%;
     margin: 0 auto;
     background: var(--note-card-bg);
     border: 1px solid var(--note-card-border);
@@ -456,7 +456,7 @@
 }
 
 .quiz-mcq-panel {
-    width: min(100%, 900px);
+    width: 100%;
     margin: 0 auto;
     background: var(--side-card-bg);
     border: 1px solid var(--editor-box-border);
@@ -558,7 +558,7 @@
 }
 
 .quiz-mcq-box.quiz-option-selected .quiz-option-letter {
-    background: rgba(111, 147, 255, 0.14);
+    background: var(--btn-blue-bg);
     border-color: var(--btn-blue-border);
     color: var(--btn-blue-color);
 }
@@ -568,18 +568,18 @@
 }
 
 .quiz-mcq-box.quiz-option-result-correct {
-    background: rgba(46, 125, 72, 0.22);
-    border-color: rgba(74, 175, 104, 0.85);
+    background: var(--btn-green-bg);
+    border-color: var(--btn-green-border);
 }
 
 .quiz-mcq-box.quiz-option-result-correct:hover {
-    background: rgba(46, 125, 72, 0.22);
-    border-color: rgba(74, 175, 104, 0.85);
+    background: var(--btn-green-bg);
+    border-color: var(--btn-green-border);
 }
 
 .quiz-mcq-box.quiz-option-result-correct .quiz-option-letter {
-    background: rgba(74, 175, 104, 0.14);
-    border-color: rgba(74, 175, 104, 0.85);
+    background: var(--btn-green-bg);
+    border-color: var(--btn-green-border);
     color: var(--btn-green-color);
 }
 
@@ -588,18 +588,18 @@
 }
 
 .quiz-mcq-box.quiz-option-result-incorrect {
-    background: rgba(176, 59, 59, 0.22);
-    border-color: rgba(214, 93, 93, 0.85);
+    background: var(--btn-danger-bg);
+    border-color: var(--btn-danger-border);
 }
 
 .quiz-mcq-box.quiz-option-result-incorrect:hover {
-    background: rgba(176, 59, 59, 0.22);
-    border-color: rgba(214, 93, 93, 0.85);
+    background: var(--btn-danger-bg);
+    border-color: var(--btn-danger-border);
 }
 
 .quiz-mcq-box.quiz-option-result-incorrect .quiz-option-letter {
-    background: rgba(214, 93, 93, 0.14);
-    border-color: rgba(214, 93, 93, 0.85);
+    background: var(--btn-danger-bg);
+    border-color: var(--btn-danger-border);
     color: var(--btn-danger-color);
 }
 
@@ -667,7 +667,7 @@
 }
 
 .quiz-results-btn-edit:hover {
-    background: var(--btn-blue-hover);
+    background: var(--btn-blue-bg-hover);
 }
 
 .quiz-results-btn-delete {
@@ -677,7 +677,7 @@
 }
 
 .quiz-results-btn-delete:hover {
-    background: var(--btn-danger-hover);
+    background: var(--btn-danger-bg-hover);
 }
 
 /* Edit Quiz Name Modal */
@@ -687,7 +687,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop-bg);
     backdrop-filter: blur(2px);
     z-index: 999;
 }
@@ -698,7 +698,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: var(--modal-bg, var(--editor-box-bg));
-    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border: 1px solid var(--editor-box-border);
     border-radius: 14px;
     padding: 24px;
     z-index: 1000;
@@ -715,7 +715,7 @@
 .quiz-edit-modal-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary-color);
+    color: var(--text-primary);
 }
 
 .quiz-edit-modal-input {
@@ -723,7 +723,7 @@
     border: 1px solid var(--input-border);
     border-radius: 8px;
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     font-family: var(--font);
     font-size: 14px;
     outline: none;
@@ -752,7 +752,7 @@
 
 .quiz-edit-modal-btn-cancel {
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     border: 1px solid var(--input-border);
 }
 
@@ -767,7 +767,7 @@
 }
 
 .quiz-edit-modal-btn-submit:hover {
-    background: var(--btn-blue-hover);
+    background: var(--btn-blue-bg-hover);
 }
 
 /* Delete Quiz Modal */
@@ -777,7 +777,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop-bg);
     backdrop-filter: blur(2px);
     z-index: 999;
 }
@@ -788,7 +788,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: var(--modal-bg, var(--editor-box-bg));
-    border: 1px solid var(--modal-border, var(--editor-box-border));
+    border: 1px solid var(--editor-box-border);
     border-radius: 14px;
     padding: 24px;
     z-index: 1000;
@@ -802,12 +802,12 @@
 .quiz-delete-modal-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary-color);
+    color: var(--text-primary);
 }
 
 .quiz-delete-modal-message {
     font-size: 14px;
-    color: var(--text-secondary-color);
+    color: var(--text-muted);
 }
 
 .quiz-delete-modal-actions {
@@ -828,7 +828,7 @@
 
 .quiz-delete-modal-btn-cancel {
     background: var(--input-bg);
-    color: var(--text-primary-color);
+    color: var(--text-primary);
     border: 1px solid var(--input-border);
 }
 
@@ -843,7 +843,7 @@
 }
 
 .quiz-delete-modal-btn-delete:hover {
-    background: var(--btn-danger-hover);
+    background: var(--btn-danger-bg-hover);
 }
 
 @media (max-width: 900px) {
