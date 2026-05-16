@@ -108,6 +108,10 @@
     /* Quiz */
     --btn-blue-bg:             rgba(38, 72, 170, 0.22);
     --btn-blue-bg-hover:       rgba(38, 72, 170, 0.35);
+    --btn-green-bg-quiz:       rgba(46, 125, 72, 0.34);
+    --btn-green-bg-quiz-hover: rgba(46, 125, 72, 0.44);
+    --btn-red-bg-quiz:         rgba(176, 59, 59, 0.34);
+    --btn-red-bg-quiz-hover:   rgba(176, 59, 59, 0.44);
     --btn-blue-border:         #6f93ff;
     --btn-blue-color:          #a9bfff;
 }
@@ -174,6 +178,11 @@
     --btn-blue-bg-hover:       rgba(55, 95, 180, 0.18);
     --btn-blue-border:         rgba(55, 95, 180, 0.40);
     --btn-blue-color:          #315FA8;
+
+    --btn-green-bg-quiz:       rgba(100, 255, 150, 0.15);
+    --btn-green-bg-quiz-hover: rgba(100, 255, 150, 0.25);
+    --btn-red-bg-quiz:         rgba(255, 110, 110, 0.15);
+    --btn-red-bg-quiz-hover:   rgba(255, 110, 110, 0.25);
 
     --modal-bg:                rgba(255, 255, 255, 0.80);
     --modal-shadow:            rgba(0, 0, 0, 0.15);
