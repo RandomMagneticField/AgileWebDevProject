@@ -286,6 +286,7 @@ function fmt(type) {
 
     // re render preview
     onEdit();
+    markUnsaved();
 }
 
 
