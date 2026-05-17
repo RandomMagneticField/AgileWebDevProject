@@ -42,7 +42,8 @@ function bindAnchorLinks() {
     });
 }
 function renderPreview() {
-    preview.innerHTML = marked.parse(textarea.value || '');
+    const dirtyHtml = marked.parse(textarea.value || '');
+    preview.innerHTML = DOMPurify.sanitize(dirtyHtml);
     bindAnchorLinks();
     buildToc();
 }
