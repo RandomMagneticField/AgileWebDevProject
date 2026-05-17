@@ -119,19 +119,50 @@ function displayResults(){
     const list = document.getElementById('correct-list')
     document.getElementById('wrong-list').style.display = 'none'
 
-    list.innerHTML = answer.map((entry) => `
-        <div class="card-body ${entry.result}" style="margin-bottom: 8px;">
-            <div class="card-side">
-                <div class="card-side-label">FRONT</div>
-                <div class="card-side-text">${entry.card.front}</div>
-            </div>
-            <div class="card-side-divider"></div>
-            <div class="card-side">
-                <div class="card-side-label">BACK</div>
-                <div class="card-side-text">${entry.card.back}</div>
-            </div>
-        </div>
-    `).join('')
+    list.innerHTML = ''
+
+    answer.forEach((entry) => {
+        const cardBody = document.createElement('div')
+        cardBody.className = `card-body ${entry.result}`
+        cardBody.style.marginBottom = '8px'
+
+        const frontSide = document.createElement('div')
+        frontSide.className = 'card-side'
+
+        const frontLabel = document.createElement('div')
+        frontLabel.className = 'card-side-label'
+        frontLabel.textContent = 'FRONT'
+
+        const frontText = document.createElement('div')
+        frontText.className = 'card-side-text'
+        frontText.textContent = entry.card.front
+
+        frontSide.appendChild(frontLabel)
+        frontSide.appendChild(frontText)
+
+        const divider = document.createElement('div')
+        divider.className = 'card-side-divider'
+
+        const backSide = document.createElement('div')
+        backSide.className = 'card-side'
+
+        const backLabel = document.createElement('div')
+        backLabel.className = 'card-side-label'
+        backLabel.textContent = 'BACK'
+
+        const backText = document.createElement('div')
+        backText.className = 'card-side-text'
+        backText.textContent = entry.card.back
+
+        backSide.appendChild(backLabel)
+        backSide.appendChild(backText)
+
+        cardBody.appendChild(frontSide)
+        cardBody.appendChild(divider)
+        cardBody.appendChild(backSide)
+
+        list.appendChild(cardBody)
+    })
 
     document.getElementById('card-viewer').style.display = 'none'
     document.getElementById('result-page').style.display = 'block'
