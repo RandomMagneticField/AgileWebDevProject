@@ -136,6 +136,7 @@ function insertTable() {
 
     // re-render preview and close modal
     onEdit();
+    markUnsaved();
     closeTableModal();
 }
 
