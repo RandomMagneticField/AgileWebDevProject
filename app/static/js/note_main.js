@@ -53,12 +53,23 @@ function handleTag(evnt) {
 
         const pill = document.createElement('span');
         pill.className = 'note-tag tag-removable';
-        pill.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+
+        const tagText = document.createTextNode(val + ' ');
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'tag-remove';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', function () {
+            removeTag(this);
+        });
+
+        pill.appendChild(tagText);
+        pill.appendChild(removeBtn);
+
         document.getElementById('tags-wrap').insertBefore(pill, evnt.target);
 
-        // clear input
         evnt.target.value = '';
-         markUnsaved();
+        markUnsaved();
     }
 
     // function below makes backspace delete tags. Uncomment if we decide this is good UX. 
@@ -196,7 +207,19 @@ if (NOTE_ID) {
             note.tags.forEach(tag => {
                 const pill = document.createElement('span');
                 pill.className = 'note-tag tag-removable';
-                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`;
+
+                const tagText = document.createTextNode(tag + ' ');
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'tag-remove';
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', function () {
+                    removeTag(this);
+                });
+
+                pill.appendChild(tagText);
+                pill.appendChild(removeBtn);
+
                 const input = document.getElementById('tag-input');
                 document.getElementById('tags-wrap').insertBefore(pill, input);
             });

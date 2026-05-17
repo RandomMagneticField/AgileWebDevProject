@@ -15,6 +15,16 @@ let cards = []
 const deckId = document.getElementById('deck-data').dataset.deckId
 // console.log('deck id:', deckId)
 
+function escapeHtml(text) {
+    return String(text ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]))
+}
+
 //render all cards as list
 function renderCards(){
     const list = document.getElementById('card-list')
@@ -25,7 +35,6 @@ function renderCards(){
         row.className = 'card-row'
         row.dataset.index = index
 
-        //display all card 
         row.innerHTML = `
             <span class="card-num">${index + 1}.</span>
             <div class="card-body">
@@ -34,12 +43,12 @@ function renderCards(){
                 </div>
                 <div class="card-side">
                     <div class="card-side-label">FRONT</div>
-                    <textarea class="card-side-text" placeholder="Front side..." rows="2">${card.front}</textarea>
+                    <textarea class="card-side-text" placeholder="Front side..." rows="2">${escapeHtml(card.front)}</textarea>
                 </div>
                 <div class="card-side-divider"></div>
                 <div class="card-side">
                     <div class="card-side-label">BACK</div>
-                    <textarea class="card-side-text" placeholder="Back side..." rows="2">${card.back}</textarea>
+                    <textarea class="card-side-text" placeholder="Back side..." rows="2">${escapeHtml(card.back)}</textarea>
                 </div>
                 <button class="card-delete" onclick="deleteCard(${index})">
                     <i class="bi bi-trash"></i>
@@ -47,15 +56,14 @@ function renderCards(){
             </div>
         `
 
-        //save edits made by user
         const textareas = row.querySelectorAll('.card-side-text')
-        //save changes made for front side of the flashcard
+
         textareas[0].addEventListener('input', function(){
             cards[index].front = this.value
             markUnsaved()
             updateProgress()
         })
-        //save changes made for back side of the flashcard
+
         textareas[1].addEventListener('input', function(){
             cards[index].back = this.value
             markUnsaved()
@@ -67,7 +75,6 @@ function renderCards(){
     
     updateProgress()
 
-    // initialise sortable after rendering
     Sortable.create(list, {
         handle: '.card-drag-handle',
         animation: 150,
@@ -152,11 +159,26 @@ function handleTag(evnt) {
 
     if (evnt.key === 'Enter' || evnt.key === ',') {
         const val = evnt.target.value.trim().replace(/,/g, '').substring(0, 20)
+
         if (!val) return
+
         const pill = document.createElement('span')
         pill.className = 'note-tag tag-removable'
-        pill.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(this)">×</button>`
+
+        const tagText = document.createTextNode(val + ' ')
+
+        const removeBtn = document.createElement('button')
+        removeBtn.className = 'tag-remove'
+        removeBtn.textContent = '×'
+        removeBtn.addEventListener('click', function () {
+            removeTag(this)
+        })
+
+        pill.appendChild(tagText)
+        pill.appendChild(removeBtn)
+
         document.getElementById('tags-wrap').insertBefore(pill, evnt.target)
+
         evnt.target.value = ''
         markUnsaved()
     }
@@ -245,7 +267,19 @@ if (deckId) {
             deck.tags.forEach(tag => {
                 const pill = document.createElement('span')
                 pill.className = 'note-tag tag-removable'
-                pill.innerHTML = `${tag} <button class="tag-remove" onclick="removeTag(this)">×</button>`
+
+                const tagText = document.createTextNode(tag + ' ')
+
+                const removeBtn = document.createElement('button')
+                removeBtn.className = 'tag-remove'
+                removeBtn.textContent = '×'
+                removeBtn.addEventListener('click', function () {
+                    removeTag(this)
+                })
+
+                pill.appendChild(tagText)
+                pill.appendChild(removeBtn)
+
                 const input = document.getElementById('tag-input')
                 document.getElementById('tags-wrap').insertBefore(pill, input)
             })

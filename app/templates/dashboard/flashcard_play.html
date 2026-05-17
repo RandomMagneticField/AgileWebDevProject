@@ -101,6 +101,7 @@
     <div id="deck-data" data-deck-id="{{ deck.deck_id if deck else '' }}"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
     <script src="{{ url_for('static', filename='js/flashcard_play.js') }}"></script>
 
 {% endblock %}

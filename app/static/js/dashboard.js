@@ -34,18 +34,28 @@ function switchTab(tab, el) {
     document.getElementById('panel-decks').style.display = tab === 'decks' ? 'block' : 'none';
 }
 
+function escapeHtml(text) {
+    return String(text ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]))
+}
+
 
 // ── Card builders ──
 function createNoteCard(note) {
-    const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
+    const tags = note.tags.map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('')
     return `
         <div class="note-card" onclick="window.location=ROUTES.note_editor + '?id=${note.id}'">
             <div class="note-card-content">
-                <div class="note-card-title">${note.title}</div>
-                <div class="note-card-body">${note.body}</div>
+                <div class="note-card-title">${escapeHtml(note.title)}</div>
+                <div class="note-card-body">${escapeHtml(note.body)}</div>
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
-                    <span class="note-card-date">${note.date}</span>
+                    <span class="note-card-date">${escapeHtml(note.date)}</span>
                 </div>
             </div>
         </div>
@@ -53,34 +63,22 @@ function createNoteCard(note) {
 }
 
 function createDeckCard(deck) {
-    const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
+    const tags = deck.tags.map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('');
     const pct = deck.lastTotal === 0 ? 0 : Math.round((deck.lastScore / deck.lastTotal) * 100);
     const scoreLabel = deck.lastTotal === 0 ? 'Not attempted' : `${deck.lastScore} / ${deck.lastTotal}`;
     return `
         <div class="deck-card" onclick="window.location=ROUTES.flashcard_editor + '?id=${deck.id}'">
             <div class="deck-card-content">
                 <div class="deck-card-header">
-                    <a href="${ROUTES.flashcard_play}?id=${deck.id}" class="deck-play-btn" >
+                    <a href="${ROUTES.flashcard_play}?id=${deck.id}" class="deck-play-btn">
                         <i class="bi bi-play-fill"></i>
                     </a>
                     <div class="deck-card-info">
-                        <div class="deck-card-title">${deck.title}</div>
-                        <div class="deck-card-count">${deck.count} Cards</div>
+                        <div class="deck-card-title">${escapeHtml(deck.title)}</div>
+                        <div class="deck-card-count">${escapeHtml(deck.count)} Cards</div>
                     </div>
                 </div>
-                <div class="deck-progress-section">
-                    <div class="deck-progress-labels">
-                        <span class="deck-progress-label">Last Session</span>
-                        <span class="deck-progress-value">${scoreLabel}</span>
-                    </div>
-                    <div class="deck-progress-bar">
-                        <div class="deck-progress-fill" style="width: ${pct}%"></div>
-                    </div>
-                </div>
-                <div class="note-card-footer">
-                    <div class="note-card-tags">${tags}</div>
-                    <span class="note-card-date">${deck.date}</span>
-                </div>
+                ...
             </div>
         </div>
     `;
@@ -266,10 +264,10 @@ function rebuildTagModal() {
     const filtered = [...availableTags].sort().filter(t => t.toLowerCase().includes(inputsearch))
 
     pills.innerHTML = `
-        <input class="tag-search-input" id="tag-search-input" type="text" placeholder="Search tags..." value="${inputsearch}" oninput="rebuildTagModal()" onclick="event.stopPropagation()"/>
+        <input class="tag-search-input" id="tag-search-input" type="text" placeholder="Search tags..." value="${escapeHtml(inputsearch)}" oninput="rebuildTagModal()" onclick="event.stopPropagation()"/>
         ${filtered.map(tag => `
-            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${tag}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
-                ${tag}
+            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${escapeHtml(tag)}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
+                ${escapeHtml(tag)}
             </button>
         `).join('')}
     `

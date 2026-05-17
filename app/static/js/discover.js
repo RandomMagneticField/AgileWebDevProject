@@ -38,16 +38,26 @@ function switchTab(tab, el) {
 }
 
 
+function escapeHtml(text) {
+    return String(text ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]))
+}
+
 // ── Card builders ──
 function NoteCard(note) {
-    const tags = note.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
+    const tags = note.tags.map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('');
     const heartIcon = note.liked ? 'bi-heart-fill' : 'bi-heart'
     const heartColour = note.liked ? 'color:#e05c5c;' : '' 
     return `
         <div class="note-card" onclick="window.location='/discover/note/${note.id}'" style="cursor:pointer;">
             <div class="note-card-content">
-                <div class="note-card-title">${note.title}</div>
-                <div class="note-card-body">${note.body}</div>
+                <div class="note-card-title">${escapeHtml(note.title)}</div>
+                <div class="note-card-body">${escapeHtml(note.body)}</div>
                 <div class="note-card-footer">
                     <div class="note-card-tags">${tags}</div>
                     <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
@@ -66,7 +76,7 @@ function NoteCard(note) {
 }
 
 function DeckCard(deck) {
-    const tags = deck.tags.map(t => `<span class="note-tag">${t}</span>`).join('');
+    const tags = deck.tags.map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('');
     const heartIcon = deck.liked ? 'bi-heart-fill' : 'bi-heart'
     const heartColour = deck.liked ? 'color:#e05c5c;' : '' 
     return `
@@ -74,7 +84,7 @@ function DeckCard(deck) {
             <div class="deck-card-content">
                 <div class="deck-card-header">
                     <div class="deck-card-info">
-                        <div class="note-card-title">${deck.title}</div>
+                        <div class="note-card-title">${escapeHtml(deck.title)}</div>
                         <div class="deck-card-count">${deck.count} Cards</div>
                     </div>
                 </div>
@@ -259,10 +269,9 @@ function rebuildTagModal() {
     const filtered = [...availableTags].sort().filter(t => t.toLowerCase().includes(inputsearch))
 
     pills.innerHTML = `
-        <input class="tag-search-input" id="tag-search-input" type="text" placeholder="Search tags..." value="${inputsearch}" oninput="rebuildTagModal()" onclick="event.stopPropagation()"/>
         ${filtered.map(tag => `
-            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${tag}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
-                ${tag}
+            <button class="tag-pill ${selectedTags.has(tag) ? 'active' : ''}" data-tag="${escapeHtml(tag)}" onclick="event.stopPropagation(); toggleTag(this.dataset.tag)">
+                ${escapeHtml(tag)}
             </button>
         `).join('')}
     `
