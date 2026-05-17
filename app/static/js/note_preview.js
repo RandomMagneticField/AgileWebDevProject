@@ -24,7 +24,8 @@ if (NOTE_ID) {
                 return res.json()})
         .then(note => {
             document.getElementById('note-title').innerText = note.title
-            preview.innerHTML = marked.parse(note.content || '')
+            const dirtyHtml = marked.parse(note.content || '')
+            preview.innerHTML = DOMPurify.sanitize(dirtyHtml)
             document.getElementById('note-description').textContent = note.description || 'No description'
             creatorpfp(note.creator, note.pfp_url)
             document.getElementById('detail-created').textContent = note.created_at
